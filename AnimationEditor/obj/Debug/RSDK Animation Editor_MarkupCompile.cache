@@ -4,17 +4,17 @@
 exe
 C#
 .cs
-D:\Users\Cwall\Source\Repos\RSDK-Animation-Editor-Reloaded\AnimationEditor\obj\Debug\
+D:\Users\Cwall\source\repos\RSDK-Animation-Editor-Reloaded\AnimationEditor\obj\Debug\
 AnimationEditor
 none
 false
 DEBUG;TRACE
-D:\Users\Cwall\Source\Repos\RSDK-Animation-Editor-Reloaded\AnimationEditor\App.xaml
+D:\Users\Cwall\source\repos\RSDK-Animation-Editor-Reloaded\AnimationEditor\App.xaml
 3-1974960093
 
 181097718963
-21-317614855
+211143223344
 AboutWindow.xaml;MainWindow.xaml;TextureWindow.xaml;
 
-True
+False
 
