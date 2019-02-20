@@ -1,0 +1,27 @@
+﻿<Application x:Class="AnimationEditor.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:AnimationEditor"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <local:SkinResourceDictionary DarkSource="pack://application:,,,/RSDKrU;component/WPF/DarkTheme.xaml" 
+                                              LightSource="pack://application:,,,/RSDKrU;component/WPF/LightTheme.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/RSDKrU;component/WPF/RSDK.AnimationEditor.Icons.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/RSDKrU;component/WPF/RSDK.Skining.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/RSDKrU;component/WPF/RSDK.ContextMenu.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/RSDKrU;component/WPF/RSDK.Toolbar.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="{x:Type StackPanel}" TargetType="{x:Type StackPanel}">
+                <Setter Property="Background" Value="{DynamicResource NormalBackground}"></Setter>
+            </Style>
+            <Style x:Key="{x:Type ToolTip}" TargetType="{x:Type ToolTip}">
+                <Setter Property="Background" Value="{DynamicResource NormalBackground}"></Setter>
+            </Style>
+            <Style x:Key="{x:Type TextBlock}" TargetType="{x:Type TextBlock}">
+                <Setter Property="Foreground" Value="{DynamicResource NormalText}"></Setter>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
