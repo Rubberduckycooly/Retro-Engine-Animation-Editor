@@ -1,6 +1,0 @@
-[submodule "RSDK"]
-	path = RSDK
-	url = https://github.com/Rubberduckycooly/RSDK-Reverse
-[submodule "RSDK-Reverse"]
-	path = RSDK-Reverse
-	url = https://github.com/Rubberduckycooly/RSDK-Reverse
