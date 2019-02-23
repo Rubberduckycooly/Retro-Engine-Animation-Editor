@@ -80,18 +80,26 @@
     <Compile Include="AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\FileHandler.cs" />
     <Compile Include="SkinResourceDictionary.cs" />
     <Compile Include="TextureWindow.xaml.cs">
       <DependentUpon>TextureWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\UserInterfacer.cs" />
     <Compile Include="ViewModels\FrameViewModel.cs" />
     <Compile Include="Services\AnimationService.cs" />
     <Compile Include="Services\ImageService.cs" />
     <Compile Include="Services\TextureService.cs" />
     <Compile Include="ViewModels\HitboxV3EditorViewModel.cs" />
     <Compile Include="ViewModels\HitboxV5EditorViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\TextureViewModel.cs" />
     <Compile Include="ViewModels\TextureWindowViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelvRS.cs" />
+    <Compile Include="ViewModels\ViewModelv5.cs" />
+    <Compile Include="ViewModels\ViewModelvB.cs" />
+    <Compile Include="ViewModels\ViewModelv2.cs" />
+    <Compile Include="ViewModels\ViewModelv1.cs" />
     <Page Include="AboutWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -105,7 +113,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\HitboxViewModel.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -152,6 +159,29 @@
       <Project>{2ba290f0-4e82-4b58-aab4-3c431ee4de62}</Project>
       <Name>RSDKrU</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RSDK-Reverse\RSDKv1\RSDKv1.csproj">
+      <Project>{e089db56-f8d4-434e-a9a8-c7efcc3278d8}</Project>
+      <Name>RSDKv1</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RSDK-Reverse\RSDKv2\RSDKv2.csproj">
+      <Project>{b41a3858-7e66-4755-9f50-94ea021155b6}</Project>
+      <Name>RSDKv2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RSDK-Reverse\RSDKv5\RSDKv5.csproj">
+      <Project>{cf5496f8-002b-408f-9b3d-67c88f610283}</Project>
+      <Name>RSDKv5</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RSDK-Reverse\RSDKvB\RSDKvB.csproj">
+      <Project>{1a58ba31-c9e1-4d18-876e-ec73799e7a9f}</Project>
+      <Name>RSDKvB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RSDK-Reverse\RSDKvRS\RSDKvRS.csproj">
+      <Project>{aae1bacd-fe6b-4cc6-ad2d-073315f45eaf}</Project>
+      <Name>RSDKvRS</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="96604.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

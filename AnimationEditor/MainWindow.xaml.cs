@@ -12,44 +12,36 @@ namespace AnimationEditor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private MainViewModel ViewModel => (MainViewModel)DataContext;
+        public ViewModelv5 ViewModel => (ViewModelv5)DataContext;
+
+        private UserInterfacer Interfacer;
+        private FileHandler Handler;
 
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
+            DataContext = new ViewModelv5();
             List.AllowDrop = true;
+            Interfacer = new UserInterfacer(this);
+            Handler = new FileHandler(this);
         }
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
         {
-            var fd = new OpenFileDialog();
-            fd.DefaultExt = "*.bin";
-            fd.Filter = "RSDKv5 Animation Files|*.bin|RSDKv2 and RSDKvB Animation Files|*.ani|RSDKv1 Animation Files|*.ani|RSDKvRS Animation Files|*.ani";
-            if (fd.ShowDialog() == true)
-            {
-
-                //RSDKvRS and RSDKv1 don't have rotation flags
-                if (fd.FilterIndex - 1 > 1) { FlagsSelector.IsEnabled = false; }
-                if (fd.FilterIndex - 1 < 2) { FlagsSelector.IsEnabled = true; }
-
-                //For RSDKvRS, RSDKv1 and RSDKv2 & RSDKvB there is no ID and the Delay is always 256, so there is no point to let users change their values
-                if (fd.FilterIndex - 1 >= 1) { DelayNUD.IsEnabled = false; idNUD.IsEnabled = false; }
-                if (fd.FilterIndex - 1 == 3) { idNUD.IsEnabled = true; IDLabel.Text = "Player"; }
-                else { IDLabel.Text = "ID"; }
-                if (fd.FilterIndex - 1 == 0) { DelayNUD.IsEnabled = true; idNUD.IsEnabled = true; }
-
-            }
+            Handler.LoadFile();
+            Interfacer.UpdateUI();
         }
 
         private void MenuFileSave_Click(object sender, RoutedEventArgs e)
         {
-
+            Handler.SaveFile();
+            Interfacer.UpdateUI();
         }
 
         private void MenuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
-
+            Handler.SaveFileAs();
+            Interfacer.UpdateUI();
         }
 
         private void MenuFileExit_Click(object sender, RoutedEventArgs e)
@@ -59,117 +51,137 @@ namespace AnimationEditor
 
         private void ButtonAnimationAdd_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationUp_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationDown_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonFrameLeft_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonFrameRight_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationDuplicate_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationRemove_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationImport_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationExport_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonFrameAdd_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonFrameDupe_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonFrameRemove_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonFrameImport_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonFrameExport_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonZoomIn_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void ButtonZoomOut_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void List_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void MenuViewTexture_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void MenuViewHitbox_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void MenuInfoAbout_Click(object sender, RoutedEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
 
         private void FramesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
+            Interfacer.UpdateUI();
         }
+
+        private void NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            Interfacer.UpdateUI();
+        }
+
+        private void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Interfacer.UpdateUI();
+        }
+
+        private void FramesList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Interfacer.UpdateUI();
+        }
+
+
+
+
+
     }
 }
