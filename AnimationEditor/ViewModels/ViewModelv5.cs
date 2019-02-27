@@ -9,26 +9,32 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
+using System.Windows.Input;
+using System.Windows.Media;
+
 
 namespace AnimationEditor.ViewModels
 {
     public class ViewModelv5
     {
+
+        public SpriteService SpriteService;
         public Animation LoadedAnimationFile;
+        public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
         public Animation.AnimationEntry _SelectedAnimation;
 
         public List<Animation.AnimationEntry> Animations { get => GetAnimations(); }
-        public List<string> SpriteSheets { get => GetSpriteSheetsList(); }
+        public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
         public Animation.AnimationEntry SelectedAnimation { get => _SelectedAnimation; set { _SelectedAnimation = value; } }
         public int SelectedAnimationIndex { get; set; }
+
+        public double ViewWidth { get; set; }
+        public double ViewHeight { get; set; }
+
         public List<Animation.AnimationEntry.Frame> AnimationFrames { get => GetAnimationsFrames(); }
         public int SelectedFrameIndex { get; set; }
-
         public byte? Loop { get => GetLoopIndex(); set => SetLoopIndex(value); }
-
         public short? Speed { get => GetSpeedMultiplyer(); set => SetSpeedMultiplyer(value); }
-
         public byte? Flags { get => GetRotationFlag(); set => SetRotationFlag(value); }
 
 
@@ -37,6 +43,48 @@ namespace AnimationEditor.ViewModels
             if (LoadedAnimationFile != null) return LoadedAnimationFile.Animations;
             else return null;
         }
+
+        public double SpriteLeft => (ViewWidth / 2.0 - SelectedFrameLeft ?? 0);
+        public double SpriteTop => (ViewHeight / 2.0 - SelectedFrameTop ?? 0);
+        public double SpriteRight => (SpriteLeft + (SelectedFrameWidth) ?? 0);
+        public double SpriteBottom => (SpriteTop + (SelectedFrameHeight) ?? 0);
+        public Rect SpriteFrame => GetFrame();
+        public Point SpriteCenter
+        {
+            get
+            {
+                
+                if (AnimationFrames != null && SelectedFrameIndex != -1)
+                {
+                    var frame = AnimationFrames[SelectedFrameIndex];
+                    if (frame != null)
+                    {
+                        if (frame.Width == 0 || frame.Height == 0)
+                        {
+                            return new Point(0.5, 0.5);
+                        }
+                        else
+                        {
+                            return new Point((double)-(frame.PivotX) / (frame.Width), (double)-(frame.PivotY) / frame.Height);
+                        }
+
+                    }
+                }
+                return new Point(0.0, 0.0);
+            }
+        }
+        public double SpriteScaleX { get => Zoom; set => Zoom = value; }
+        public double SpriteScaleY { get => Zoom; set => Zoom = value; }
+
+        public double Zoom = 1;
+
+        public Rect GetFrame()
+        {
+            if (SelectedFrameLeft != null && SelectedFrameTop != null && SelectedFrameWidth != null && SelectedFrameHeight != null) return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
+            return new Rect(0, 0, 0.5, 0.5);
+
+        }
+
         public List<string> GetSpriteSheetsList()
         {
             if (LoadedAnimationFile != null) return LoadedAnimationFile.SpriteSheets;
@@ -48,20 +96,20 @@ namespace AnimationEditor.ViewModels
             else return null;
         }
 
-        public byte? GetLoopIndex()
+        public byte GetLoopIndex()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].LoopIndex;
-            else return null;
+            else return 0;
         }
-        public short? GetSpeedMultiplyer()
+        public short GetSpeedMultiplyer()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].SpeedMultiplyer;
-            else return null;
+            else return 0;
         }
-        public byte? GetRotationFlag()
+        public byte GetRotationFlag()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].RotationFlags;
-            else return null;
+            else return 0;
         }
 
         public void SetLoopIndex(byte? value)
@@ -95,50 +143,50 @@ namespace AnimationEditor.ViewModels
         public byte? CurrentSpriteSheet { get => GetSpriteSheet(); set => SetSpriteSheet(value); }
 
         #region Get Methods
-        public byte? GetSpriteSheet()
+        public byte GetSpriteSheet()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].SpriteSheet;
-            else return null;
+            else return 0;
         }
-        public short? GetPivotX()
+        public short GetPivotX()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].PivotX;
-            else return null;
+            else return 0;
         }
-        public short? GetPivotY()
+        public short GetPivotY()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].PivotY;
-            else return null;
+            else return 0;
         }
-        public short? GetHeight()
+        public short GetHeight()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Height;
-            else return null;
+            else return 0;
         }
-        public short? GetWidth()
+        public short GetWidth()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Width;
-            else return null;
+            else return 0;
         }
-        public short? GetX()
+        public short GetX()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].X;
-            else return null;
+            else return 0;
         }
-        public short? GetY()
+        public short GetY()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Y;
-            else return null;
+            else return 0;
         }
-        public short? GetID()
+        public short GetID()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID;
-            else return null;
+            else return 0;
         }
-        public short? GetDelay()
+        public short GetDelay()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Delay;
-            else return null;
+            else return 0;
         }
         #endregion
         #region Set Methods

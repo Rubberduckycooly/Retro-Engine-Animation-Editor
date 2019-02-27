@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace AnimationEditor
 {
@@ -36,8 +37,25 @@ namespace AnimationEditor
                 if (fd.FilterIndex - 1 == 0) { Instance.DelayNUD.IsEnabled = true; Instance.idNUD.IsEnabled = true; }
 
                 Instance.ViewModel.LoadedAnimationFile = new RSDKv5.Animation(new RSDKv5.Reader(fd.FileName));
+                foreach (string path in Instance.ViewModel.SpriteSheetPaths)
+                {
+                    string animationDirectory = Path.GetDirectoryName(fd.FileName);
+                    string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, path);
+                    Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));
+                }
 
             }
+        }
+
+        public BitmapImage LoadAnimationTexture(string fileName)
+        {
+            FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+
+            var img = new System.Windows.Media.Imaging.BitmapImage();
+            img.BeginInit();
+            img.StreamSource = fileStream;
+            img.EndInit();
+            return img;
         }
 
         public void SaveFile()
@@ -54,7 +72,9 @@ namespace AnimationEditor
 
         public void UnloadAnimationData()
         {
+            if (Instance.ViewModel.SpriteSheets != null) Instance.ViewModel.SpriteSheets.Clear();
             Instance.DataContext = new ViewModelv5();
+            Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
         }
 
     }

@@ -19,6 +19,7 @@ namespace AnimationEditor
 
         public MainWindow()
         {
+
             InitializeComponent();
             DataContext = new ViewModelv5();
             List.AllowDrop = true;
@@ -121,11 +122,13 @@ namespace AnimationEditor
 
         private void ButtonZoomIn_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.SpriteScaleX = ViewModel.SpriteScaleX + 1;
             Interfacer.UpdateUI();
         }
 
         private void ButtonZoomOut_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.SpriteScaleX = ViewModel.SpriteScaleX - 1;
             Interfacer.UpdateUI();
         }
 
@@ -179,9 +182,9 @@ namespace AnimationEditor
             Interfacer.UpdateUI();
         }
 
-
-
-
-
+        private void SpriteSheetList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Interfacer.UpdateUI();
+        }
     }
 }

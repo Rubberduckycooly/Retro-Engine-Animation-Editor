@@ -141,7 +141,7 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </DockPanel>
-                <StackPanel DockPanel.Dock="Bottom" Margin="0 0 0 5" Orientation="Horizontal">
+                <StackPanel DockPanel.Dock="Bottom" Margin="0 0 0 0" Orientation="Horizontal">
                     <ToggleButton x:Name="ButtonPlay" IsChecked="{Binding IsRunning, Mode=TwoWay}">
                         <Image Width="16" Source="{StaticResource Run_16x}"/>
                         <ToggleButton.ToolTip>
@@ -257,11 +257,11 @@
                         </Button.ToolTip>
                     </Button>
                 </StackPanel>
-                <Canvas Margin="0 0 0 5" SizeChanged="Canvas_SizeChanged"
+                <Canvas x:Name="CanvasView" Margin="0 0 0 0" SizeChanged="Canvas_SizeChanged"
                         RenderOptions.BitmapScalingMode="NearestNeighbor"
                         ClipToBounds="True" MouseWheel="Canvas_MouseWheel"
                         Background="#303030">
-                    <Image Source="{Binding Sprite}"
+                    <Image x:Name="CanvasImage"
                            Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
                            Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
                            Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
@@ -269,12 +269,15 @@
                            RenderTransformOrigin="{Binding SpriteCenter, Mode=OneWay}">
                         <Image.RenderTransform>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="{Binding SpriteScaleX}" ScaleY="{Binding SpriteScaleY}"/>
+                                <ScaleTransform x:Name="ImageScale" ScaleX="{Binding SpriteScaleX}" ScaleY="{Binding SpriteScaleY}"/>
                                 <SkewTransform/>
                                 <RotateTransform/>
                                 <TranslateTransform/>
                             </TransformGroup>
                         </Image.RenderTransform>
+                        <Image.Clip>
+                            <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"></RectangleGeometry>
+                        </Image.Clip>
                     </Image>
                 </Canvas>
             </DockPanel>
@@ -328,7 +331,7 @@
                         </GroupBox.Header>
                         <StackPanel Background='{DynamicResource NormalBackground2}'>
                             <TextBlock Margin="0 5 0 0" Text="Texture" Foreground="{DynamicResource NormalText}"/>
-                            <ComboBox x:Name="SpriteSheetList" ItemsSource="{Binding SpriteSheets}"
+                            <ComboBox x:Name="SpriteSheetList" SelectionChanged="SpriteSheetList_SelectionChanged" ItemsSource="{Binding SpriteSheetPaths}"
                               SelectedIndex="{Binding CurrentSpriteSheet, Mode=TwoWay}"/>
                             <TextBlock Margin="0 5 0 0" Text="Hitbox" Foreground="{DynamicResource NormalText}"/>
                             <ComboBox x:Name="HitBoxComboBox" ItemsSource="{Binding HitboxItems}" Margin="0,1" Visibility="{Binding HitboxV3Visibility}"
@@ -351,19 +354,19 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Left" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="HitboxLeftNUD" Grid.Column="1" Grid.Row="1"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxLeftNUD" Grid.Column="1" Grid.Row="1"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedHitbox.Left, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="1" Text="Top" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="HitboxTopNUD" Grid.Column="4" Grid.Row="1"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxTopNUD" Grid.Column="4" Grid.Row="1"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedHitbox.Top, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Right" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="HitboxRightNUD" Grid.Column="1" Grid.Row="3"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxRightNUD" Grid.Column="1" Grid.Row="3"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedHitbox.Right, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="3" Text="Bottom" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="HitboxBottomNUD" Grid.Column="4" Grid.Row="3"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxBottomNUD" Grid.Column="4" Grid.Row="3"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedHitbox.Bottom, Mode=TwoWay}"/>
                             </Grid>
@@ -390,35 +393,35 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Left" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="FrameLeftNUD" Grid.Column="1" Grid.Row="1"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="FrameLeftNUD" Grid.Column="1" Grid.Row="1"
                                     Minimum="0" Maximum="32767"
                                     Value="{Binding SelectedFrameLeft, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="1" Text="Top" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="FrameTopNUD" Grid.Column="4" Grid.Row="1"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="FrameTopNUD" Grid.Column="4" Grid.Row="1"
                                     Minimum="0" Maximum="32767"
                                     Value="{Binding SelectedFrameTop, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Width" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="FrameWidthNUD" Grid.Column="1" Grid.Row="3"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="FrameWidthNUD" Grid.Column="1" Grid.Row="3"
                                     Minimum="0" Maximum="32767"
                                     Value="{Binding SelectedFrameWidth, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="3" Text="Height" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="FrameHeightNUD"  Grid.Column="4" Grid.Row="3"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="FrameHeightNUD"  Grid.Column="4" Grid.Row="3"
                                     Minimum="0" Maximum="32767"
                                     Value="{Binding SelectedFrameHeight, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="0" Grid.Row="5" Text="PivotX" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="PivotXBox" Grid.Column="1" Grid.Row="5"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="PivotXBox" Grid.Column="1" Grid.Row="5"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedFramePivotX, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="5" Text="PivotY" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="PivotYBox" Grid.Column="4" Grid.Row="5"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="PivotYBox" Grid.Column="4" Grid.Row="5"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedFramePivotY, Mode=TwoWay}"/>
                                 <TextBlock x:Name="IDLabel" Grid.Column="0" Grid.Row="7" Text="ID" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="idNUD" Grid.Column="1" Grid.Row="7"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="idNUD" Grid.Column="1" Grid.Row="7"
                                     Minimum="0" Maximum="65535"
                                     Value="{Binding SelectedFrameId, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="7" Text="Duration" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown x:Name="DelayNUD" Grid.Column="4" Grid.Row="7"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="DelayNUD" Grid.Column="4" Grid.Row="7"
                                     Minimum="0" Maximum="65535"
                                     Value="{Binding SelectedFrameDuration, Mode=TwoWay}"/>
 
