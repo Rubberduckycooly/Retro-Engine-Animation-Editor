@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AnimationEditor"
         mc:Ignorable="d"
-        Title="Texture manager" Height="633.12" Width="690.52">
+        Title="Texture manager" Height="633.12" Width="690.52" Background="{DynamicResource NormalBackground}">
     <DockPanel Margin="10">
         <TextBlock DockPanel.Dock="Top" Text="List of texture files" Margin="5 0 0 5"/>
         <DockPanel DockPanel.Dock="Top" Margin="0 0 0 5">
-            <Button x:Name="ButtonRemove" DockPanel.Dock="Right"
+            <Button Click="ButtonRemove_Click" x:Name="ButtonRemove" DockPanel.Dock="Right"
                     IsEnabled="{Binding IsValueSelected}">
                 <Image Width="16" Source="{StaticResource Remove_color_16x}"/>
                 <Button.ToolTip>
@@ -18,7 +18,7 @@
                     </StackPanel>
                 </Button.ToolTip>
             </Button>
-            <Button x:Name="ButtonAdd" DockPanel.Dock="Right">
+            <Button Click="ButtonAdd_Click" x:Name="ButtonAdd" DockPanel.Dock="Right">
                 <Image Width="16" Source="{StaticResource Add_16x}"/>
                 <Button.ToolTip>
                     <StackPanel>
@@ -26,7 +26,7 @@
                     </StackPanel>
                 </Button.ToolTip>
             </Button>
-            <Button x:Name="ButtonChange" DockPanel.Dock="Right"
+            <Button Click="ButtonChange_Click" x:Name="ButtonChange" DockPanel.Dock="Right"
                     IsEnabled="{Binding IsValueSelected}">
                 <Image Width="16" Source="{StaticResource OpenFileDialog_16x}"/>
                 <Button.ToolTip>
@@ -53,12 +53,10 @@
                     </StackPanel>
                 </Button.ToolTip>
             </Button>
-            <ComboBox x:Name="ListTextures" ItemsSource="{Binding Textures}"
-                      SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
-                      SelectedValue="{Binding SelectedValue, Mode=TwoWay}"/>
+            <ComboBox x:Name="ListTextures" SelectionChanged="ListTextures_SelectionChanged"/>
         </DockPanel>
-        <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentTexture.StrSize, StringFormat='Size: {0}'}" Margin="5 0 5 5"/>
-        <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentTexture.StrFormat, StringFormat='Format: {0}'}" Margin="5 0 5 5"/>
-        <Image x:Name="ImageTexture" Source="{Binding CurrentTexture.Image}"/>
+        <TextBlock x:Name="SizeText" DockPanel.Dock="Top" Margin="5 0 5 5"/>
+        <TextBlock x:Name="FormatText" DockPanel.Dock="Top" Text="" Margin="5 0 5 5"/>
+        <Image x:Name="ImageTexture" Source="{Binding CurrentTexture}"/>
     </DockPanel>
 </Window>

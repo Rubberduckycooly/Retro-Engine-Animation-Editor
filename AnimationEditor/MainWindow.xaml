@@ -11,11 +11,24 @@
         <Menu DockPanel.Dock="Top" Background="{DynamicResource MenuBar}" Foreground="{DynamicResource NormalText}">
             <MenuItem Header="_File">
                 <MenuItem x:Name="MenuFileOpen" Header="_Open" Click="MenuFileOpen_Click"/>
+                <MenuItem x:Name="MenuFileOpenRecently" Header="_Recently Opened...">
+                    <MenuItem Header="1. N/A" IsEnabled="False" x:Name="MenuRecentFile1" Click="MenuRecentFile_Click" Tag="1"></MenuItem>
+                    <MenuItem Header="2. N/A" IsEnabled="False" x:Name="MenuRecentFile2" Click="MenuRecentFile_Click" Tag="2"></MenuItem>
+                    <MenuItem Header="3. N/A" IsEnabled="False" x:Name="MenuRecentFile3" Click="MenuRecentFile_Click" Tag="3"></MenuItem>
+                    <MenuItem Header="4. N/A" IsEnabled="False" x:Name="MenuRecentFile4" Click="MenuRecentFile_Click" Tag="4"></MenuItem>
+                    <MenuItem Header="5. N/A" IsEnabled="False" x:Name="MenuRecentFile5" Click="MenuRecentFile_Click" Tag="5"></MenuItem>
+                    <MenuItem Header="6. N/A" IsEnabled="False" x:Name="MenuRecentFile6" Click="MenuRecentFile_Click" Tag="6"></MenuItem>
+                    <MenuItem Header="7. N/A" IsEnabled="False" x:Name="MenuRecentFile7" Click="MenuRecentFile_Click" Tag="7"></MenuItem>
+                    <MenuItem Header="8. N/A" IsEnabled="False" x:Name="MenuRecentFile8" Click="MenuRecentFile_Click" Tag="8"></MenuItem>
+                    <MenuItem Header="9. N/A" IsEnabled="False" x:Name="MenuRecentFile9" Click="MenuRecentFile_Click" Tag="9"></MenuItem>
+                    <MenuItem Header="10. N/A" IsEnabled="False" x:Name="MenuRecentFile10" Click="MenuRecentFile_Click" Tag="10"></MenuItem>
+                    <MenuItem Visibility="Collapsed" Header="Clear All Items"></MenuItem>
+                </MenuItem>
                 <MenuItem x:Name="MenuFileSave" Header="_Save" Click="MenuFileSave_Click"/>
                 <MenuItem x:Name="MenuFileSaveAs" Header="Save _as" Click="MenuFileSaveAs_Click"/>
                 <MenuItem x:Name="MenuFileExit" Header="E_xit" Click="MenuFileExit_Click"/>
             </MenuItem>
-            <MenuItem Header="_View">
+            <MenuItem Header="_View" Visibility="Collapsed">
                 <MenuItem x:Name="MenuViewHitbox" Header="_Hitbox manager" Click="MenuViewHitbox_Click"/>
                 <MenuItem x:Name="MenuViewTexture" Header="_Texture manager" Click="MenuViewTexture_Click"/>
             </MenuItem>
@@ -287,7 +300,7 @@
                             RenderTransformOrigin="0.0,0.0">
                         <Grid Background="Red" Opacity="0.5"></Grid>
                     </Border>
-                            
+
 
                 </Canvas>
             </DockPanel>
@@ -346,8 +359,8 @@
                                     <ColumnDefinition Width="1*"></ColumnDefinition>
                                     <ColumnDefinition Width="20"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                               <ComboBox x:Name="SpriteSheetList" SelectionChanged="SpriteSheetList_SelectionChanged" ItemsSource="{Binding SpriteSheetPaths}" SelectedIndex="{Binding CurrentSpriteSheet, Mode=TwoWay}"/>
-                                <Button Grid.Column="1" Content="..." VerticalContentAlignment="Top"></Button>
+                                <ComboBox x:Name="SpriteSheetList" SelectionChanged="SpriteSheetList_SelectionChanged" ItemsSource="{Binding SpriteSheetPaths}" SelectedIndex="{Binding CurrentSpriteSheet, Mode=TwoWay}"/>
+                                <Button Click="MenuViewTexture_Click" Grid.Column="1" Content="..." VerticalContentAlignment="Top"></Button>
                             </Grid>
 
                             <TextBlock Margin="0 5 0 0" Text="Hitbox" Foreground="{DynamicResource NormalText}"/>
@@ -357,7 +370,7 @@
                                     <ColumnDefinition Width="20"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <ComboBox SelectionChanged="HitBoxComboBox_SelectionChanged" MouseDoubleClick="HitBoxComboBox_MouseDoubleClick" x:Name="HitBoxComboBox" ItemsSource="{Binding CollisionBoxesNames}" Visibility="{Binding HitboxV3Visibility}" SelectedIndex="{Binding SelectedFrameHitboxIndex, Mode=TwoWay}"/>
-                                <Button Grid.Column="1" Content="..." VerticalContentAlignment="Top"></Button>
+                                <Button Click="MenuViewHitbox_Click" Grid.Column="1" Content="..." VerticalContentAlignment="Top"></Button>
                             </Grid>
 
                             <ComboBox x:Name="HitBoxComboBox2" Margin="0,1" Visibility="Hidden"/>

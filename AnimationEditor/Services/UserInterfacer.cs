@@ -28,6 +28,7 @@ namespace AnimationEditor
         {
             if (Instance.ViewModel != null)
             {
+                Instance.Handler.UpdateRecentsDropDown();
                 UpdateList();
                 UpdateFramesList();
                 UpdateInfo();
@@ -215,6 +216,9 @@ namespace AnimationEditor
                 Instance.idNUD.Value = Instance.ViewModel.SelectedFrameId;
                 Instance.DelayNUD.Value = Instance.ViewModel.SelectedFrameDuration;
 
+                Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
+                Instance.SpriteSheetList.SelectedIndex = (Instance.ViewModel.CurrentSpriteSheet.HasValue ? Instance.ViewModel.CurrentSpriteSheet.Value : 0);
+                if (Instance.ViewModel.SpriteSheetPaths != null) Instance.SpriteSheetList.SelectedValue = Instance.ViewModel.SpriteSheetPaths[Instance.SpriteSheetList.SelectedIndex];
 
                 if (Instance.ViewModel.SelectedFrameIndex != -1 && Instance.ViewModel.SelectedFrameIndex != null && Instance.ViewModel.AnimationFrames != null)
                 {
@@ -227,8 +231,6 @@ namespace AnimationEditor
                     }
                 }
 
-                Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
-                Instance.SpriteSheetList.SelectedIndex = (Instance.ViewModel.CurrentSpriteSheet.HasValue ? Instance.ViewModel.CurrentSpriteSheet.Value : 0);
             }
             void UpdateHitboxInfo()
             {

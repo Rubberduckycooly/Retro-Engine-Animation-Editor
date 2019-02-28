@@ -20,9 +20,10 @@ namespace AnimationEditor.ViewModels
 
         public SpriteService SpriteService;
         public Animation LoadedAnimationFile;
+        public string AnimationDirectory { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
         public Animation.AnimationEntry _SelectedAnimation;
-
+        
         public List<Animation.AnimationEntry> Animations { get => GetAnimations(); }
         public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
 

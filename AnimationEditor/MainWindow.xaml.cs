@@ -16,7 +16,7 @@ namespace AnimationEditor
         public ViewModelv5 ViewModel => (ViewModelv5)DataContext;
 
         private UserInterfacer Interfacer;
-        private FileHandler Handler;
+        public FileHandler Handler;
         public Brush DefaultBorderBrush;
         public Brush DefaultTextBrush;
 
@@ -172,6 +172,9 @@ namespace AnimationEditor
 
         private void MenuViewTexture_Click(object sender, RoutedEventArgs e)
         {
+            TextureWindow texture = new TextureWindow(this);
+            texture.Owner = App.Current.MainWindow;
+            texture.ShowDialog();
             Interfacer.UpdateUI();
         }
 
@@ -182,7 +185,9 @@ namespace AnimationEditor
 
         private void MenuInfoAbout_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            AboutWindow about = new AboutWindow();
+            about.Owner = App.Current.MainWindow;
+            about.ShowDialog();
         }
 
         private void FramesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -224,6 +229,18 @@ namespace AnimationEditor
         {
             HitBoxComboBox.SelectedIndex = -1;
             Interfacer.UpdateUI();
+        }
+
+        private void MenuRecentFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.MenuItem)
+            {
+                System.Windows.Controls.MenuItem item = sender as System.Windows.Controls.MenuItem;
+                bool result = Int32.TryParse(item.Tag.ToString(), out int index);
+                if (result == true) Handler.OpenRecentFile(index-1);
+            }
+            Interfacer.UpdateUI();
+
         }
     }
 }
