@@ -25,6 +25,9 @@ namespace AnimationEditor.ViewModels
 
         public List<Animation.AnimationEntry> Animations { get => GetAnimations(); }
         public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
+
+        public List<string> CollisionBoxesNames { get => GetCollisionBoxes(); }
+        public List<Animation.AnimationEntry.Frame.HitBox> CollisionBoxes { get => GetHitBoxes(); }
         public Animation.AnimationEntry SelectedAnimation { get => _SelectedAnimation; set { _SelectedAnimation = value; } }
         public int SelectedAnimationIndex { get; set; }
 
@@ -44,37 +47,72 @@ namespace AnimationEditor.ViewModels
             else return null;
         }
 
-        public double SpriteLeft => (ViewWidth / 2.0 - SelectedFrameLeft ?? 0);
-        public double SpriteTop => (ViewHeight / 2.0 - SelectedFrameTop ?? 0);
-        public double SpriteRight => (SpriteLeft + (SelectedFrameWidth) ?? 0);
-        public double SpriteBottom => (SpriteTop + (SelectedFrameHeight) ?? 0);
+        public double SpriteLeft => GetSpriteLeft();
+        public double SpriteTop => GetSpriteTop();
+        public double SpriteRight => GetSpriteRight();
+        public double SpriteBottom => GetSpriteBottom();
+
+        public double HitboxLeft => GetHitboxLeft();
+        public double HitboxTop => GetHitboxTop();
+
         public Rect SpriteFrame => GetFrame();
         public Point SpriteCenter
         {
             get
             {
-                
-                if (AnimationFrames != null && SelectedFrameIndex != -1)
-                {
-                    var frame = AnimationFrames[SelectedFrameIndex];
-                    if (frame != null)
-                    {
-                        if (frame.Width == 0 || frame.Height == 0)
-                        {
-                            return new Point(0.5, 0.5);
-                        }
-                        else
-                        {
-                            return new Point((double)-(frame.PivotX) / (frame.Width), (double)-(frame.PivotY) / frame.Height);
-                        }
-
-                    }
-                }
-                return new Point(0.0, 0.0);
+                return new Point(0, 0);
             }
         }
+
+        public double GetSpriteTop()
+        {
+            double Center = ViewHeight / 2.0;
+            double FrameTop = SelectedFrameTop ?? 0;
+            double FrameCenterY = SelectedFramePivotY ?? 0;
+            double FrameHeight = SelectedFrameHeight ?? 0;
+            return (Center - FrameTop * Zoom) + FrameCenterY * Zoom;
+        }
+
+        public double GetSpriteLeft()
+        {
+            double Center = ViewWidth / 2.0;
+            double FrameLeft = SelectedFrameLeft ?? 0;
+            double FrameCenterX = SelectedFramePivotX ?? 0;
+            double FrameWidth = SelectedFrameWidth ?? 0;
+            return (Center - FrameLeft * Zoom) + FrameCenterX * Zoom;
+        }
+
+        public double GetSpriteRight()
+        {
+            double FrameWidth = SelectedFrameWidth ?? 0;
+            return (SpriteLeft + FrameWidth * Zoom);
+        }
+
+        public double GetSpriteBottom()
+        {
+            double FrameHeight = SelectedFrameHeight ?? 0;
+            return (SpriteTop + FrameHeight * Zoom);
+        }
+
+        public double GetHitboxTop()
+        {
+            double FrameCenterY = SelectedFramePivotY ?? 0;
+            double Center = ViewHeight / 2.0;
+            double HitboxOffset = SelectedHitbox_Width * Zoom;
+            return Center + HitboxOffset;
+        }
+
+        public double GetHitboxLeft()
+        {
+            double FrameX = SelectedFramePivotX ?? 0;
+
+            double FrameCenterX = SelectedFramePivotX ?? 0;
+            double Center = ViewWidth / 2.0;
+            double HitboxOffset = SelectedHitbox_X * Zoom;
+            return Center + HitboxOffset;
+        }
+
         public double SpriteScaleX { get => Zoom; set => Zoom = value; }
-        public double SpriteScaleY { get => Zoom; set => Zoom = value; }
 
         public double Zoom = 1;
 
@@ -128,6 +166,21 @@ namespace AnimationEditor.ViewModels
             else return;
         }
 
+        #region Hitboxes
+
+        public List<string> GetCollisionBoxes()
+        {
+            if (LoadedAnimationFile != null) return LoadedAnimationFile.CollisionBoxes;
+            else return new List<string> { "" };
+
+        }
+
+        public List<Animation.AnimationEntry.Frame.HitBox> GetHitBoxes()
+        {
+            return null;
+        }
+
+        #endregion
 
 
         #region Frame Info
@@ -235,6 +288,122 @@ namespace AnimationEditor.ViewModels
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Delay = value.Value;
             else return;
         }
+        #endregion
+
+        #region Hitbox Info
+
+        public int SelectedFrameHitboxIndex { get; set; }
+
+        public Animation.AnimationEntry.Frame.HitBox? SelectedHitbox { get => GetSelectedHitbox(); set => SetSelectedHitbox(value); }
+
+        public short SelectedHitbox_X { get => GetCurrentHitboxX(); set => SetCurrentHitboxX(value); }
+
+        public short SelectedHitbox_Y { get => GetCurrentHitboxY(); set => SetCurrentHitboxY(value); }
+
+        public short SelectedHitbox_Width { get => GetCurrentHitboxWidth(); set => SetCurrentHitboxWidth(value); }
+
+        public short SelectedHitbox_Height { get => GetCurrentHitboxHeight(); set => SetCurrentHitboxHeight(value); }
+
+        #region Get Methods
+
+        public Animation.AnimationEntry.Frame.HitBox? GetSelectedHitbox()
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex];
+            else return null;
+        }
+        public int GetCurrentHitboxIndex()
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].CollisionBox;
+            else return -1;
+        }
+
+        public short GetCurrentHitboxX()
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].X;
+            else return 0;
+        }
+
+        public short GetCurrentHitboxY()
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Y;
+            else return 0;
+        }
+
+        public short GetCurrentHitboxWidth()
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Width;
+            else return 0;
+        }
+
+        public short GetCurrentHitboxHeight()
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Height;
+            else return 0;
+        }
+
+        #endregion
+
+        #region Set Methods
+
+        public void SetSelectedHitbox(Animation.AnimationEntry.Frame.HitBox? value)
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = value.Value;
+            else return;
+        }
+        public void SetCurrentHitboxIndex(int value)
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].CollisionBox = (byte)value;
+            else return;
+        }
+
+        public void SetCurrentHitboxX(short? value)
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
+            {
+                Animation.AnimationEntry.Frame.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                box.X = value.Value;
+                LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
+            }
+            else return;
+        }
+
+        public void SetCurrentHitboxY(short? value)
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
+            {
+                Animation.AnimationEntry.Frame.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                box.Y = value.Value;
+                LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
+            }
+            else return;
+        }
+
+        public void SetCurrentHitboxWidth(short? value)
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
+            {
+                Animation.AnimationEntry.Frame.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                box.Width = value.Value;
+                LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
+            }
+            else return;
+        }
+
+        public void SetCurrentHitboxHeight(short? value)
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
+            {
+                Animation.AnimationEntry.Frame.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                box.Height = value.Value;
+                LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
+            }
+            else return;
+        }
+
+        #endregion
+
+
+
         #endregion
 
         #endregion

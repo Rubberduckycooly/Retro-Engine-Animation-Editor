@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace AnimationEditor
 {
@@ -16,12 +17,16 @@ namespace AnimationEditor
 
         private UserInterfacer Interfacer;
         private FileHandler Handler;
+        public Brush DefaultBorderBrush;
+        public Brush DefaultTextBrush;
 
         public MainWindow()
         {
-
+            DefaultBorderBrush = (Brush)FindResource("ComboBoxBorder");
+            DefaultTextBrush = (Brush)FindResource("NormalText");
             InitializeComponent();
             DataContext = new ViewModelv5();
+
             List.AllowDrop = true;
             Interfacer = new UserInterfacer(this);
             Handler = new FileHandler(this);
@@ -29,7 +34,7 @@ namespace AnimationEditor
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
         {
-            Handler.LoadFile();
+            Handler.OpenFile();
             Interfacer.UpdateUI();
         }
 
@@ -128,8 +133,12 @@ namespace AnimationEditor
 
         private void ButtonZoomOut_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.SpriteScaleX = ViewModel.SpriteScaleX - 1;
-            Interfacer.UpdateUI();
+            if (ViewModel.SpriteScaleX != 1)
+            {
+                ViewModel.SpriteScaleX = ViewModel.SpriteScaleX - 1;
+                Interfacer.UpdateUI();
+            }
+
         }
 
         private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -139,6 +148,20 @@ namespace AnimationEditor
 
         private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
+            if (e.Delta > 1)
+            {
+                if (ViewModel.SpriteScaleX < 8)
+                {
+                    ViewModel.SpriteScaleX = ViewModel.SpriteScaleX + 1;
+                }
+            }
+            else
+            {
+                if (ViewModel.SpriteScaleX > 1)
+                {
+                    ViewModel.SpriteScaleX = ViewModel.SpriteScaleX - 1;
+                }
+            }
             Interfacer.UpdateUI();
         }
 
@@ -184,6 +207,22 @@ namespace AnimationEditor
 
         private void SpriteSheetList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            Interfacer.UpdateUI();
+        }
+
+        private void HitBoxComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Interfacer.UpdateUI();
+        }
+
+        private void FramesList_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
+        {
+            Interfacer.UpdateUI();
+        }
+
+        private void HitBoxComboBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            HitBoxComboBox.SelectedIndex = -1;
             Interfacer.UpdateUI();
         }
     }

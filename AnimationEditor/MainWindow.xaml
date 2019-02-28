@@ -128,7 +128,7 @@
                        IsEnabled="{Binding IsAnimationSelected}">
                 <DockPanel DockPanel.Dock="Bottom">
                     <ListBox x:Name="FramesList" ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                         ItemsSource="{Binding AnimationFrames}" SelectedIndex="{Binding SelectedFrameIndex}" SelectionChanged="FramesList_SelectionChanged" MouseDoubleClick="FramesList_MouseDoubleClick">
+                         ItemsSource="{Binding AnimationFrames}" SelectedIndex="{Binding SelectedFrameIndex}" SelectionChanged="FramesList_SelectionChanged" MouseDoubleClick="FramesList_MouseDoubleClick" ScrollBar.Scroll="FramesList_Scroll">
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
@@ -269,7 +269,7 @@
                            RenderTransformOrigin="{Binding SpriteCenter, Mode=OneWay}">
                         <Image.RenderTransform>
                             <TransformGroup>
-                                <ScaleTransform x:Name="ImageScale" ScaleX="{Binding SpriteScaleX}" ScaleY="{Binding SpriteScaleY}"/>
+                                <ScaleTransform x:Name="ImageScale" ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"/>
                                 <SkewTransform/>
                                 <RotateTransform/>
                                 <TranslateTransform/>
@@ -279,6 +279,16 @@
                             <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"></RectangleGeometry>
                         </Image.Clip>
                     </Image>
+                    <Border BorderBrush="Red" x:Name="HitBoxViewer" BorderThickness="1"                            
+                           Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
+                           Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
+                           Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
+                           Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
+                            RenderTransformOrigin="0.0,0.0">
+                        <Grid Background="Red" Opacity="0.5"></Grid>
+                    </Border>
+                            
+
                 </Canvas>
             </DockPanel>
 
@@ -331,13 +341,26 @@
                         </GroupBox.Header>
                         <StackPanel Background='{DynamicResource NormalBackground2}'>
                             <TextBlock Margin="0 5 0 0" Text="Texture" Foreground="{DynamicResource NormalText}"/>
-                            <ComboBox x:Name="SpriteSheetList" SelectionChanged="SpriteSheetList_SelectionChanged" ItemsSource="{Binding SpriteSheetPaths}"
-                              SelectedIndex="{Binding CurrentSpriteSheet, Mode=TwoWay}"/>
+                            <Grid Height="22">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="20"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                               <ComboBox x:Name="SpriteSheetList" SelectionChanged="SpriteSheetList_SelectionChanged" ItemsSource="{Binding SpriteSheetPaths}" SelectedIndex="{Binding CurrentSpriteSheet, Mode=TwoWay}"/>
+                                <Button Grid.Column="1" Content="..." VerticalContentAlignment="Top"></Button>
+                            </Grid>
+
                             <TextBlock Margin="0 5 0 0" Text="Hitbox" Foreground="{DynamicResource NormalText}"/>
-                            <ComboBox x:Name="HitBoxComboBox" ItemsSource="{Binding HitboxItems}" Margin="0,1" Visibility="{Binding HitboxV3Visibility}"
-                              SelectedIndex="{Binding SelectedFrameHitbox, Mode=TwoWay}"/>
-                            <ComboBox x:Name="HitBoxComboBox2" ItemsSource="{Binding HitboxTypes}" Margin="0,1" Visibility="{Binding HitboxV5Visibility}"
-                              SelectedIndex="{Binding SelectedHitboxType, Mode=TwoWay}"/>
+                            <Grid Height="22">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="20"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox SelectionChanged="HitBoxComboBox_SelectionChanged" MouseDoubleClick="HitBoxComboBox_MouseDoubleClick" x:Name="HitBoxComboBox" ItemsSource="{Binding CollisionBoxesNames}" Visibility="{Binding HitboxV3Visibility}" SelectedIndex="{Binding SelectedFrameHitboxIndex, Mode=TwoWay}"/>
+                                <Button Grid.Column="1" Content="..." VerticalContentAlignment="Top"></Button>
+                            </Grid>
+
+                            <ComboBox x:Name="HitBoxComboBox2" Margin="0,1" Visibility="Hidden"/>
                             <Grid Margin="3" Visibility="{Binding HitboxV5Visibility}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="40"/>
@@ -356,19 +379,19 @@
                                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Left" Foreground="{DynamicResource NormalText}"/>
                                 <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxLeftNUD" Grid.Column="1" Grid.Row="1"
                                     Minimum="-32768" Maximum="32767"
-                                    Value="{Binding SelectedHitbox.Left, Mode=TwoWay}"/>
+                                    Value="{Binding SelectedHitbox_X, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="1" Text="Top" Foreground="{DynamicResource NormalText}"/>
                                 <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxTopNUD" Grid.Column="4" Grid.Row="1"
                                     Minimum="-32768" Maximum="32767"
-                                    Value="{Binding SelectedHitbox.Top, Mode=TwoWay}"/>
+                                    Value="{Binding SelectedHitbox_Y, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Right" Foreground="{DynamicResource NormalText}"/>
                                 <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxRightNUD" Grid.Column="1" Grid.Row="3"
                                     Minimum="-32768" Maximum="32767"
-                                    Value="{Binding SelectedHitbox.Right, Mode=TwoWay}"/>
+                                    Value="{Binding SelectedHitbox_Width, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="3" Text="Bottom" Foreground="{DynamicResource NormalText}"/>
                                 <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxBottomNUD" Grid.Column="4" Grid.Row="3"
                                     Minimum="-32768" Maximum="32767"
-                                    Value="{Binding SelectedHitbox.Bottom, Mode=TwoWay}"/>
+                                    Value="{Binding SelectedHitbox_Height, Mode=TwoWay}"/>
                             </Grid>
 
                             <TextBlock Margin="0 5 0 0" Foreground="{DynamicResource NormalText}"><Run Text="Sprite property"/><InlineUIContainer>

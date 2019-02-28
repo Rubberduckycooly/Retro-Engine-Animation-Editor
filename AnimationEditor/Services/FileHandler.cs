@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace AnimationEditor
 {
@@ -17,7 +18,7 @@ namespace AnimationEditor
         }
 
 
-        public void LoadFile()
+        public void OpenFile()
         {
             UnloadAnimationData();
             var fd = new OpenFileDialog();
@@ -25,23 +26,34 @@ namespace AnimationEditor
             fd.Filter = "RSDKv5 Animation Files|*.bin|RSDKv2 and RSDKvB Animation Files|*.ani|RSDKv1 Animation Files|*.ani|RSDKvRS Animation Files|*.ani";
             if (fd.ShowDialog() == true)
             {
+                LoadFile(fd);
+            }
+        }
 
-                //RSDKvRS and RSDKv1 don't have rotation flags
-                if (fd.FilterIndex - 1 > 1) { Instance.FlagsSelector.IsEnabled = false; }
-                if (fd.FilterIndex - 1 < 2) { Instance.FlagsSelector.IsEnabled = true; }
+        public void LoadFile(OpenFileDialog fd)
+        {
+            //RSDKvRS and RSDKv1 don't have rotation flags
+            if (fd.FilterIndex - 1 > 1) { Instance.FlagsSelector.IsEnabled = false; }
+            if (fd.FilterIndex - 1 < 2) { Instance.FlagsSelector.IsEnabled = true; }
 
-                //For RSDKvRS, RSDKv1 and RSDKv2 & RSDKvB there is no ID and the Delay is always 256, so there is no point to let users change their values
-                if (fd.FilterIndex - 1 >= 1) { Instance.DelayNUD.IsEnabled = false; Instance.idNUD.IsEnabled = false; }
-                if (fd.FilterIndex - 1 == 3) { Instance.idNUD.IsEnabled = true; Instance.IDLabel.Text = "Player"; }
-                else { Instance.IDLabel.Text = "ID"; }
-                if (fd.FilterIndex - 1 == 0) { Instance.DelayNUD.IsEnabled = true; Instance.idNUD.IsEnabled = true; }
+            //For RSDKvRS, RSDKv1 and RSDKv2 & RSDKvB there is no ID and the Delay is always 256, so there is no point to let users change their values
+            if (fd.FilterIndex - 1 >= 1) { Instance.DelayNUD.IsEnabled = false; Instance.idNUD.IsEnabled = false; }
+            if (fd.FilterIndex - 1 == 3) { Instance.idNUD.IsEnabled = true; Instance.IDLabel.Text = "Player"; }
+            else { Instance.IDLabel.Text = "ID"; }
+            if (fd.FilterIndex - 1 == 0) { Instance.DelayNUD.IsEnabled = true; Instance.idNUD.IsEnabled = true; }
 
-                Instance.ViewModel.LoadedAnimationFile = new RSDKv5.Animation(new RSDKv5.Reader(fd.FileName));
-                foreach (string path in Instance.ViewModel.SpriteSheetPaths)
+            Instance.ViewModel.LoadedAnimationFile = new RSDKv5.Animation(new RSDKv5.Reader(fd.FileName));
+            foreach (string path in Instance.ViewModel.SpriteSheetPaths)
+            {
+                string animationDirectory = Path.GetDirectoryName(fd.FileName);
+                string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, path);
+                if (File.Exists(imagePath))
                 {
-                    string animationDirectory = Path.GetDirectoryName(fd.FileName);
-                    string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, path);
                     Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));
+                }
+                else
+                {
+                    Instance.ViewModel.SpriteSheets.Add(new BitmapImage());
                 }
 
             }

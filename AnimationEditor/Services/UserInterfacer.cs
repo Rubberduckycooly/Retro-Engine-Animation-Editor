@@ -12,10 +12,14 @@ namespace AnimationEditor
     {
         private MainWindow Instance;
         private Brush DefaultBorderBrush;
+        private Brush DefaultTextBrush;
+        private Brush HideTextBrush;
         public UserInterfacer(MainWindow window)
         {
             Instance = window;
-            DefaultBorderBrush = Instance.DelayNUD.BorderBrush;
+            DefaultBorderBrush = Instance.DefaultBorderBrush;
+            DefaultTextBrush = Instance.DefaultTextBrush;
+            HideTextBrush = Brushes.Transparent;
         }
 
         #region UI Updating
@@ -26,16 +30,14 @@ namespace AnimationEditor
             {
                 UpdateList();
                 UpdateFramesList();
-                UpdateFrameInfo();
-                UpdateAnimatonInfo();
-                UpdateFrameInfoEnabledState();
+                UpdateInfo();
                 UpdateImage();
-                UpdateDisabledState();
+                UpdateInvalidState();
             }
 
         }
 
-        public void UpdateDisabledState()
+        public void UpdateInvalidState()
         {
             if (Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SelectedAnimationIndex != -1)
             {
@@ -52,34 +54,91 @@ namespace AnimationEditor
             {
                 UpdateAnimationInfoInvalidState();
             }
+
+            void UpdateHitboxInvalidState(bool invalid = true, bool indexNegative = false)
+            {
+                Instance.HitboxLeftNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.HitboxRightNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.HitboxTopNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.HitboxBottomNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+
+                Instance.HitBoxComboBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.HitBoxComboBox.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
+                Instance.HitBoxComboBox.IsHitTestVisible = (invalid && !indexNegative ? false : true);
+
+            }
+ 
+            void UpdateFrameInfoInvalidState(bool invalid = true)
+            {
+                Instance.FrameWidthNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.FrameHeightNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.FrameLeftNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.FrameTopNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.PivotXBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.PivotYBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.idNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.DelayNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+
+                Instance.SpriteSheetList.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.SpriteSheetList.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
+                Instance.SpriteSheetList.IsHitTestVisible = (invalid ? false : true);
+
+                if (Instance.HitBoxComboBox.SelectedIndex == -1) UpdateHitboxInvalidState(true, true);
+                else UpdateHitboxInvalidState(invalid);
+
+            }
+
+            void UpdateAnimationInfoInvalidState(bool invalid = true)
+            {
+                Instance.SpeedNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.LoopIndexNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+
+                Instance.FlagsSelector.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.FlagsSelector.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
+                Instance.FlagsSelector.IsHitTestVisible = (invalid ? false : true);
+
+                UpdateFrameInfoInvalidState(invalid);
+            }
         }
 
-        public void UpdateFrameInfoInvalidState(bool invalid = true)
+        public void UpdateDisabledState()
         {
-            Instance.FrameWidthNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.FrameHeightNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.FrameLeftNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.FrameTopNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.PivotXBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.PivotYBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.idNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.DelayNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.SpriteSheetList.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-        }
+            void UpdateFrameInfoEnabledState(bool invalid = false)
+            {
+                Instance.FrameWidthNUD.IsEnabled = Instance.ViewModel.SelectedFrameWidth != null && invalid == false;
+                Instance.FrameHeightNUD.IsEnabled = Instance.ViewModel.SelectedFrameHeight != null && invalid == false;
+                Instance.FrameLeftNUD.IsEnabled = Instance.ViewModel.SelectedFrameLeft != null && invalid == false;
+                Instance.FrameTopNUD.IsEnabled = Instance.ViewModel.SelectedFrameTop != null && invalid == false;
+                Instance.PivotXBox.IsEnabled = Instance.ViewModel.SelectedFramePivotX != null && invalid == false;
+                Instance.PivotYBox.IsEnabled = Instance.ViewModel.SelectedFramePivotY != null && invalid == false;
+                Instance.idNUD.IsEnabled = Instance.ViewModel.SelectedFrameId != null && invalid == false;
+                Instance.DelayNUD.IsEnabled = Instance.ViewModel.SelectedFrameDuration != null && invalid == false;
 
-        public void UpdateAnimationInfoInvalidState(bool invalid = true)
-        {
-            Instance.SpeedNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.LoopIndexNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.FlagsSelector.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
 
-            UpdateFrameInfoInvalidState(invalid);
+
+                Instance.HitBoxComboBox.IsEnabled = false && invalid == false;
+                Instance.HitBoxComboBox2.IsEnabled = false && invalid == false;
+
+                Instance.HitboxBottomNUD.IsEnabled = false && invalid == false;
+                Instance.HitboxTopNUD.IsEnabled = false && invalid == false;
+                Instance.HitboxLeftNUD.IsEnabled = false && invalid == false;
+                Instance.HitboxRightNUD.IsEnabled = false && invalid == false;
+            }
+
+            void UpdateAnimationInfoEnabledState(bool invalid = false)
+            {
+                Instance.SpriteSheetList.IsEnabled = Instance.ViewModel.CurrentSpriteSheet != null && invalid == false;
+                Instance.FlagsSelector.IsEnabled = Instance.ViewModel.Flags != null && invalid == false;
+                Instance.SpeedNUD.IsEnabled = Instance.ViewModel.Speed != null && invalid == false;
+                Instance.LoopIndexNUD.IsEnabled = Instance.ViewModel.Loop != null && invalid == false;
+
+                UpdateFrameInfoEnabledState(invalid);
+            }
         }
 
         public void UpdateImage()
         {
-            Instance.ImageScale.ScaleX = Instance.ViewModel.SpriteScaleX;
-            Instance.ImageScale.ScaleY = Instance.ViewModel.SpriteScaleY;
+            Instance.Geomotry.Rect = Instance.ViewModel.SpriteFrame;
 
             Instance.ViewModel.ViewWidth = Instance.CanvasView.ActualWidth;
             Instance.ViewModel.ViewHeight = Instance.CanvasView.ActualHeight;
@@ -98,9 +157,30 @@ namespace AnimationEditor
                 Instance.CanvasImage.Source = null;
             }
 
-            Instance.Geomotry.Rect = Instance.ViewModel.SpriteFrame;
+            Instance.ImageScale.ScaleX = Instance.ViewModel.Zoom;
+            Instance.ImageScale.ScaleY = Instance.ViewModel.Zoom;
             Instance.CanvasImage.RenderTransformOrigin = Instance.ViewModel.SpriteCenter;
 
+            System.Windows.Controls.Canvas.SetLeft(Instance.HitBoxViewer, Instance.ViewModel.HitboxLeft);
+            System.Windows.Controls.Canvas.SetTop(Instance.HitBoxViewer, Instance.ViewModel.HitboxTop);
+            Instance.HitBoxViewer.RenderTransformOrigin = Instance.ViewModel.SpriteCenter;
+            SetHitboxDimensions();
+
+
+        }
+
+        public void SetHitboxDimensions()
+        {
+            double FrameX = Instance.ViewModel.SelectedFramePivotX ?? 0 * Instance.ViewModel.Zoom;
+            double FrameY = Instance.ViewModel.SelectedFramePivotY ?? 0 * Instance.ViewModel.Zoom;
+
+            double x = (Instance.ViewModel.SelectedHitbox_X < 0 ? -Instance.ViewModel.SelectedHitbox_X : Instance.ViewModel.SelectedHitbox_X) * Instance.ViewModel.Zoom;
+            double y = (Instance.ViewModel.SelectedHitbox_Y < 0 ? -Instance.ViewModel.SelectedHitbox_Y : Instance.ViewModel.SelectedHitbox_Y) * Instance.ViewModel.Zoom;
+            double width = (Instance.ViewModel.SelectedHitbox_Width < 0 ? -Instance.ViewModel.SelectedHitbox_Width : Instance.ViewModel.SelectedHitbox_Width) * Instance.ViewModel.Zoom;
+            double height = (Instance.ViewModel.SelectedHitbox_Height < 0 ? -Instance.ViewModel.SelectedHitbox_Height : Instance.ViewModel.SelectedHitbox_Height) * Instance.ViewModel.Zoom;
+
+            Instance.HitBoxViewer.Width = x + y;
+            Instance.HitBoxViewer.Height = width + height;
         }
 
         public void UpdateList()
@@ -115,63 +195,59 @@ namespace AnimationEditor
             Instance.FramesList.UpdateLayout();
         }
 
-        public void UpdateFrameInfo()
+        public void UpdateInfo()
         {
-            Instance.FrameWidthNUD.Value = Instance.ViewModel.SelectedFrameWidth;
-            Instance.FrameHeightNUD.Value = Instance.ViewModel.SelectedFrameHeight;
-            Instance.FrameLeftNUD.Value = Instance.ViewModel.SelectedFrameLeft;
-            Instance.FrameTopNUD.Value = Instance.ViewModel.SelectedFrameTop;
-            Instance.PivotXBox.Value = Instance.ViewModel.SelectedFramePivotX;
-            Instance.PivotYBox.Value = Instance.ViewModel.SelectedFramePivotY;
-            Instance.idNUD.Value = Instance.ViewModel.SelectedFrameId;
-            Instance.DelayNUD.Value = Instance.ViewModel.SelectedFrameDuration;
+            UpdateAnimatonInfo();
+            UpdateFrameInfo();
+            UpdateHitboxInfo();
 
 
-            if (Instance.ViewModel.SelectedFrameIndex != -1 && Instance.ViewModel.SelectedFrameIndex != null && Instance.ViewModel.AnimationFrames != null)
+            void UpdateFrameInfo()
             {
-                if (Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex] != null)
+                UpdateHitboxInfo();
+
+                Instance.FrameWidthNUD.Value = Instance.ViewModel.SelectedFrameWidth;
+                Instance.FrameHeightNUD.Value = Instance.ViewModel.SelectedFrameHeight;
+                Instance.FrameLeftNUD.Value = Instance.ViewModel.SelectedFrameLeft;
+                Instance.FrameTopNUD.Value = Instance.ViewModel.SelectedFrameTop;
+                Instance.PivotXBox.Value = Instance.ViewModel.SelectedFramePivotX;
+                Instance.PivotYBox.Value = Instance.ViewModel.SelectedFramePivotY;
+                Instance.idNUD.Value = Instance.ViewModel.SelectedFrameId;
+                Instance.DelayNUD.Value = Instance.ViewModel.SelectedFrameDuration;
+
+
+                if (Instance.ViewModel.SelectedFrameIndex != -1 && Instance.ViewModel.SelectedFrameIndex != null && Instance.ViewModel.AnimationFrames != null)
                 {
-                    if (Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet != Instance.ViewModel.CurrentSpriteSheet && Instance.ViewModel.CurrentSpriteSheet != null)
+                    if (Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex] != null)
                     {
-                        Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet = Instance.ViewModel.CurrentSpriteSheet.Value;
+                        if (Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet != Instance.ViewModel.CurrentSpriteSheet && Instance.ViewModel.CurrentSpriteSheet != null)
+                        {
+                            Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet = Instance.ViewModel.CurrentSpriteSheet.Value;
+                        }
                     }
                 }
+
+                Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
+                Instance.SpriteSheetList.SelectedIndex = (Instance.ViewModel.CurrentSpriteSheet.HasValue ? Instance.ViewModel.CurrentSpriteSheet.Value : 0);
             }
+            void UpdateHitboxInfo()
+            {
 
-            Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
-            Instance.SpriteSheetList.SelectedIndex = (Instance.ViewModel.CurrentSpriteSheet.HasValue ? Instance.ViewModel.CurrentSpriteSheet.Value : 0);
-        }
+                Instance.HitBoxComboBox.ItemsSource = Instance.ViewModel.CollisionBoxesNames;
+                Instance.HitBoxComboBox.SelectedIndex = Instance.ViewModel.SelectedFrameHitboxIndex;
 
-        public void UpdateFrameInfoEnabledState()
-        {
-            Instance.FrameWidthNUD.IsEnabled = Instance.ViewModel.SelectedFrameWidth != null;
-            Instance.FrameHeightNUD.IsEnabled = Instance.ViewModel.SelectedFrameHeight != null;
-            Instance.FrameLeftNUD.IsEnabled = Instance.ViewModel.SelectedFrameLeft != null;
-            Instance.FrameTopNUD.IsEnabled = Instance.ViewModel.SelectedFrameTop != null;
-            Instance.PivotXBox.IsEnabled = Instance.ViewModel.SelectedFramePivotX != null;
-            Instance.PivotYBox.IsEnabled = Instance.ViewModel.SelectedFramePivotY != null;
-            Instance.idNUD.IsEnabled = Instance.ViewModel.SelectedFrameId != null;
-            Instance.DelayNUD.IsEnabled = Instance.ViewModel.SelectedFrameDuration != null;
+                Instance.HitboxLeftNUD.Value = Instance.ViewModel.SelectedHitbox_X;
+                Instance.HitboxTopNUD.Value = Instance.ViewModel.SelectedHitbox_Y;
+                Instance.HitboxRightNUD.Value = Instance.ViewModel.SelectedHitbox_Width;
+                Instance.HitboxBottomNUD.Value = Instance.ViewModel.SelectedHitbox_Height;
 
-            Instance.SpriteSheetList.IsEnabled = Instance.ViewModel.CurrentSpriteSheet != null;
-            Instance.FlagsSelector.IsEnabled = Instance.ViewModel.Flags != null;
-            Instance.SpeedNUD.IsEnabled = Instance.ViewModel.Speed != null;
-            Instance.LoopIndexNUD.IsEnabled = Instance.ViewModel.Loop != null;
-
-            Instance.HitBoxComboBox.IsEnabled = false;
-            Instance.HitBoxComboBox2.IsEnabled = false;
-
-            Instance.HitboxBottomNUD.IsEnabled = false;
-            Instance.HitboxTopNUD.IsEnabled = false;
-            Instance.HitboxLeftNUD.IsEnabled = false;
-            Instance.HitboxRightNUD.IsEnabled = false;
-        }
-
-        public void UpdateAnimatonInfo()
-        {
-            Instance.SpeedNUD.Value = Instance.ViewModel.Speed;
-            Instance.LoopIndexNUD.Value = Instance.ViewModel.Loop;
-            Instance.FlagsSelector.SelectedIndex = (Instance.ViewModel.Flags.HasValue ? Instance.ViewModel.Flags.Value : 0);
+            }
+            void UpdateAnimatonInfo()
+            {
+                Instance.SpeedNUD.Value = Instance.ViewModel.Speed;
+                Instance.LoopIndexNUD.Value = Instance.ViewModel.Loop;
+                Instance.FlagsSelector.SelectedIndex = (Instance.ViewModel.Flags.HasValue ? Instance.ViewModel.Flags.Value : 0);
+            }
         }
 
         #endregion
