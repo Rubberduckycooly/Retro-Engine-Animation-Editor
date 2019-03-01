@@ -41,6 +41,7 @@ namespace AnimationEditor.Services
 {
     public class SpriteService
     {
+        private MainWindow Instance;
         private Animation _animationData;
         public string BasePath { get; set; }
 
@@ -63,7 +64,7 @@ namespace AnimationEditor.Services
                 //if (!frame.IsEmpty)
                 if (frame.Width > 0 && frame.Height > 0)
                 {
-                    var textureBitmap = GetTexture(texture);
+                    var textureBitmap = Instance.ViewModel.SpriteSheets[texture];
                     try
                     {
                         bitmap = new CroppedBitmap(textureBitmap,
@@ -87,23 +88,11 @@ namespace AnimationEditor.Services
             }
         }
 
-        public SpriteService(Animation animation, string basePath)
+        public SpriteService(Animation animation, string basePath, MainWindow instance)
         {
+            Instance = instance;
             _animationData = animation;
             BasePath = basePath;
-        }
-
-        private BitmapSource GetTexture(int index)
-        {
-            if (index < 0 || index >= _animationData.SpriteSheets.Count)
-                return null;
-            var name = _animationData.SpriteSheets[index];
-            if (_textures.TryGetValue(name, out var bitmap))
-                return bitmap;
-            var fileName = Path.Combine(BasePath, name);
-            bitmap = ImageService.Open(fileName);
-            _textures.Add(name, bitmap);
-            return bitmap;
         }
 
         public void Invalidate(int texture, Animation.AnimationEntry.Frame frame)

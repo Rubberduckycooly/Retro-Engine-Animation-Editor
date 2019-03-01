@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace AnimationEditor
 {
@@ -20,16 +21,18 @@ namespace AnimationEditor
         public Brush DefaultBorderBrush;
         public Brush DefaultTextBrush;
 
+        private bool PreventScrollChange = true;
+
         public MainWindow()
         {
             DefaultBorderBrush = (Brush)FindResource("ComboBoxBorder");
             DefaultTextBrush = (Brush)FindResource("NormalText");
             InitializeComponent();
             DataContext = new ViewModelv5();
-
             List.AllowDrop = true;
             Interfacer = new UserInterfacer(this);
             Handler = new FileHandler(this);
+            PreventScrollChange = false;
         }
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
@@ -172,14 +175,15 @@ namespace AnimationEditor
 
         private void MenuViewTexture_Click(object sender, RoutedEventArgs e)
         {
-            TextureWindow texture = new TextureWindow(this);
-            texture.Owner = App.Current.MainWindow;
-            texture.ShowDialog();
+            TextureManagerMenu.Startup(this);
+            TextureManagerPopup.IsOpen = true;
             Interfacer.UpdateUI();
+
         }
 
         private void MenuViewHitbox_Click(object sender, RoutedEventArgs e)
         {
+            HitboxManagerPopup.IsOpen = true;
             Interfacer.UpdateUI();
         }
 
@@ -197,11 +201,12 @@ namespace AnimationEditor
 
         private void NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            Interfacer.UpdateUI();
+            Interfacer.UpdateUI(true);
         }
 
         private void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            Interfacer.UpdateFramesList();
             Interfacer.UpdateUI();
         }
 
@@ -240,6 +245,41 @@ namespace AnimationEditor
                 if (result == true) Handler.OpenRecentFile(index-1);
             }
             Interfacer.UpdateUI();
+
+        }
+
+        private void ContextMenu_ContextMenuClosing(object sender, System.Windows.Controls.ContextMenuEventArgs e)
+        {
+            TextureManagerMenu.Shutdown();
+        }
+
+        private void HitboxManagerMenu_DragOver(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void HitboxManagerPopup_LostFocus(object sender, RoutedEventArgs e)
+        {
+            //HitboxManagerPopup.IsOpen = false;
+            //Interfacer.UpdateUI();
+        }
+
+        private void TextureManagerPopup_LostFocus(object sender, RoutedEventArgs e)
+        {
+            //TextureManagerPopup.IsOpen = false;
+            //Interfacer.UpdateUI();
+        }
+
+        private void AnimationScroller_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (!PreventScrollChange)
+            {
+                PreventScrollChange = true;
+                if (AnimationScroller.Value == 3) Interfacer.UpdateFrameIndex(false);
+                if (AnimationScroller.Value == 1) Interfacer.UpdateFrameIndex(true);
+                AnimationScroller.Value = 2;
+                PreventScrollChange = false;
+            }
 
         }
     }

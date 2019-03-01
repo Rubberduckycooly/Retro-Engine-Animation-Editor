@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Collections.Generic;
 
@@ -11,7 +12,7 @@ namespace AnimationEditor
     /// <summary>
     /// Interaction logic for TextureWindow.xaml
     /// </summary>
-    public partial class TextureWindow : Window
+    public partial class TextureManager : UserControl
     {
         private MainWindow ParentInstance;
         private List<BitmapImage> SpriteSheets;
@@ -20,13 +21,42 @@ namespace AnimationEditor
         private int SelectedValue { get; set; }
         private BitmapImage CurrentTexture { get; set; }
 
-        public TextureWindow(MainWindow instance)
+        public TextureManager()
+        {
+            InitializeComponent();
+            Border.BorderBrush = SystemParameters.WindowGlassBrush;
+        }
+
+        public void Startup(MainWindow instance)
         {
             ParentInstance = instance;
-            InitializeComponent();
-            InitializeVarriables();
-            UpdateUI();
-            SelectedTextureIndex = 0;
+            if (ParentInstance != null && ParentInstance.ViewModel != null && ParentInstance.ViewModel.LoadedAnimationFile != null)
+            {
+                InitializeVarriables();
+                UpdateUI();
+                SelectedTextureIndex = 0;
+
+                ButtonRemove.IsEnabled = true;
+                ButtonAdd.IsEnabled = true;
+                ButtonChange.IsEnabled = true;
+                ListTextures.IsEnabled = true;
+            }
+            else
+            {
+                ButtonRemove.IsEnabled = false;
+                ButtonAdd.IsEnabled = false;
+                ButtonChange.IsEnabled = false;
+                ListTextures.IsEnabled = false;
+            }
+        }
+
+        public void Shutdown()
+        {
+            ParentInstance = null;
+            ButtonRemove.IsEnabled = true;
+            ButtonAdd.IsEnabled = true;
+            ButtonChange.IsEnabled = true;
+            ListTextures.IsEnabled = true;
         }
 
         public void InitializeVarriables()

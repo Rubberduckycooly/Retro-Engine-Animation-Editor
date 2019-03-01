@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 
 namespace AnimationEditor.ViewModels
@@ -23,7 +24,6 @@ namespace AnimationEditor.ViewModels
         public string AnimationDirectory { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
         public Animation.AnimationEntry _SelectedAnimation;
-        
         public List<Animation.AnimationEntry> Animations { get => GetAnimations(); }
         public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
 
@@ -41,11 +41,72 @@ namespace AnimationEditor.ViewModels
         public short? Speed { get => GetSpeedMultiplyer(); set => SetSpeedMultiplyer(value); }
         public byte? Flags { get => GetRotationFlag(); set => SetRotationFlag(value); }
 
+        private Dictionary<string, BitmapSource> _textures = new Dictionary<string, BitmapSource>(24);
+        private Dictionary<Tuple<string, int>, BitmapSource> _frames = new Dictionary<Tuple<string, int>, BitmapSource>(1024);
+
+        public BitmapSource GetCroppedFrame(int texture, Animation.AnimationEntry.Frame frame)
+        {
+            if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count || frame == null)
+                return null;
+            var name = LoadedAnimationFile.SpriteSheets[texture];
+            var tuple = new Tuple<string, int>(name, frame.GetHashCode());
+            if (_frames.TryGetValue(tuple, out BitmapSource bitmap))
+                return bitmap;
+
+            //if (!frame.IsEmpty)
+            if (frame.Width > 0 && frame.Height > 0)
+            {
+                var textureBitmap = SpriteSheets[texture];
+                try
+                {
+                    bitmap = new CroppedBitmap(textureBitmap,
+                    new System.Windows.Int32Rect()
+                    {
+                        X = frame.X,
+                        Y = frame.Y,
+                        Width = frame.Width,
+                        Height = frame.Height
+                    });
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+            else
+            {
+                bitmap = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgr24, null, new byte[3] { 0, 0, 0 }, 3);
+            }
+            return _frames[tuple] = bitmap;
+        }
+
+        public void InvalidateFrame(int texture, Animation.AnimationEntry.Frame frame)
+        {
+            if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count)
+                return;
+            var name = LoadedAnimationFile.SpriteSheets[texture];
+            _frames.Remove(new Tuple<string, int>(name, frame.GetHashCode()));
+        }
+
+        public BitmapSource GetFrameImage(int index)
+        {
+            return GetCroppedFrame(GetAnimationFrame(index).SpriteSheet, GetAnimationFrame(index));
+        }
+
+        public void InvalidateFrameImage(int index)
+        {
+            InvalidateFrame(GetAnimationFrame(index).SpriteSheet, GetAnimationFrame(index));
+        }
 
         public List<Animation.AnimationEntry> GetAnimations()
         {
             if (LoadedAnimationFile != null) return LoadedAnimationFile.Animations;
             else return null;
+        }
+
+        public int GetCurrentFrameCount()
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Count;
+            else return -1;
         }
 
         public double SpriteLeft => GetSpriteLeft();
@@ -122,6 +183,12 @@ namespace AnimationEditor.ViewModels
             if (SelectedFrameLeft != null && SelectedFrameTop != null && SelectedFrameWidth != null && SelectedFrameHeight != null) return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
             return new Rect(0, 0, 0.5, 0.5);
 
+        }
+
+        public Animation.AnimationEntry.Frame GetAnimationFrame(int index)
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[index];
+            else return null;
         }
 
         public List<string> GetSpriteSheetsList()

@@ -80,10 +80,13 @@
     <Compile Include="AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HitboxManager.xaml.cs">
+      <DependentUpon>HitboxManager.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Services\FileHandler.cs" />
     <Compile Include="SkinResourceDictionary.cs" />
-    <Compile Include="TextureWindow.xaml.cs">
-      <DependentUpon>TextureWindow.xaml</DependentUpon>
+    <Compile Include="TextureManager.xaml.cs">
+      <DependentUpon>TextureManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\UserInterfacer.cs" />
     <Compile Include="ViewModels\FrameViewModel.cs" />
@@ -100,6 +103,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="HitboxManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -113,7 +120,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="TextureWindow.xaml">
+    <Page Include="TextureManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

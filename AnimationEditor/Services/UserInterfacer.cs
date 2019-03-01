@@ -14,6 +14,8 @@ namespace AnimationEditor
         private Brush DefaultBorderBrush;
         private Brush DefaultTextBrush;
         private Brush HideTextBrush;
+
+        public bool PreventIndexUpdate = false;
         public UserInterfacer(MainWindow window)
         {
             Instance = window;
@@ -24,17 +26,19 @@ namespace AnimationEditor
 
         #region UI Updating
 
-        public void UpdateUI()
+        public void UpdateUI(bool frameInfoUpdate = false)
         {
+            if (PreventIndexUpdate) return;
             if (Instance.ViewModel != null)
             {
                 Instance.Handler.UpdateRecentsDropDown();
                 UpdateList();
-                UpdateFramesList();
+                if (frameInfoUpdate) UpdateCurrentFrameInList();
                 UpdateInfo();
                 UpdateImage();
                 UpdateInvalidState();
             }
+            PreventIndexUpdate = false;
 
         }
 
@@ -167,6 +171,8 @@ namespace AnimationEditor
             Instance.HitBoxViewer.RenderTransformOrigin = Instance.ViewModel.SpriteCenter;
             SetHitboxDimensions();
 
+            if (Instance.ViewModel.SpriteService == null && Instance.ViewModel.LoadedAnimationFile != null) Instance.ViewModel.SpriteService = new AnimationEditor.Services.SpriteService(Instance.ViewModel.LoadedAnimationFile, Instance.ViewModel.AnimationDirectory, Instance);
+
 
         }
 
@@ -192,8 +198,41 @@ namespace AnimationEditor
 
         public void UpdateFramesList()
         {
-            Instance.FramesList.ItemsSource = Instance.ViewModel.AnimationFrames;
-            Instance.FramesList.UpdateLayout();
+            if (Instance.ViewModel.LoadedAnimationFile != null)
+            {
+                Instance.FramesList.Items.Clear();
+                for (int i = 0; i < Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Count; i++)
+                {
+                    System.Windows.Controls.Image frame = new System.Windows.Controls.Image();
+                    frame.Width = 45;
+                    frame.Height = 45;
+                    frame.Source = Instance.ViewModel.GetFrameImage(i);
+                    Instance.FramesList.Items.Add(frame);
+                }
+                Instance.FramesList.UpdateLayout();
+            }
+
+        }
+
+        public void UpdateCurrentFrameInList()
+        {
+            int selectedIndex = Instance.ViewModel.SelectedFrameIndex;
+            if (selectedIndex != -1 && Instance.ViewModel.LoadedAnimationFile != null)
+            {
+                PreventIndexUpdate = true;
+                Instance.ViewModel.InvalidateFrameImage(selectedIndex);
+                System.Windows.Controls.Image frame = new System.Windows.Controls.Image();
+                frame.Width = 45;
+                frame.Height = 45;
+                frame.Source = Instance.ViewModel.GetFrameImage(selectedIndex);
+                Instance.FramesList.Items.RemoveAt(selectedIndex);
+                Instance.FramesList.Items.Insert(selectedIndex, frame);
+                Instance.ViewModel.SelectedFrameIndex = selectedIndex;
+                Instance.FramesList.SelectedIndex = Instance.ViewModel.SelectedFrameIndex;
+                Instance.FramesList.UpdateLayout();
+            }
+
+
         }
 
         public void UpdateInfo()
@@ -231,6 +270,7 @@ namespace AnimationEditor
                     }
                 }
 
+
             }
             void UpdateHitboxInfo()
             {
@@ -250,6 +290,26 @@ namespace AnimationEditor
                 Instance.LoopIndexNUD.Value = Instance.ViewModel.Loop;
                 Instance.FlagsSelector.SelectedIndex = (Instance.ViewModel.Flags.HasValue ? Instance.ViewModel.Flags.Value : 0);
             }
+        }
+
+        public void UpdateFrameIndex(bool subtract = false)
+        {
+            if (Instance.FramesList.Items != null && Instance.FramesList.Items.Count > 0)
+            {
+                if (subtract)
+                {
+                    if (Instance.FramesList.SelectedIndex - 1 > -1) Instance.FramesList.SelectedIndex--;
+                }
+                else
+                {
+                    if (Instance.FramesList.SelectedIndex + 1 < Instance.FramesList.Items.Count) Instance.FramesList.SelectedIndex++;
+                    else Instance.FramesList.SelectedIndex = (Instance.LoopIndexNUD.Value != null ? Instance.LoopIndexNUD.Value.Value : 0);
+                }
+                Instance.FramesList.ScrollIntoView(Instance.FramesList.SelectedItem);
+                UpdateUI();
+            }
+
+
         }
 
         #endregion
