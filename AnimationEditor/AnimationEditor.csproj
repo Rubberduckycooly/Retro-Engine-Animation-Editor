@@ -83,26 +83,17 @@
     <Compile Include="AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Animation.cs" />
+    <Compile Include="Services\AnimationService.cs" />
     <Compile Include="HitboxManager.xaml.cs">
       <DependentUpon>HitboxManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\FileHandler.cs" />
-    <Compile Include="SkinResourceDictionary.cs" />
+    <Compile Include="Services\SkinResourceDictionary.cs" />
     <Compile Include="TextureManager.xaml.cs">
       <DependentUpon>TextureManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\UserInterfacer.cs" />
-    <Compile Include="ViewModels\FrameViewModel.cs" />
-    <Compile Include="Services\AnimationService.cs" />
-    <Compile Include="Services\ImageService.cs" />
-    <Compile Include="Services\TextureService.cs" />
-    <Compile Include="ViewModels\HitboxV3EditorViewModel.cs" />
-    <Compile Include="ViewModels\HitboxV5EditorViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\TextureViewModel.cs" />
-    <Compile Include="ViewModels\TextureWindowViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelv5.cs" />
     <Page Include="AboutWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -119,7 +110,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ViewModels\HitboxViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

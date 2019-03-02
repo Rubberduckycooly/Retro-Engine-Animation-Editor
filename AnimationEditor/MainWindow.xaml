@@ -142,14 +142,17 @@
             <DockPanel Grid.Column="2"
                        IsEnabled="{Binding IsAnimationSelected}">
                 <DockPanel DockPanel.Dock="Bottom">
-                    <ListBox x:Name="FramesList" ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                    <Grid>
+                        <ListBox x:Name="FramesList" ScrollViewer.HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch"
                          SelectedIndex="{Binding SelectedFrameIndex}" SelectionChanged="FramesList_SelectionChanged" MouseDoubleClick="FramesList_MouseDoubleClick" ScrollBar.Scroll="FramesList_Scroll">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
+                        <ListBox Visibility="Hidden" x:Name="FakeScrollbar" IsEnabled="False" ScrollViewer.HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch"></ListBox>
+                    </Grid>
                 </DockPanel>
                 <Grid DockPanel.Dock="Bottom" Margin="0">
                     <Grid.ColumnDefinitions>
@@ -357,7 +360,7 @@
                                 <Run Text="Current frame "/>
                                 <Run Text="{Binding SelectedFrameIndex, Mode=OneWay}"/>
                                 <Run Text="- Total "/>
-                                <Run Text="{Binding FramesCount, Mode=OneWay}"/>
+                                <Run x:Name="FramesCountLabel" Text="{Binding FramesCount, Mode=OneWay}"/>
                             </TextBlock>
                         </GroupBox.Header>
                         <StackPanel Background='{DynamicResource NormalBackground2}'>

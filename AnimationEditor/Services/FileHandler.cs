@@ -20,6 +20,7 @@ namespace AnimationEditor
 
         public void OpenFile()
         {
+            Instance.Interfacer.PreventIndexUpdate = true;
             UnloadAnimationData();
             var fd = new OpenFileDialog();
             fd.DefaultExt = "*.bin";
@@ -29,10 +30,12 @@ namespace AnimationEditor
                 UpdateRecentsDropDown(fd.FileName);
                 LoadFile(fd);
             }
+            Instance.Interfacer.PreventIndexUpdate = false;
         }
 
         public void OpenRecentFile(int index)
         {
+            Instance.Interfacer.PreventIndexUpdate = true;
             if (Properties.Settings.Default.RecentFiles != null)
             {
                 if (Properties.Settings.Default.RecentFiles[index] != null)
@@ -41,28 +44,16 @@ namespace AnimationEditor
                 }
             }
             UpdateRecentsDropDown();
+            Instance.Interfacer.PreventIndexUpdate = false;
         }
 
         public void LoadFile(string filepath)
         {
             Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
 
+            Instance.ViewModel.LoadedAnimationFile = new Animation();
             Instance.ViewModel.LoadedAnimationFile.ImportFrom(Instance.AnimationType, filepath);
-            foreach (string path in Instance.ViewModel.SpriteSheetPaths)
-            {
-                string animationDirectory = Path.GetDirectoryName(filepath);
-                Instance.ViewModel.AnimationDirectory = animationDirectory;
-                string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, path);
-                if (File.Exists(imagePath))
-                {
-                    Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));
-                }
-                else
-                {
-                    Instance.ViewModel.SpriteSheets.Add(new BitmapImage());
-                }
-
-            }
+            LoadAnimationTextures(filepath);
         }
 
         public void LoadFile(OpenFileDialog fd)
@@ -93,12 +84,18 @@ namespace AnimationEditor
                     break;
             }
 
+            Instance.ViewModel.LoadedAnimationFile = new Animation();
             Instance.ViewModel.LoadedAnimationFile.ImportFrom(Instance.AnimationType, fd.FileName);
+            LoadAnimationTextures(fd.FileName);
+        }
+
+        public void LoadAnimationTextures(string filename)
+        {
             foreach (string path in Instance.ViewModel.SpriteSheetPaths)
             {
-                string animationDirectory = Path.GetDirectoryName(fd.FileName);
+                string animationDirectory = Path.GetDirectoryName(filename);
                 Instance.ViewModel.AnimationDirectory = animationDirectory;
-                string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, Instance.ViewModel.LoadedAnimationFile.pathmod,path);
+                string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, Instance.ViewModel.LoadedAnimationFile.pathmod, path);
                 if (File.Exists(imagePath))
                 {
                     Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));
@@ -203,9 +200,8 @@ namespace AnimationEditor
             Instance.List.SelectedIndex = -1;
             Instance.FramesList.SelectedIndex = -1;
             if (Instance.ViewModel.SpriteSheets != null) Instance.ViewModel.SpriteSheets.Clear();
-            Instance.DataContext = new ViewModelv5();
+            Instance.DataContext = new MainViewModel();
             Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
-
         }
 
     }

@@ -170,10 +170,6 @@ namespace AnimationEditor
             System.Windows.Controls.Canvas.SetTop(Instance.HitBoxViewer, Instance.ViewModel.HitboxTop);
             Instance.HitBoxViewer.RenderTransformOrigin = Instance.ViewModel.SpriteCenter;
             SetHitboxDimensions();
-
-            if (Instance.ViewModel.SpriteService == null && Instance.ViewModel.LoadedAnimationFile != null) Instance.ViewModel.SpriteService = new AnimationEditor.Services.SpriteService(Instance.ViewModel.LoadedAnimationFile, Instance.ViewModel.AnimationDirectory, Instance);
-
-
         }
 
         public void SetHitboxDimensions()
@@ -194,6 +190,20 @@ namespace AnimationEditor
         {
             Instance.List.ItemsSource = Instance.ViewModel.Animations;
             Instance.List.UpdateLayout();
+
+            Instance.FramesCountLabel.Text = Instance.ViewModel.FramesCount.ToString();
+
+            if (Instance.ViewModel.SelectedAnimationIndex == -1) {
+                Instance.FramesList.Height = 21;
+                Instance.FramesList.Visibility = Visibility.Hidden;
+                Instance.FakeScrollbar.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Instance.FramesList.Height = Double.NaN;
+                Instance.FramesList.Visibility = Visibility.Visible;
+                Instance.FakeScrollbar.Visibility = Visibility.Hidden;
+            }
         }
 
         public void UpdateFramesList()
@@ -258,6 +268,10 @@ namespace AnimationEditor
 
                 Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
                 Instance.SpriteSheetList.SelectedIndex = (Instance.ViewModel.CurrentSpriteSheet.HasValue ? Instance.ViewModel.CurrentSpriteSheet.Value : 0);
+
+                if (Instance.ViewModel.AnimationFrames != null && Instance.ViewModel.SelectedFrameIndex != -1) Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet = Instance.ViewModel.CurrentSpriteSheet.Value;
+
+                
                 if (Instance.ViewModel.SpriteSheetPaths != null && Instance.ViewModel.SpriteSheetPaths.Count > 0) Instance.SpriteSheetList.SelectedValue = Instance.ViewModel.SpriteSheetPaths[Instance.SpriteSheetList.SelectedIndex];
 
                 if (Instance.ViewModel.SelectedFrameIndex != -1 && Instance.ViewModel.SelectedFrameIndex != null && Instance.ViewModel.AnimationFrames != null)

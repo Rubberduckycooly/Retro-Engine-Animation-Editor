@@ -15,9 +15,9 @@ namespace AnimationEditor
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ViewModelv5 ViewModel => (ViewModelv5)DataContext;
+        public MainViewModel ViewModel => (MainViewModel)DataContext;
 
-        private UserInterfacer Interfacer;
+        public UserInterfacer Interfacer;
         public FileHandler Handler;
         public Brush DefaultBorderBrush;
         public Brush DefaultTextBrush;
@@ -31,7 +31,7 @@ namespace AnimationEditor
             DefaultBorderBrush = (Brush)FindResource("ComboBoxBorder");
             DefaultTextBrush = (Brush)FindResource("NormalText");
             InitializeComponent();
-            DataContext = new ViewModelv5();
+            DataContext = new MainViewModel();
             List.AllowDrop = true;
             Interfacer = new UserInterfacer(this);
             Handler = new FileHandler(this);

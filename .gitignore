@@ -11,7 +11,6 @@
 *.userprefs
 
 # Build results
-[Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
@@ -21,7 +20,8 @@ build/
 bld/
 bin/
 [Bb]in/
-[Oo]bj/
+[Dd]ebug/
+
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -204,6 +204,7 @@ FakesAssemblies/
 # Visual Studio 6 build log
 *.plg
 
+
 # Visual Studio 6 workspace options file
 *.opt
 
@@ -213,3 +214,11 @@ _Pvt_Extensions/
 ModelManifest.xml
 
 Ignored/
+/AnimationEditor/obj/Debug
+/AnimationEditor/obj/Release
+/MigrationBackup/64c3eaa7/RSDKv2
+/MigrationBackup/8035db02/RSDKvB
+/MigrationBackup/86b1d7bb/RSDKv5
+/MigrationBackup/4b5ba9ca/RSDKvRS
+/MigrationBackup/1eac9abd/RSDKv1
+
