@@ -153,7 +153,7 @@ namespace AnimationEditor
             System.Windows.Controls.Canvas.SetRight(Instance.CanvasImage, Instance.ViewModel.SpriteRight);
             System.Windows.Controls.Canvas.SetBottom(Instance.CanvasImage, Instance.ViewModel.SpriteBottom);
 
-            if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.LoadedAnimationFile != null)
+            if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SpriteSheets != null)
             {
                 Instance.CanvasImage.Source = Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value];
             }
@@ -201,6 +201,7 @@ namespace AnimationEditor
             if (Instance.ViewModel.LoadedAnimationFile != null)
             {
                 Instance.FramesList.Items.Clear();
+                if (Instance.ViewModel.SelectedAnimationIndex < 0) Instance.ViewModel.SelectedAnimationIndex = 0;
                 for (int i = 0; i < Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Count; i++)
                 {
                     System.Windows.Controls.Image frame = new System.Windows.Controls.Image();
@@ -257,7 +258,7 @@ namespace AnimationEditor
 
                 Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
                 Instance.SpriteSheetList.SelectedIndex = (Instance.ViewModel.CurrentSpriteSheet.HasValue ? Instance.ViewModel.CurrentSpriteSheet.Value : 0);
-                if (Instance.ViewModel.SpriteSheetPaths != null) Instance.SpriteSheetList.SelectedValue = Instance.ViewModel.SpriteSheetPaths[Instance.SpriteSheetList.SelectedIndex];
+                if (Instance.ViewModel.SpriteSheetPaths != null && Instance.ViewModel.SpriteSheetPaths.Count > 0) Instance.SpriteSheetList.SelectedValue = Instance.ViewModel.SpriteSheetPaths[Instance.SpriteSheetList.SelectedIndex];
 
                 if (Instance.ViewModel.SelectedFrameIndex != -1 && Instance.ViewModel.SelectedFrameIndex != null && Instance.ViewModel.AnimationFrames != null)
                 {

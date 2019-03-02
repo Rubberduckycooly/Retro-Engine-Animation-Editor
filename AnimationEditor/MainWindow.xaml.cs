@@ -21,6 +21,8 @@ namespace AnimationEditor
         public Brush DefaultBorderBrush;
         public Brush DefaultTextBrush;
 
+        public EngineType AnimationType = EngineType.RSDKv5;
+
         private bool PreventScrollChange = true;
 
         public MainWindow()

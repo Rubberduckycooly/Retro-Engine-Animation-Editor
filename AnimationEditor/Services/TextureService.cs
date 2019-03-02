@@ -50,7 +50,7 @@ namespace AnimationEditor.Services
         private Dictionary<Tuple<string, int>, BitmapSource> _frames =
             new Dictionary<Tuple<string, int>, BitmapSource>(1024);
 
-        public BitmapSource this[int texture, Animation.AnimationEntry.Frame frame]
+        public BitmapSource this[int texture, Animation.Frame frame]
         {
             get
             {
@@ -95,7 +95,7 @@ namespace AnimationEditor.Services
             BasePath = basePath;
         }
 
-        public void Invalidate(int texture, Animation.AnimationEntry.Frame frame)
+        public void Invalidate(int texture, Animation.Frame frame)
         {
             if (texture < 0 || texture >= _animationData.SpriteSheets.Count)
                 return;

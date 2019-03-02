@@ -46,7 +46,8 @@ namespace AnimationEditor
         public void LoadFile(string filepath)
         {
             Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
-            Instance.ViewModel.LoadedAnimationFile = new RSDKv5.Animation(new RSDKv5.Reader(filepath));
+
+            Instance.ViewModel.LoadedAnimationFile.ImportFrom(Instance.AnimationType, filepath);
             foreach (string path in Instance.ViewModel.SpriteSheetPaths)
             {
                 string animationDirectory = Path.GetDirectoryName(filepath);
@@ -76,12 +77,28 @@ namespace AnimationEditor
             else { Instance.IDLabel.Text = "ID"; }
             if (fd.FilterIndex - 1 == 0) { Instance.DelayNUD.IsEnabled = true; Instance.idNUD.IsEnabled = true; }
 
-            Instance.ViewModel.LoadedAnimationFile = new RSDKv5.Animation(new RSDKv5.Reader(fd.FileName));
+            switch(fd.FilterIndex-1)
+            {
+                case 0:
+                    Instance.AnimationType = EngineType.RSDKv5;
+                    break;
+                case 1:
+                    Instance.AnimationType = EngineType.RSDKv2;
+                    break;
+                case 2:
+                    Instance.AnimationType = EngineType.RSDKv1;
+                    break;
+                case 3:
+                    Instance.AnimationType = EngineType.RSDKvRS;
+                    break;
+            }
+
+            Instance.ViewModel.LoadedAnimationFile.ImportFrom(Instance.AnimationType, fd.FileName);
             foreach (string path in Instance.ViewModel.SpriteSheetPaths)
             {
                 string animationDirectory = Path.GetDirectoryName(fd.FileName);
                 Instance.ViewModel.AnimationDirectory = animationDirectory;
-                string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, path);
+                string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, Instance.ViewModel.LoadedAnimationFile.pathmod,path);
                 if (File.Exists(imagePath))
                 {
                     Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));
@@ -114,7 +131,30 @@ namespace AnimationEditor
 
         public void SaveFileAs()
         {
+            var fd = new SaveFileDialog();
+            fd.DefaultExt = "*.bin";
+            fd.Filter = "RSDKv5 Animation Files|*.bin|RSDKv2 and RSDKvB Animation Files|*.ani|RSDKv1 Animation Files|*.ani|RSDKvRS Animation Files|*.ani";
+            if (fd.ShowDialog() == true)
+            {
+                UpdateRecentsDropDown(fd.FileName);
 
+                switch (fd.FilterIndex - 1)
+                {
+                    case 0:
+                        Instance.AnimationType = EngineType.RSDKv5;
+                        break;
+                    case 1:
+                        Instance.AnimationType = EngineType.RSDKv2;
+                        break;
+                    case 2:
+                        Instance.AnimationType = EngineType.RSDKv1;
+                        break;
+                    case 3:
+                        Instance.AnimationType = EngineType.RSDKvRS;
+                        break;
+                }
+                Instance.ViewModel.LoadedAnimationFile.ExportTo(Instance.AnimationType, fd.FileName);
+            }
         }
 
         public void UpdateRecentsDropDown(string itemToAdd = "")
@@ -160,6 +200,8 @@ namespace AnimationEditor
 
         public void UnloadAnimationData()
         {
+            Instance.List.SelectedIndex = -1;
+            Instance.FramesList.SelectedIndex = -1;
             if (Instance.ViewModel.SpriteSheets != null) Instance.ViewModel.SpriteSheets.Clear();
             Instance.DataContext = new ViewModelv5();
             Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
