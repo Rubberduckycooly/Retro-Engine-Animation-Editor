@@ -277,7 +277,7 @@
                     <ScrollBar Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Width="40" Height="20" x:Name="AnimationScroller" ValueChanged="AnimationScroller_ValueChanged" SmallChange="1" Value="2" Maximum="3" Minimum="0"></ScrollBar>
 
                 </Grid>
-                
+
                 <Canvas x:Name="CanvasView" Margin="0 0 0 0" SizeChanged="Canvas_SizeChanged"
                         RenderOptions.BitmapScalingMode="NearestNeighbor"
                         ClipToBounds="True" MouseWheel="Canvas_MouseWheel"
@@ -306,7 +306,7 @@
                            Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
                            Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
                             RenderTransformOrigin="0.0,0.0">
-                        <Grid Background="Red" Opacity="0.5"></Grid>
+                        <Grid x:Name="HitBoxBackground" Background="Red" Opacity="0.5"></Grid>
                     </Border>
 
 
@@ -392,9 +392,29 @@
                                     </StackPanel>
                                 </Popup>
                             </Grid>
+                            <Grid Height="22" Margin="0,5,0,-5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="20"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                        <ColumnDefinition Width="24"></ColumnDefinition>
+                                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Hitbox Color:" VerticalAlignment="Center"></TextBlock>
+                                    <xc:ColorPicker Grid.Column="1" SelectedColor="#FFFF0000" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="HitboxColorPicker" Foreground="#7FFF0000"></xc:ColorPicker>
+                                    <Border Grid.Column="1" Margin="2,0" Width="20" Height="20" BorderBrush="Black" BorderThickness="1">
+                                        <Grid x:Name="HitboxColorBox" HorizontalAlignment="Left" Grid.Column="1" Width="18" Height="18" Background="#FFFF0000">
+                                            <Button x:Name="HitboxColorTrigger" Width="18" Height="18" Opacity="0.0" Click="HitboxColorBox_Click"></Button>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Grid>
 
                             <ComboBox x:Name="HitBoxComboBox2" Margin="0,1" Visibility="Hidden"/>
-                            <Grid Margin="3" Visibility="{Binding HitboxV5Visibility}">
+                            <Grid Margin="3,-9,3,3" Visibility="{Binding HitboxV5Visibility}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="40"/>
                                     <ColumnDefinition Width="*"/>

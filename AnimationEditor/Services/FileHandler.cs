@@ -160,9 +160,12 @@ namespace AnimationEditor
 
         public void UnloadAnimationData()
         {
+            Instance.List.SelectedIndex = -1;
+            Instance.FramesList.SelectedIndex = -1;
             if (Instance.ViewModel.SpriteSheets != null) Instance.ViewModel.SpriteSheets.Clear();
             Instance.DataContext = new ViewModelv5();
             Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
+
         }
 
     }

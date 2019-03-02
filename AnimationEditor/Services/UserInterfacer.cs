@@ -21,7 +21,7 @@ namespace AnimationEditor
             Instance = window;
             DefaultBorderBrush = Instance.DefaultBorderBrush;
             DefaultTextBrush = Instance.DefaultTextBrush;
-            HideTextBrush = Brushes.Transparent;
+            HideTextBrush = Brushes.Transparent;           
         }
 
         #region UI Updating
@@ -198,7 +198,7 @@ namespace AnimationEditor
 
         public void UpdateFramesList()
         {
-            if (Instance.ViewModel.LoadedAnimationFile != null)
+            if (Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SelectedAnimationIndex != -1)
             {
                 Instance.FramesList.Items.Clear();
                 for (int i = 0; i < Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Count; i++)

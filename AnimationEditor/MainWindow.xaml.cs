@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Xceed.Wpf.Toolkit;
 
 namespace AnimationEditor
 {
@@ -33,6 +34,7 @@ namespace AnimationEditor
             Interfacer = new UserInterfacer(this);
             Handler = new FileHandler(this);
             PreventScrollChange = false;
+            HitboxColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
         }
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
@@ -281,6 +283,23 @@ namespace AnimationEditor
                 PreventScrollChange = false;
             }
 
+        }
+
+        private void HitboxColorBox_Click(object sender, RoutedEventArgs e)
+        {
+            HitboxColorPicker.ColorMode = ColorMode.ColorCanvas;
+            HitboxColorPicker.ShowStandardColors = false;
+            HitboxColorPicker.IsOpen = true;
+        }
+
+        private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            if (HitboxColorPicker.SelectedColor != null)
+            {
+                HitBoxViewer.BorderBrush = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
+                HitBoxBackground.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
+                HitboxColorBox.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
+            }
         }
     }
 }
