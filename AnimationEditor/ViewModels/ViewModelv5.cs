@@ -20,7 +20,7 @@ namespace AnimationEditor.ViewModels
     {
 
         public SpriteService SpriteService;
-        public Animation LoadedAnimationFile;
+        public Animation LoadedAnimationFile = new Animation();
         public string AnimationDirectory { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
         public Animation.AnimationEntry _SelectedAnimation;
@@ -28,14 +28,14 @@ namespace AnimationEditor.ViewModels
         public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
 
         public List<string> CollisionBoxesNames { get => GetCollisionBoxes(); }
-        public List<Animation.AnimationEntry.Frame.HitBox> CollisionBoxes { get => GetHitBoxes(); }
+        public List<Animation.HitBox> CollisionBoxes { get => GetHitBoxes(); }
         public Animation.AnimationEntry SelectedAnimation { get => _SelectedAnimation; set { _SelectedAnimation = value; } }
         public int SelectedAnimationIndex { get; set; }
 
         public double ViewWidth { get; set; }
         public double ViewHeight { get; set; }
 
-        public List<Animation.AnimationEntry.Frame> AnimationFrames { get => GetAnimationsFrames(); }
+        public List<Animation.Frame> AnimationFrames { get => GetAnimationsFrames(); }
         public int SelectedFrameIndex { get; set; }
         public byte? Loop { get => GetLoopIndex(); set => SetLoopIndex(value); }
         public short? Speed { get => GetSpeedMultiplyer(); set => SetSpeedMultiplyer(value); }
@@ -44,7 +44,7 @@ namespace AnimationEditor.ViewModels
         private Dictionary<string, BitmapSource> _textures = new Dictionary<string, BitmapSource>(24);
         private Dictionary<Tuple<string, int>, BitmapSource> _frames = new Dictionary<Tuple<string, int>, BitmapSource>(1024);
 
-        public BitmapSource GetCroppedFrame(int texture, Animation.AnimationEntry.Frame frame)
+        public BitmapSource GetCroppedFrame(int texture, Animation.Frame frame)
         {
             if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count || frame == null)
                 return null;
@@ -79,7 +79,7 @@ namespace AnimationEditor.ViewModels
             return _frames[tuple] = bitmap;
         }
 
-        public void InvalidateFrame(int texture, Animation.AnimationEntry.Frame frame)
+        public void InvalidateFrame(int texture, Animation.Frame frame)
         {
             if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count)
                 return;
@@ -185,7 +185,7 @@ namespace AnimationEditor.ViewModels
 
         }
 
-        public Animation.AnimationEntry.Frame GetAnimationFrame(int index)
+        public Animation.Frame GetAnimationFrame(int index)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[index];
             else return null;
@@ -196,7 +196,7 @@ namespace AnimationEditor.ViewModels
             if (LoadedAnimationFile != null) return LoadedAnimationFile.SpriteSheets;
             else return null;
         }
-        public List<Animation.AnimationEntry.Frame> GetAnimationsFrames()
+        public List<Animation.Frame> GetAnimationsFrames()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames;
             else return null;
@@ -243,7 +243,7 @@ namespace AnimationEditor.ViewModels
 
         }
 
-        public List<Animation.AnimationEntry.Frame.HitBox> GetHitBoxes()
+        public List<Animation.HitBox> GetHitBoxes()
         {
             return null;
         }
@@ -362,7 +362,7 @@ namespace AnimationEditor.ViewModels
 
         public int SelectedFrameHitboxIndex { get; set; }
 
-        public Animation.AnimationEntry.Frame.HitBox? SelectedHitbox { get => GetSelectedHitbox(); set => SetSelectedHitbox(value); }
+        public Animation.HitBox SelectedHitbox { get => GetSelectedHitbox(); set => SetSelectedHitbox(value); }
 
         public short SelectedHitbox_X { get => GetCurrentHitboxX(); set => SetCurrentHitboxX(value); }
 
@@ -374,7 +374,7 @@ namespace AnimationEditor.ViewModels
 
         #region Get Methods
 
-        public Animation.AnimationEntry.Frame.HitBox? GetSelectedHitbox()
+        public Animation.HitBox GetSelectedHitbox()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex];
             else return null;
@@ -413,9 +413,9 @@ namespace AnimationEditor.ViewModels
 
         #region Set Methods
 
-        public void SetSelectedHitbox(Animation.AnimationEntry.Frame.HitBox? value)
+        public void SetSelectedHitbox(Animation.HitBox value)
         {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = value.Value;
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = value;
             else return;
         }
         public void SetCurrentHitboxIndex(int value)
@@ -428,7 +428,7 @@ namespace AnimationEditor.ViewModels
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                Animation.AnimationEntry.Frame.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                Animation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.X = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
@@ -439,7 +439,7 @@ namespace AnimationEditor.ViewModels
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                Animation.AnimationEntry.Frame.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                Animation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Y = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
@@ -450,7 +450,7 @@ namespace AnimationEditor.ViewModels
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                Animation.AnimationEntry.Frame.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                Animation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Width = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
@@ -461,7 +461,7 @@ namespace AnimationEditor.ViewModels
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                Animation.AnimationEntry.Frame.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                Animation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Height = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }

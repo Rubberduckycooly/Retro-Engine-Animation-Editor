@@ -337,10 +337,10 @@
                         <xc:IntegerUpDown x:Name="LoopIndexNUD" Grid.Column="2" Grid.Row="1" Minimum="0" Maximum="255"
                                           Value="{Binding Loop, Mode=TwoWay}"/>
 
-                        <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="3" Text="Flags" Foreground="{DynamicResource NormalText}"/>
+                        <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="3" Text="Rotation Flags" Foreground="{DynamicResource NormalText}"/>
                         <ComboBox x:Name="FlagsSelector" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="5"
                                   SelectedIndex="{Binding Flags, Mode=TwoWay}">
-                            <TextBlock Text="Default behavior"/>
+                            <TextBlock Text="No Rotation"/>
                             <TextBlock Text="Full engine rotation"/>
                             <TextBlock Text="45 Degree engine rotation"/>
                             <TextBlock Text="Static rotation using extra frames"/>
