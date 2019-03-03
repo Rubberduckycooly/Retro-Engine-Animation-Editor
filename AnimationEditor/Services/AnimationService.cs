@@ -314,7 +314,7 @@ namespace AnimationEditor
             /// <summary>
             /// special value, used for things like the title card letters (and strangely, mighty's victory anim)
             /// </summary>
-            public short ID = 0;
+            public ushort ID = 0;
             /// <summary>
             /// the Xpos on the sheet
             /// </summary>
@@ -342,7 +342,6 @@ namespace AnimationEditor
 
             public Frame()
             {
-                HitBoxes.Add(new HitBox());
             }
 
             public void ImportFrom(EngineType type, string filepath)
@@ -634,6 +633,7 @@ namespace AnimationEditor
                     for (int a = 0; a < animsetv5.Animations.Count; a++)
                     {
                         Animations.Add(new AnimationEntry());
+                        Animations[a].Frames.Clear();
                         Animations[a].AnimName = animsetv5.Animations[a].AnimName;
                         Animations[a].LoopIndex = animsetv5.Animations[a].LoopIndex;
                         Animations[a].SpeedMultiplyer = animsetv5.Animations[a].SpeedMultiplyer;
@@ -642,6 +642,7 @@ namespace AnimationEditor
                         for (int i = 0; i < animsetv5.Animations[a].Frames.Count; i++)
                         {
                             Animations[a].Frames.Add(new Frame());
+                            Animations[a].Frames[i].HitBoxes.Clear();
                             Animations[a].Frames[i].CollisionBox = animsetv5.Animations[a].Frames[i].CollisionBox;
                             Animations[a].Frames[i].Delay = animsetv5.Animations[a].Frames[i].Delay;
                             Animations[a].Frames[i].Height = animsetv5.Animations[a].Frames[i].Height;

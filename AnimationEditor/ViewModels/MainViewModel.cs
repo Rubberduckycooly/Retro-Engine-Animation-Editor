@@ -259,7 +259,7 @@ namespace AnimationEditor.ViewModels
         public short? SelectedFrameWidth { get => GetWidth(); set => SetWidth(value); }
         public short? SelectedFrameLeft { get => GetX(); set => SetX(value); }
         public short? SelectedFrameTop { get => GetY(); set => SetY(value); }
-        public short? SelectedFrameId { get => GetID(); set => SetID(value); }
+        public ushort? SelectedFrameId { get => GetID(); set => SetID(value); }
         public short? SelectedFrameDuration { get { return GetDelay(); } set { SetDelay(value); } }
         public byte? CurrentSpriteSheet { get => GetSpriteSheet(); set => SetSpriteSheet(value); }
 
@@ -299,7 +299,7 @@ namespace AnimationEditor.ViewModels
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Y;
             else return 0;
         }
-        public short GetID()
+        public ushort GetID()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID;
             else return 0;
@@ -346,7 +346,7 @@ namespace AnimationEditor.ViewModels
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Y = value.Value;
             else return;
         }
-        public void SetID(short? value)
+        public void SetID(ushort? value)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID = value.Value;
             else return;
