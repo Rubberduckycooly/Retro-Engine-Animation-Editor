@@ -11,18 +11,8 @@
         <Menu DockPanel.Dock="Top" x:Name="MenuStrip" Background="{DynamicResource MenuBar}" Foreground="{DynamicResource NormalText}">
             <MenuItem Header="_File">
                 <MenuItem x:Name="MenuFileOpen" Header="_Open" Click="MenuFileOpen_Click"/>
-                <MenuItem x:Name="MenuFileOpenRecently" Header="_Recently Opened...">
-                    <MenuItem Header="1. N/A" IsEnabled="False" x:Name="MenuRecentFile1" Click="MenuRecentFile_Click" Tag="1"></MenuItem>
-                    <MenuItem Header="2. N/A" IsEnabled="False" x:Name="MenuRecentFile2" Click="MenuRecentFile_Click" Tag="2"></MenuItem>
-                    <MenuItem Header="3. N/A" IsEnabled="False" x:Name="MenuRecentFile3" Click="MenuRecentFile_Click" Tag="3"></MenuItem>
-                    <MenuItem Header="4. N/A" IsEnabled="False" x:Name="MenuRecentFile4" Click="MenuRecentFile_Click" Tag="4"></MenuItem>
-                    <MenuItem Header="5. N/A" IsEnabled="False" x:Name="MenuRecentFile5" Click="MenuRecentFile_Click" Tag="5"></MenuItem>
-                    <MenuItem Header="6. N/A" IsEnabled="False" x:Name="MenuRecentFile6" Click="MenuRecentFile_Click" Tag="6"></MenuItem>
-                    <MenuItem Header="7. N/A" IsEnabled="False" x:Name="MenuRecentFile7" Click="MenuRecentFile_Click" Tag="7"></MenuItem>
-                    <MenuItem Header="8. N/A" IsEnabled="False" x:Name="MenuRecentFile8" Click="MenuRecentFile_Click" Tag="8"></MenuItem>
-                    <MenuItem Header="9. N/A" IsEnabled="False" x:Name="MenuRecentFile9" Click="MenuRecentFile_Click" Tag="9"></MenuItem>
-                    <MenuItem Header="10. N/A" IsEnabled="False" x:Name="MenuRecentFile10" Click="MenuRecentFile_Click" Tag="10"></MenuItem>
-                    <MenuItem Visibility="Collapsed" Header="Clear All Items"></MenuItem>
+                <MenuItem x:Name="MenuFileOpenRecently" Header="_Recently Opened..." MenuItem.SubmenuOpened="MenuFileOpenRecently_SubmenuOpened">
+                    <MenuItem Header="No Recent Items" IsEnabled="False" x:Name="NoRecentFiles" Tag="0"></MenuItem>
                 </MenuItem>
                 <MenuItem x:Name="MenuFileSave" Header="_Save" Click="MenuFileSave_Click"/>
                 <MenuItem x:Name="MenuFileSaveAs" Header="Save _as" Click="MenuFileSaveAs_Click"/>

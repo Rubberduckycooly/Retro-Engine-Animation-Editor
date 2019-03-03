@@ -3,18 +3,26 @@ using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Windows;
+using System.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using System.Linq;
+using System.Windows.Controls;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Collections.Specialized;
 
 namespace AnimationEditor
 {
     public class FileHandler
     {
         private MainWindow Instance;
+        public System.Collections.Generic.IList<MenuItem> RecentItems;
         public FileHandler(MainWindow window)
         {
             Instance = window;
+            RecentItems = new List<MenuItem>();
         }
 
 
@@ -27,30 +35,23 @@ namespace AnimationEditor
             fd.Filter = "RSDKv5 Animation Files|*.bin|RSDKv2 and RSDKvB Animation Files|*.ani|RSDKv1 Animation Files|*.ani|RSDKvRS Animation Files|*.ani";
             if (fd.ShowDialog() == true)
             {
-                UpdateRecentsDropDown(fd.FileName);
+                AddRecentDataFolder(fd.FileName);
                 LoadFile(fd);
             }
             Instance.Interfacer.PreventIndexUpdate = false;
         }
 
-        public void OpenRecentFile(int index)
+        public void OpenFile(string file)
         {
-            Instance.Interfacer.PreventIndexUpdate = true;
-            if (Properties.Settings.Default.RecentFiles != null)
-            {
-                if (Properties.Settings.Default.RecentFiles[index] != null)
-                {
-                    if (File.Exists(Properties.Settings.Default.RecentFiles[index])) LoadFile(Properties.Settings.Default.RecentFiles[index].ToString());
-                }
-            }
+            LoadFile(file);
             UpdateRecentsDropDown();
             Instance.Interfacer.PreventIndexUpdate = false;
+            Instance.Interfacer.UpdateUI();
         }
 
         public void LoadFile(string filepath)
         {
             Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
-
             Instance.ViewModel.LoadedAnimationFile = new Animation();
             Instance.ViewModel.LoadedAnimationFile.ImportFrom(Instance.AnimationType, filepath);
             LoadAnimationTextures(filepath);
@@ -68,7 +69,7 @@ namespace AnimationEditor
             else { Instance.IDLabel.Text = "ID"; }
             if (fd.FilterIndex - 1 == 0) { Instance.DelayNUD.IsEnabled = true; Instance.idNUD.IsEnabled = true; }
 
-            switch(fd.FilterIndex-1)
+            switch (fd.FilterIndex - 1)
             {
                 case 0:
                     Instance.AnimationType = EngineType.RSDKv5;
@@ -154,47 +155,6 @@ namespace AnimationEditor
             }
         }
 
-        public void UpdateRecentsDropDown(string itemToAdd = "")
-        {
-            if (Properties.Settings.Default.RecentFiles == null) Properties.Settings.Default.RecentFiles = new System.Collections.Specialized.StringCollection();
-            if (itemToAdd != "")
-            {
-                if (Properties.Settings.Default.RecentFiles.Contains(itemToAdd))
-                {
-                    Properties.Settings.Default.RecentFiles.Remove(itemToAdd);
-                    Properties.Settings.Default.RecentFiles.Add(itemToAdd);
-                    Properties.Settings.Default.Save();
-                }
-                else
-                {
-                    Properties.Settings.Default.RecentFiles.Add(itemToAdd);
-                    Properties.Settings.Default.Save();
-                }
-            }
-
-            if (Properties.Settings.Default.RecentFiles.Count >= 1) { Instance.MenuRecentFile1.Header = String.Format("1: {0}", Properties.Settings.Default.RecentFiles[0].ToString()); Instance.MenuRecentFile1.IsEnabled = true; Instance.MenuRecentFile1.Visibility = Visibility.Visible; }
-            else { Instance.MenuRecentFile1.Header = "1: N/A"; Instance.MenuRecentFile1.IsEnabled = false; Instance.MenuRecentFile1.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.RecentFiles.Count >= 2) { Instance.MenuRecentFile2.Header = String.Format("2: {0}", Properties.Settings.Default.RecentFiles[1].ToString()); Instance.MenuRecentFile2.IsEnabled = true; Instance.MenuRecentFile2.Visibility = Visibility.Visible; }
-            else { Instance.MenuRecentFile2.Header = "2: N/A"; Instance.MenuRecentFile2.IsEnabled = false; Instance.MenuRecentFile2.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.RecentFiles.Count >= 3) { Instance.MenuRecentFile3.Header = String.Format("3: {0}", Properties.Settings.Default.RecentFiles[2].ToString()); Instance.MenuRecentFile3.IsEnabled = true; Instance.MenuRecentFile3.Visibility = Visibility.Visible; }
-            else { Instance.MenuRecentFile3.Header = "3: N/A"; Instance.MenuRecentFile3.IsEnabled = false; Instance.MenuRecentFile3.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.RecentFiles.Count >= 4) { Instance.MenuRecentFile4.Header = String.Format("4: {0}", Properties.Settings.Default.RecentFiles[3].ToString()); Instance.MenuRecentFile4.IsEnabled = true; Instance.MenuRecentFile4.Visibility = Visibility.Visible; }
-            else { Instance.MenuRecentFile4.Header = "4: N/A"; Instance.MenuRecentFile4.IsEnabled = false; Instance.MenuRecentFile4.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.RecentFiles.Count >= 5) { Instance.MenuRecentFile5.Header = String.Format("5: {0}", Properties.Settings.Default.RecentFiles[4].ToString()); Instance.MenuRecentFile5.IsEnabled = true; Instance.MenuRecentFile5.Visibility = Visibility.Visible; }
-            else { Instance.MenuRecentFile5.Header = "5: N/A"; Instance.MenuRecentFile5.IsEnabled = false; Instance.MenuRecentFile5.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.RecentFiles.Count >= 6) { Instance.MenuRecentFile6.Header = String.Format("6: {0}", Properties.Settings.Default.RecentFiles[5].ToString()); Instance.MenuRecentFile6.IsEnabled = true; Instance.MenuRecentFile6.Visibility = Visibility.Visible; }
-            else { Instance.MenuRecentFile6.Header = "6: N/A"; Instance.MenuRecentFile6.IsEnabled = false; Instance.MenuRecentFile6.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.RecentFiles.Count >= 7) { Instance.MenuRecentFile7.Header = String.Format("7: {0}", Properties.Settings.Default.RecentFiles[6].ToString()); Instance.MenuRecentFile7.IsEnabled = true; Instance.MenuRecentFile7.Visibility = Visibility.Visible; }
-            else { Instance.MenuRecentFile7.Header = "7: N/A"; Instance.MenuRecentFile7.IsEnabled = false; Instance.MenuRecentFile7.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.RecentFiles.Count >= 8) { Instance.MenuRecentFile8.Header = String.Format("8: {0}", Properties.Settings.Default.RecentFiles[7].ToString()); Instance.MenuRecentFile8.IsEnabled = true; Instance.MenuRecentFile8.Visibility = Visibility.Visible; }
-            else { Instance.MenuRecentFile8.Header = "8: N/A"; Instance.MenuRecentFile8.IsEnabled = false; Instance.MenuRecentFile8.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.RecentFiles.Count >= 9) { Instance.MenuRecentFile9.Header = String.Format("9: {0}", Properties.Settings.Default.RecentFiles[8].ToString()); Instance.MenuRecentFile9.IsEnabled = true; Instance.MenuRecentFile9.Visibility = Visibility.Visible; }
-            else { Instance.MenuRecentFile9.Header = "9: N/A"; Instance.MenuRecentFile9.IsEnabled = false; Instance.MenuRecentFile9.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.RecentFiles.Count >= 10) { Instance.MenuRecentFile10.Header = String.Format("10: {0}", Properties.Settings.Default.RecentFiles[9].ToString()); Instance.MenuRecentFile10.IsEnabled = true; Instance.MenuRecentFile10.Visibility = Visibility.Visible; }
-            else { Instance.MenuRecentFile10.Header = "10: N/A"; Instance.MenuRecentFile10.IsEnabled = false; Instance.MenuRecentFile10.Visibility = Visibility.Collapsed; }
-
-        }
-
         public void UnloadAnimationData()
         {
             Instance.List.SelectedIndex = -1;
@@ -204,5 +164,174 @@ namespace AnimationEditor
             Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
         }
 
+        #region Recent Files (Lifted from Maniac Editor)
+
+        public void UpdateRecentsDropDown(string itemToAdd = "")
+        {
+            if (itemToAdd != "") AddRecentDataFolder(itemToAdd);
+            RefreshDataDirectories(Properties.Settings.Default.RecentFiles);
+        }
+
+        public void RecentDataDirectoryClicked(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as System.Windows.Controls.MenuItem;
+            string dataDirectory = menuItem.Tag.ToString();
+            var dataDirectories = Properties.Settings.Default.RecentFiles;
+            if (File.Exists(dataDirectory))
+            {
+                AddRecentDataFolder(dataDirectory);
+                OpenFile(dataDirectory);
+            }
+            else
+            {
+                RSDKrU.MessageBox.Show($"The specified File {dataDirectory} is not valid.",
+                                "Invalid Annimation File!",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                dataDirectories.Remove(dataDirectory);
+                RefreshDataDirectories(dataDirectories);
+
+            }
+            Properties.Settings.Default.Save();
+        }
+
+        public void RefreshDataDirectories(System.Collections.Specialized.StringCollection recentDataDirectories)
+        {
+            if (Properties.Settings.Default.RecentFiles?.Count > 0)
+            {
+                Instance.NoRecentFiles.Visibility = Visibility.Collapsed;
+                CleanUpRecentList();
+
+                var startRecentItems = Instance.MenuFileOpenRecently.Items.IndexOf(Instance.NoRecentFiles);
+
+                foreach (var dataDirectory in recentDataDirectories)
+                {
+                    RecentItems.Add(CreateDataDirectoryMenuLink(dataDirectory));
+                }
+
+
+
+                foreach (MenuItem menuItem in RecentItems.Reverse())
+                {
+                    Instance.MenuFileOpenRecently.Items.Insert(startRecentItems, menuItem);
+                }
+            }
+            else
+            {
+                Instance.NoRecentFiles.Visibility = Visibility.Visible;
+            }
+
+
+
+        }
+
+        private MenuItem CreateDataDirectoryMenuLink(string target)
+        {
+            MenuItem newItem = new MenuItem();
+            newItem.Header = target;
+            newItem.InputGestureText = GetRecentItemFileVersion(target);
+            newItem.Tag = target;
+            newItem.Click += RecentDataDirectoryClicked;
+            return newItem;
+        }
+
+        private string GetRecentItemFileVersion(string target)
+        {
+            byte[] Header = null;
+            using (FileStream fs = new FileStream(target, FileMode.Open, FileAccess.Read))
+            {
+                Header = new byte[4];
+                fs.Read(Header, 0, (int)4);
+            }
+
+            byte[] RSDKv5 = new byte[] { (byte)'S', (byte)'P', (byte)'R', (byte)'\0' };
+            byte[] RSDKv1 = new byte[] { (byte)'\0', (byte)'\0', (byte)'\0', (byte)'\0' };
+            
+            // WIP 
+            byte[] RSDKvRS = new byte[] { (byte)'\0', (byte)'\0', (byte)'\0', (byte)'\0' };
+            byte[] RSDKv2 = new byte[] { (byte)'\0', (byte)'\0', (byte)'\0', (byte)'\0' };
+            byte[] RSDKvB = new byte[] { (byte)'\0', (byte)'\0', (byte)'\0', (byte)'\0' };
+
+
+
+
+            if (HeaderMatches(Header, RSDKv5))
+            {
+                return "RSDKv5";
+            }
+            else if (HeaderMatches(Header, RSDKv1))
+            {
+                return "RSDKv1";
+            }
+            else
+            {
+                return "?";
+            }
+        }
+
+        private bool HeaderMatches(byte[] target, byte[] format) {
+            for (int i = 0; i < 4; i++)
+            {
+                string targetItem = target[i].ToString();
+                string formatItem = format[i].ToString();
+                if (targetItem == formatItem) continue;
+                else return false;
+            }
+            return true;
+        }
+
+        private void CleanUpRecentList()
+        {
+            foreach (var menuItem in RecentItems)
+            {
+                menuItem.Click -= RecentDataDirectoryClicked;
+                Instance.MenuFileOpenRecently.Items.Remove(menuItem);
+            }
+            RecentItems.Clear();
+        }
+
+        public void AddRecentDataFolder(string dataDirectory)
+        {
+            try
+            {
+                var mySettings = Properties.Settings.Default;
+                var dataDirectories = mySettings.RecentFiles;
+
+                if (dataDirectories == null)
+                {
+                    dataDirectories = new System.Collections.Specialized.StringCollection();
+                    mySettings.RecentFiles = dataDirectories;
+                }
+
+                if (dataDirectories.Contains(dataDirectory))
+                {
+                    dataDirectories.Remove(dataDirectory);
+                }
+
+                if (dataDirectories.Count >= 10)
+                {
+                    for (int i = 9; i < dataDirectories.Count; i++)
+                    {
+                        dataDirectories.RemoveAt(i);
+                    }
+                }
+
+                dataDirectories.Insert(0, dataDirectory);
+
+                mySettings.Save();
+
+                RefreshDataDirectories(dataDirectories);
+
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Write("Failed to add data folder to recent list: " + ex);
+            }
+        }
+
+        #endregion
+
     }
+
 }

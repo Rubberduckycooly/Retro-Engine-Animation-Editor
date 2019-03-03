@@ -14,6 +14,7 @@ namespace AnimationEditor
         RSDKv2,
         RSDKv1,
         RSDKvRS,
+        Invalid
     }
 
     [Serializable]
@@ -40,7 +41,7 @@ namespace AnimationEditor
             /// <summary>
             /// the list of frames in this animation
             /// </summary>
-            public List<Frame> Frames = new List<Frame>();
+            public List<Frame> Frames;
             /// <summary>
             /// the frame to loop back from
             /// </summary>
@@ -56,7 +57,7 @@ namespace AnimationEditor
 
             public AnimationEntry()
             {
-
+                Frames = new List<Frame>();
             }
 
             public void ImportFrom(EngineType type, string filepath)
@@ -608,6 +609,12 @@ namespace AnimationEditor
             Animations.Add(new AnimationEntry());
         }
 
+        public EngineType GetFormat(string filepath)
+        {
+            
+            return EngineType.Invalid;
+        }
+
         public void ImportFrom(EngineType type, string filepath)
         {
             engineType = type;
@@ -801,6 +808,7 @@ namespace AnimationEditor
                         {
                             RSDKv5.Animation.AnimationEntry.Frame frame = new RSDKv5.Animation.AnimationEntry.Frame();
                             frame.CollisionBox = Animations[a].Frames[i].CollisionBox;
+                            frame.SpriteSheet = Animations[a].Frames[i].SpriteSheet;
                             frame.Delay = Animations[a].Frames[i].Delay;
                             frame.Height = Animations[a].Frames[i].Height;
                             frame.ID = Animations[a].Frames[i].ID;

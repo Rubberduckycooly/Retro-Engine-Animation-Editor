@@ -242,12 +242,7 @@ namespace AnimationEditor
 
         private void MenuRecentFile_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is System.Windows.Controls.MenuItem)
-            {
-                System.Windows.Controls.MenuItem item = sender as System.Windows.Controls.MenuItem;
-                bool result = Int32.TryParse(item.Tag.ToString(), out int index);
-                if (result == true) Handler.OpenRecentFile(index-1);
-            }
+            Handler.RecentDataDirectoryClicked(sender, e);
             Interfacer.UpdateUI();
 
         }
@@ -302,6 +297,12 @@ namespace AnimationEditor
                 HitBoxBackground.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
                 HitboxColorBox.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
             }
+        }
+
+        private void MenuFileOpenRecently_SubmenuOpened(object sender, RoutedEventArgs e)
+        {
+            Handler.RefreshDataDirectories(Properties.Settings.Default.RecentFiles);
+            Interfacer.UpdateUI();
         }
     }
 }

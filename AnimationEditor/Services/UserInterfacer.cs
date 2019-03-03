@@ -31,7 +31,6 @@ namespace AnimationEditor
             if (PreventIndexUpdate) return;
             if (Instance.ViewModel != null)
             {
-                Instance.Handler.UpdateRecentsDropDown();
                 UpdateList();
                 if (frameInfoUpdate) UpdateCurrentFrameInList();
                 UpdateInfo();
