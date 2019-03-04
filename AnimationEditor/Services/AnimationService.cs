@@ -79,7 +79,7 @@ namespace AnimationEditor
                             frame.CollisionBox = animv5.Frames[i].CollisionBox;
                             frame.Delay = animv5.Frames[i].Delay;
                             frame.Height = animv5.Frames[i].Height;
-                            frame.ID = animv5.Frames[i].ID;
+                            frame.ID = (ushort)animv5.Frames[i].ID;
                             frame.PivotX = animv5.Frames[i].PivotX;
                             frame.PivotY = animv5.Frames[i].PivotY;
                             frame.Width = animv5.Frames[i].Width;
@@ -191,7 +191,7 @@ namespace AnimationEditor
                             frame.CollisionBox = Frames[i].CollisionBox;
                             frame.Delay = Frames[i].Delay;
                             frame.Height = Frames[i].Height;
-                            frame.ID = Frames[i].ID;
+                            frame.ID = (short)Frames[i].ID;
                             frame.PivotX = Frames[i].PivotX;
                             frame.PivotY = Frames[i].PivotY;
                             frame.Width = Frames[i].Width;
@@ -354,7 +354,7 @@ namespace AnimationEditor
                         CollisionBox = framev5.CollisionBox;
                         Delay = framev5.Delay;
                         Height = framev5.Height;
-                        ID = framev5.ID;
+                        ID = (ushort)framev5.ID;
                         PivotX = framev5.PivotX;
                         PivotY = framev5.PivotY;
                         SpriteSheet = framev5.SpriteSheet;
@@ -427,7 +427,7 @@ namespace AnimationEditor
                         framev5.CollisionBox = CollisionBox;
                         framev5.Delay = Delay;
                         framev5.Height = Height;
-                        framev5.ID = ID;
+                        framev5.ID = (short)ID;
                         framev5.PivotX = PivotX;
                         framev5.PivotY = PivotY;
                         framev5.SpriteSheet = SpriteSheet;
@@ -646,7 +646,7 @@ namespace AnimationEditor
                             Animations[a].Frames[i].CollisionBox = animsetv5.Animations[a].Frames[i].CollisionBox;
                             Animations[a].Frames[i].Delay = animsetv5.Animations[a].Frames[i].Delay;
                             Animations[a].Frames[i].Height = animsetv5.Animations[a].Frames[i].Height;
-                            Animations[a].Frames[i].ID = animsetv5.Animations[a].Frames[i].ID;
+                            Animations[a].Frames[i].ID = (ushort)animsetv5.Animations[a].Frames[i].ID;
                             Animations[a].Frames[i].PivotX = animsetv5.Animations[a].Frames[i].PivotX;
                             Animations[a].Frames[i].PivotY = animsetv5.Animations[a].Frames[i].PivotY;
                             Animations[a].Frames[i].Width = animsetv5.Animations[a].Frames[i].Width;
@@ -812,7 +812,7 @@ namespace AnimationEditor
                             frame.SpriteSheet = Animations[a].Frames[i].SpriteSheet;
                             frame.Delay = Animations[a].Frames[i].Delay;
                             frame.Height = Animations[a].Frames[i].Height;
-                            frame.ID = Animations[a].Frames[i].ID;
+                            frame.ID = (short)Animations[a].Frames[i].ID;
                             frame.PivotX = Animations[a].Frames[i].PivotX;
                             frame.PivotY = Animations[a].Frames[i].PivotY;
                             frame.Width = Animations[a].Frames[i].Width;

@@ -4,16 +4,16 @@
 exe
 C#
 .cs
-C:\Users\owner\Documents\GitHub\Retro-Engine-Animation-Editor\AnimationEditor\obj\Debug\
+D:\Users\Cwall\source\repos\RSDK-Animation-Editor-Reloaded\AnimationEditor\obj\Debug\
 AnimationEditor
 none
 false
 DEBUG;TRACE
-C:\Users\owner\Documents\GitHub\Retro-Engine-Animation-Editor\AnimationEditor\App.xaml
+D:\Users\Cwall\source\repos\RSDK-Animation-Editor-Reloaded\AnimationEditor\App.xaml
 4740740244
 
 131581372063
-27-930377255
+27472083682
 AboutWindow.xaml;HitboxManager.xaml;MainWindow.xaml;TextureManager.xaml;
 
 False

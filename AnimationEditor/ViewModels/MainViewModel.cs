@@ -52,9 +52,9 @@ namespace AnimationEditor.ViewModels
                 return bitmap;
 
             //if (!frame.IsEmpty)
-            if (frame.Width > 0 && frame.Height > 0)
+            var textureBitmap = SpriteSheets[texture];
+            if (frame.Width > 0 && frame.Height > 0 && textureBitmap != null && bitmap != null)
             {
-                var textureBitmap = SpriteSheets[texture];
                 try
                 {
                     bitmap = new CroppedBitmap(textureBitmap,
