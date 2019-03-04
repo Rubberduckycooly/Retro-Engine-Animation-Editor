@@ -53,7 +53,7 @@ namespace AnimationEditor.ViewModels
 
             //if (!frame.IsEmpty)
             var textureBitmap = SpriteSheets[texture];
-            if (frame.Width > 0 && frame.Height > 0 && textureBitmap != null && bitmap != null)
+            if (frame.Width > 0 && frame.Height > 0 && textureBitmap != null)
             {
                 try
                 {
