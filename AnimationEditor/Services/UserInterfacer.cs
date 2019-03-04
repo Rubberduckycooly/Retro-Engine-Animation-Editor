@@ -154,7 +154,15 @@ namespace AnimationEditor
 
             if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SpriteSheets != null)
             {
-                Instance.CanvasImage.Source = Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value];
+                if (!Instance.ViewModel.NullSpriteSheetList.Contains(Instance.ViewModel.SpriteSheetPaths[Instance.ViewModel.CurrentSpriteSheet.Value]))
+                {
+                    Instance.CanvasImage.Source = Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value];
+                }
+                else
+                {
+                    Instance.CanvasImage.Source = null;
+                }
+
             }
             else
             {

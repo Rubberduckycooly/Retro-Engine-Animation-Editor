@@ -20,6 +20,8 @@ namespace AnimationEditor.ViewModels
         public Animation LoadedAnimationFile;
         public string AnimationDirectory { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
+        public List<string> NullSpriteSheetList { get => SpriteSheetNullList; set => SpriteSheetNullList = value; }
+        private List<string> SpriteSheetNullList = new List<string>();
         public Animation.AnimationEntry _SelectedAnimation;
         public List<Animation.AnimationEntry> Animations { get => GetAnimations(); }
         public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
@@ -50,9 +52,14 @@ namespace AnimationEditor.ViewModels
             var tuple = new Tuple<string, int>(name, frame.GetHashCode());
             if (_frames.TryGetValue(tuple, out BitmapSource bitmap))
                 return bitmap;
-
-            //if (!frame.IsEmpty)
             var textureBitmap = SpriteSheets[texture];
+
+            if (NullSpriteSheetList.Contains(name))
+            {
+                bitmap = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgr24, null, new byte[3] { 0, 0, 0 }, 3);
+                return _frames[tuple] = bitmap;
+            }
+
             if (frame.Width > 0 && frame.Height > 0 && textureBitmap != null)
             {
                 try

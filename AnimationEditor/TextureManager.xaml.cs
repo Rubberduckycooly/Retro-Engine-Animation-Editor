@@ -71,9 +71,18 @@ namespace AnimationEditor
         public void UpdateUI()
         {
             CurrentTexture = ParentInstance.ViewModel.SpriteSheets[SelectedTextureIndex];
-            SizeText.Text = string.Format("Size: {0} x {1}", CurrentTexture.Width, CurrentTexture.Height);
-            ImageTexture.Source = CurrentTexture;
+            if (CurrentTexture != null && !ParentInstance.ViewModel.NullSpriteSheetList.Contains(ParentInstance.ViewModel.SpriteSheetPaths[SelectedTextureIndex]))
+            {
+                SizeText.Text = string.Format("Size: {0} x {1}", CurrentTexture.Width, CurrentTexture.Height);
+                ImageTexture.Source = CurrentTexture;
+            }
+            else
+            {
+                SizeText.Text = string.Format("Size: {0} x {1}", "NULL", "NULL");
+                ImageTexture.Source = null;
+            }
             ListTextures.SelectedIndex = SelectedTextureIndex;
+
         }
 
         public void RemoveTexture(int index)

@@ -43,6 +43,8 @@ namespace AnimationEditor
 
         public void OpenFile(string file)
         {
+            Instance.Interfacer.PreventIndexUpdate = true;
+            UnloadAnimationData();
             LoadFile(file);
             UpdateRecentsDropDown();
             Instance.Interfacer.PreventIndexUpdate = false;
@@ -104,6 +106,7 @@ namespace AnimationEditor
                 else
                 {
                     Instance.ViewModel.SpriteSheets.Add(new BitmapImage());
+                    Instance.ViewModel.NullSpriteSheetList.Add(path);
                 }
 
             }
@@ -162,6 +165,7 @@ namespace AnimationEditor
             if (Instance.ViewModel.SpriteSheets != null) Instance.ViewModel.SpriteSheets.Clear();
             Instance.DataContext = new MainViewModel();
             Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
+            Instance.ViewModel.NullSpriteSheetList.Clear();
         }
 
         #region Recent Files (Lifted from Maniac Editor)
@@ -287,6 +291,19 @@ namespace AnimationEditor
                 menuItem.Click -= RecentDataDirectoryClicked;
                 Instance.MenuFileOpenRecently.Items.Remove(menuItem);
             }
+
+            List<string> ItemsForRemoval = new List<string>();
+
+            for (int i = 0; i < Properties.Settings.Default.RecentFiles.Count; i++)
+            {
+                if (File.Exists(Properties.Settings.Default.RecentFiles[i])) continue;
+                else ItemsForRemoval.Add(Properties.Settings.Default.RecentFiles[i]);
+            }
+            foreach(string item in ItemsForRemoval)
+            {
+                Properties.Settings.Default.RecentFiles.Remove(item);
+            }
+
             RecentItems.Clear();
         }
 
