@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Xceed.Wpf.Toolkit;
+using AnimationEditor.Services;
 
 namespace AnimationEditor
 {
@@ -21,8 +22,11 @@ namespace AnimationEditor
         public FileHandler Handler;
         public Brush DefaultBorderBrush;
         public Brush DefaultTextBrush;
-
         public EngineType AnimationType = EngineType.RSDKv5;
+        public static int AnimationIndex { get; set; }
+
+        private PlaybackService PlaybackService;
+        public bool isPlaybackEnabled = false;
 
         private bool PreventScrollChange = true;
 
@@ -37,6 +41,18 @@ namespace AnimationEditor
             Handler = new FileHandler(this);
             PreventScrollChange = false;
             HitboxColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
+        }
+
+        private void PlaybackService_OnFrameChanged(PlaybackService obj)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() => UpdatePlaybackIndex(obj.FrameIndex)));
+
+        }
+
+        private void UpdatePlaybackIndex(int frameIndex)
+        {
+            FramesList.SelectedIndex = frameIndex;
+            Interfacer.UpdateImage();
         }
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
@@ -64,36 +80,50 @@ namespace AnimationEditor
 
         private void ButtonAnimationAdd_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.AddAnimation(ViewModel.SelectedAnimationIndex);
+            Interfacer.FullUpdateList();
             Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationUp_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.ShiftAnimationUp(ViewModel.SelectedAnimationIndex);
+            Interfacer.FullUpdateList();
             Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationDown_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.ShiftAnimationDown(ViewModel.SelectedAnimationIndex);
+            Interfacer.FullUpdateList();
             Interfacer.UpdateUI();
         }
 
         private void ButtonFrameLeft_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            ViewModel.ShiftFrameLeft(ViewModel.SelectedFrameIndex);
+            Interfacer.UpdateFramesList();
+            Interfacer.UpdateUI(true);
         }
 
         private void ButtonFrameRight_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            ViewModel.ShiftFrameRight(ViewModel.SelectedFrameIndex);
+            Interfacer.UpdateFramesList();
+            Interfacer.UpdateUI(true);
         }
 
         private void ButtonAnimationDuplicate_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.DuplicateAnimation(ViewModel.SelectedAnimationIndex);
+            Interfacer.FullUpdateList();
             Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationRemove_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.RemoveAnimation(ViewModel.SelectedAnimationIndex);
+            Interfacer.FullUpdateList();
             Interfacer.UpdateUI();
         }
 
@@ -109,17 +139,23 @@ namespace AnimationEditor
 
         private void ButtonFrameAdd_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            ViewModel.AddFrame(ViewModel.SelectedFrameIndex);
+            Interfacer.UpdateFramesList();
+            Interfacer.UpdateUI(true);
         }
 
         private void ButtonFrameDupe_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            ViewModel.DuplicateFrame(ViewModel.SelectedFrameIndex);
+            Interfacer.UpdateFramesList();
+            Interfacer.UpdateUI(true);
         }
 
         private void ButtonFrameRemove_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            ViewModel.RemoveFrame(ViewModel.SelectedFrameIndex);
+            Interfacer.UpdateFramesList();
+            Interfacer.UpdateUI(true);
         }
 
         private void ButtonFrameImport_Click(object sender, RoutedEventArgs e)
@@ -187,6 +223,7 @@ namespace AnimationEditor
 
         private void MenuViewHitbox_Click(object sender, RoutedEventArgs e)
         {
+            HitboxManagerMenu.Startup(this);
             HitboxManagerPopup.IsOpen = true;
             Interfacer.UpdateUI();
         }
@@ -216,6 +253,7 @@ namespace AnimationEditor
 
         private void FramesList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (!isPlaybackEnabled)
             Interfacer.UpdateUI();
         }
 
@@ -254,7 +292,7 @@ namespace AnimationEditor
 
         private void HitboxManagerMenu_DragOver(object sender, DragEventArgs e)
         {
-
+            HitboxManagerMenu.Shutdown();
         }
 
         private void HitboxManagerPopup_LostFocus(object sender, RoutedEventArgs e)
@@ -303,6 +341,51 @@ namespace AnimationEditor
         {
             Handler.RefreshDataDirectories(Properties.Settings.Default.RecentFiles);
             Interfacer.UpdateUI();
+        }
+
+        private void ButtonPlay_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        #region Playback Triggers
+
+        public void TogglePlayback(bool enabled)
+        {
+            if (PlaybackService == null) IntilizePlayback();
+
+            if (enabled)
+            {
+                isPlaybackEnabled = true;
+                PlaybackService.AnimationData = ViewModel.LoadedAnimationFile;
+                PlaybackService.Animation = ViewModel.SelectedAnimation.AnimName;
+                PlaybackService.IsRunning = true;
+            }
+            else
+            {
+                isPlaybackEnabled = false;
+                PlaybackService.IsRunning = false;
+                Interfacer.UpdateUI();
+            }
+        }
+
+        public void IntilizePlayback()
+        {
+            PlaybackService = new PlaybackService(ViewModel.LoadedAnimationFile, this);
+            PlaybackService.OnFrameChanged += PlaybackService_OnFrameChanged;
+        }
+
+        #endregion
+
+        private void ButtonPlay_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.LoadedAnimationFile != null && ViewModel.SelectedAnimation != null)
+            {
+                bool enabled = ButtonPlay.IsChecked.Value && List.SelectedItem != null;
+                Interfacer.EnableUIElements(!enabled);
+                TogglePlayback(enabled);
+            }
         }
     }
 }

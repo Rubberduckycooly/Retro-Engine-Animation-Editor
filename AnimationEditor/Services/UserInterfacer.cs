@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using AnimationEditor.Services;
 
 namespace AnimationEditor
 {
@@ -15,13 +16,15 @@ namespace AnimationEditor
         private Brush DefaultTextBrush;
         private Brush HideTextBrush;
 
+
         public bool PreventIndexUpdate = false;
+
         public UserInterfacer(MainWindow window)
         {
             Instance = window;
             DefaultBorderBrush = Instance.DefaultBorderBrush;
             DefaultTextBrush = Instance.DefaultTextBrush;
-            HideTextBrush = Brushes.Transparent;           
+            HideTextBrush = Brushes.Transparent;
         }
 
         #region UI Updating
@@ -193,12 +196,22 @@ namespace AnimationEditor
             Instance.HitBoxViewer.Height = width + height;
         }
 
+        public void FullUpdateList()
+        {
+            var temp = Instance.List.SelectedItem;
+            Instance.List.ItemsSource = null;
+            Instance.List.ItemsSource = Instance.ViewModel.Animations;
+            Instance.List.UpdateLayout();
+            if (Instance.List.Items.Contains(temp)) Instance.List.SelectedItem = temp;
+        }
+
         public void UpdateList()
         {
             Instance.List.ItemsSource = Instance.ViewModel.Animations;
             Instance.List.UpdateLayout();
 
             Instance.FramesCountLabel.Text = Instance.ViewModel.FramesCount.ToString();
+            Instance.AnimationsCountLabel.Text = Instance.ViewModel.AnimationsCount.ToString();
 
             if (Instance.ViewModel.SelectedAnimationIndex == -1) {
                 Instance.FramesList.Height = 21;
@@ -213,10 +226,12 @@ namespace AnimationEditor
             }
         }
 
+
         public void UpdateFramesList()
         {
             if (Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SelectedAnimationIndex != -1)
             {
+                var temp = Instance.FramesList.SelectedItem;
                 Instance.FramesList.Items.Clear();
                 if (Instance.ViewModel.SelectedAnimationIndex < 0) Instance.ViewModel.SelectedAnimationIndex = 0;
                 for (int i = 0; i < Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Count; i++)
@@ -228,6 +243,7 @@ namespace AnimationEditor
                     Instance.FramesList.Items.Add(frame);
                 }
                 Instance.FramesList.UpdateLayout();
+                if (Instance.FramesList.Items.Contains(temp)) Instance.FramesList.SelectedItem = temp;
             }
 
         }
@@ -314,7 +330,7 @@ namespace AnimationEditor
             }
         }
 
-        public void UpdateFrameIndex(bool subtract = false)
+        public void UpdateFrameIndex(bool subtract = false, bool updateUI = true)
         {
             if (Instance.FramesList.Items != null && Instance.FramesList.Items.Count > 0)
             {
@@ -328,10 +344,37 @@ namespace AnimationEditor
                     else Instance.FramesList.SelectedIndex = (Instance.LoopIndexNUD.Value != null ? Instance.LoopIndexNUD.Value.Value : 0);
                 }
                 Instance.FramesList.ScrollIntoView(Instance.FramesList.SelectedItem);
-                UpdateUI();
+                if (updateUI) UpdateUI();
             }
 
 
+        }
+
+
+        public void EnableUIElements(bool enabled)
+        {
+            Instance.ButtonFrameAdd.IsEnabled = enabled;
+            Instance.ButtonFrameDupe.IsEnabled = enabled;
+            Instance.ButtonFrameExport.IsEnabled = enabled;
+            Instance.ButtonFrameImport.IsEnabled = enabled;
+            Instance.ButtonFrameRemove.IsEnabled = enabled;
+            Instance.ButtonFrameLeft.IsEnabled = enabled;
+            Instance.ButtonFrameRight.IsEnabled = enabled;
+
+            Instance.ButtonAnimationAdd.IsEnabled = enabled;
+            Instance.ButtonAnimationRemove.IsEnabled = enabled;
+            Instance.ButtonAnimationExport.IsEnabled = enabled;
+            Instance.ButtonAnimationImport.IsEnabled = enabled;
+            Instance.ButtonAnimationDuplicate.IsEnabled = enabled;
+            Instance.ButtonAnimationUp.IsEnabled = enabled;
+            Instance.ButtonAnimationDown.IsEnabled = enabled;
+
+            Instance.ControlPanel.IsEnabled = enabled;
+            Instance.List.IsEnabled = enabled;
+            Instance.FramesList.IsEnabled = enabled;
+
+            Instance.AnimationScroller.IsEnabled = enabled;
+            Instance.MenuStrip.IsEnabled = enabled;
         }
 
         #endregion

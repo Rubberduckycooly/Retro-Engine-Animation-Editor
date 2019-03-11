@@ -88,6 +88,7 @@
       <DependentUpon>HitboxManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\FileHandler.cs" />
+    <Compile Include="Services\PlaybackService.cs" />
     <Compile Include="Services\SkinResourceDictionary.cs" />
     <Compile Include="TextureManager.xaml.cs">
       <DependentUpon>TextureManager.xaml</DependentUpon>
@@ -176,9 +177,6 @@
       <Project>{aae1bacd-fe6b-4cc6-ad2d-073315f45eaf}</Project>
       <Name>RSDKvRS</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="96604.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -11,27 +11,30 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
+using AnimationEditor.Services;
 
 namespace AnimationEditor.ViewModels
 {
     public class MainViewModel
     {
+        #region Animations and Frames
         public Animation LoadedAnimationFile;
+
         public string AnimationDirectory { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
         public List<string> NullSpriteSheetList { get => SpriteSheetNullList; set => SpriteSheetNullList = value; }
         private List<string> SpriteSheetNullList = new List<string>();
         public Animation.AnimationEntry _SelectedAnimation;
-        public List<Animation.AnimationEntry> Animations { get => GetAnimations(); }
+        public List<Animation.AnimationEntry> Animations { get => GetAnimations(); set => SetAnimations(value); }
         public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
-
+        public List<string> Hitboxes { get => GetHitboxesList(); set => SetHitboxesList(value); }
         public List<string> CollisionBoxesNames { get => GetCollisionBoxes(); }
         public List<Animation.HitBox> CollisionBoxes { get => GetHitBoxes(); }
         public Animation.AnimationEntry SelectedAnimation { get => _SelectedAnimation; set { _SelectedAnimation = value; } }
         public int SelectedAnimationIndex { get; set; }
 
         public int FramesCount { get => GetCurrentFrameCount(); }
+        public int AnimationsCount { get => GetCurrentAnimationCount(); }
 
         public double ViewWidth { get; set; }
         public double ViewHeight { get; set; }
@@ -109,10 +112,21 @@ namespace AnimationEditor.ViewModels
             if (LoadedAnimationFile != null) return LoadedAnimationFile.Animations;
             else return null;
         }
+        public void SetAnimations(List<Animation.AnimationEntry> value)
+        {
+            if (LoadedAnimationFile != null) LoadedAnimationFile.Animations = value;
+            else return;
+        }
 
         public int GetCurrentFrameCount()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Count - 1;
+            else return -1;
+        }
+
+        public int GetCurrentAnimationCount()
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations.Count - 1;
             else return -1;
         }
 
@@ -203,6 +217,13 @@ namespace AnimationEditor.ViewModels
             if (LoadedAnimationFile != null) return LoadedAnimationFile.SpriteSheets;
             else return null;
         }
+
+        public List<string> GetHitboxesList()
+        {
+            if (LoadedAnimationFile != null) return LoadedAnimationFile.CollisionBoxes;
+            else return null;
+        }
+
         public List<Animation.Frame> GetAnimationsFrames()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames;
@@ -238,6 +259,12 @@ namespace AnimationEditor.ViewModels
         public void SetRotationFlag(byte? value)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].RotationFlags = value.Value;
+            else return;
+        }
+
+        public void SetHitboxesList(List<string> value)
+        {
+            if (LoadedAnimationFile != null) LoadedAnimationFile.CollisionBoxes = value;
             else return;
         }
 
@@ -483,6 +510,104 @@ namespace AnimationEditor.ViewModels
 
         #endregion
 
+        #endregion
+
+
+        #region Animation and Frame Management
+
+        public void ShiftFrameRight(int frameID)
+        {
+            int parentID = frameID + 1;
+            if (parentID < 0 || parentID > LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Count()) return;
+            var targetFrame = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID];
+            var parentFrame = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[parentID];
+
+            int parentIndex = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.IndexOf(parentFrame);
+            int targetIndex = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.IndexOf(parentFrame);
+
+            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Remove(targetFrame);
+            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(parentIndex, targetFrame);
+
+
+        }
+
+        public void ShiftFrameLeft(int frameID)
+        {
+            int parentID = frameID - 1;
+            if (parentID < 0 || parentID > LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Count()) return;
+            var targetFrame = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID];
+            var parentFrame = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[parentID];
+
+            int parentIndex = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.IndexOf(parentFrame);
+            int targetIndex = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.IndexOf(parentFrame);
+
+            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Remove(targetFrame);
+            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(parentIndex, targetFrame);
+        }
+
+        public void ShiftAnimationUp(int animID)
+        {
+            int parentID = animID - 1;
+            if (parentID < 0 || parentID > LoadedAnimationFile.Animations.Count()) return;
+            var targetAnimation = LoadedAnimationFile.Animations[animID];
+            var parentAnimation = LoadedAnimationFile.Animations[parentID];
+
+            int parentIndex = LoadedAnimationFile.Animations.IndexOf(parentAnimation);
+
+            LoadedAnimationFile.Animations.Remove(targetAnimation);
+            LoadedAnimationFile.Animations.Insert(parentIndex, targetAnimation);
+        }
+
+        public void ShiftAnimationDown(int animID)
+        {
+            int parentID = animID + 1;
+            if (parentID < 0 || parentID > LoadedAnimationFile.Animations.Count()) return;
+            var targetAnimation = LoadedAnimationFile.Animations[animID];
+            var parentAnimation = LoadedAnimationFile.Animations[parentID];
+
+            int parentIndex = LoadedAnimationFile.Animations.IndexOf(parentAnimation);
+
+            LoadedAnimationFile.Animations.Remove(targetAnimation);
+            LoadedAnimationFile.Animations.Insert(parentIndex, targetAnimation);
+        }
+
+        public void RemoveFrame(int frameID)
+        {
+            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.RemoveAt(frameID);
+        }
+
+        public void AddFrame(int frameID)
+        {
+            var frame = new Animation.Frame();
+            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
+        }
+
+        public void DuplicateFrame(int frameID)
+        { 
+            var frame = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID];
+            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
+        }
+
+        public void RemoveAnimation(int animID)
+        {
+            LoadedAnimationFile.Animations.RemoveAt(animID);
+        }
+
+        public void AddAnimation(int animID)
+        {
+            var animation = new Animation.AnimationEntry();
+            LoadedAnimationFile.Animations.Insert(animID, animation);
+        }
+
+        public void DuplicateAnimation(int animID)
+        {
+            var animation = LoadedAnimationFile.Animations[animID];
+            LoadedAnimationFile.Animations.Insert(animID, animation);
+        }
+
+
+
+        #endregion
 
     }
 }

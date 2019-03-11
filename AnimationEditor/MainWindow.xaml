@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"       
         xmlns:local="clr-namespace:AnimationEditor"
         mc:Ignorable="d"
-        Title="RSDK Animation Editor v2" MinHeight="480" Height="428.667" MinWidth="700" Width="641" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
+        Title="RSDK Animation Editor v2" MinHeight="500" Height="500" MinWidth="700" Width="641" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
     <DockPanel x:Name="MainPanel">
         <Menu DockPanel.Dock="Top" x:Name="MenuStrip" Background="{DynamicResource MenuBar}" Foreground="{DynamicResource NormalText}">
             <MenuItem Header="_File">
@@ -41,7 +41,7 @@
                 <DockPanel Grid.Column="0">
                     <ToolBarPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
 
-                        <Button BorderThickness="1" Click="ButtonAnimationAdd_Click">
+                        <Button x:Name="ButtonAnimationAdd" BorderThickness="1" Click="ButtonAnimationAdd_Click">
                             <Image Width="16" Source="{StaticResource Add_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
@@ -50,7 +50,7 @@
                             </Button.ToolTip>
                         </Button>
 
-                        <Button BorderThickness="1" Click="ButtonAnimationDuplicate_Click">
+                        <Button x:Name="ButtonAnimationDuplicate" BorderThickness="1" Click="ButtonAnimationDuplicate_Click">
                             <Image Width="16" Source="{StaticResource Copy_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
@@ -59,7 +59,7 @@
                             </Button.ToolTip>
                         </Button>
 
-                        <Button BorderThickness="1" Click="ButtonAnimationRemove_Click">
+                        <Button x:Name="ButtonAnimationRemove" BorderThickness="1" Click="ButtonAnimationRemove_Click">
                             <Image Width="16" Source="{StaticResource Remove_color_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
@@ -68,7 +68,7 @@
                             </Button.ToolTip>
                         </Button>
 
-                        <Button BorderThickness="1" Click="ButtonAnimationImport_Click">
+                        <Button x:Name="ButtonAnimationImport" BorderThickness="1" Click="ButtonAnimationImport_Click">
                             <Image Width="16" Source="{StaticResource Import_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
@@ -77,7 +77,7 @@
                             </Button.ToolTip>
                         </Button>
 
-                        <Button BorderThickness="1" Click="ButtonAnimationExport_Click">
+                        <Button x:Name="ButtonAnimationExport" BorderThickness="1" Click="ButtonAnimationExport_Click">
                             <Image Width="16" Source="{StaticResource Export_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
@@ -85,7 +85,7 @@
                                 </StackPanel>
                             </Button.ToolTip>
                         </Button>
-                        <Button BorderThickness="1" Click="ButtonAnimationUp_Click">
+                        <Button x:Name="ButtonAnimationUp" BorderThickness="1" Click="ButtonAnimationUp_Click">
                             <Image Source="{StaticResource RightArrow_16x}" Height="16" Width="16" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
@@ -102,7 +102,7 @@
                                 </StackPanel>
                             </Button.ToolTip>
                         </Button>
-                        <Button BorderThickness="1" Click="ButtonAnimationDown_Click">
+                        <Button x:Name="ButtonAnimationDown" BorderThickness="1" Click="ButtonAnimationDown_Click">
                             <Button.ToolTip>
                                 <StackPanel>
                                     <Label Content="Shifts the Current Animation Down by one"/>
@@ -150,7 +150,7 @@
                         <ColumnDefinition Width="40"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-                        <ToggleButton x:Name="ButtonPlay" IsChecked="{Binding IsRunning, Mode=TwoWay}">
+                        <ToggleButton Click="ButtonPlay_Click" Checked="ButtonPlay_CheckChanged" Unchecked="ButtonPlay_CheckChanged" x:Name="ButtonPlay" IsChecked="{Binding IsRunning, Mode=TwoWay}">
                             <Image Width="16" Source="{StaticResource Run_16x}"/>
                             <ToggleButton.ToolTip>
                                 <StackPanel>
@@ -243,7 +243,7 @@
                                 <Label Content="Export the selected frame"/>
                             </Button.ToolTip>
                         </Button>
-                        <Button Width="20" Height="20" x:Name="ButtonFrameLeft" Grid.Column="1">
+                        <Button Width="20" Height="20" x:Name="ButtonFrameLeft" Grid.Column="1" Click="ButtonFrameLeft_Click">
                             <Image Source="{StaticResource RightArrow_16x}" Height="16" Width="16" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
@@ -258,7 +258,7 @@
                                 <Label Content="Shifts the Current Frame over to the left by one"/>
                             </Button.ToolTip>
                         </Button>
-                        <Button Width="20" Height="20" x:Name="ButtonFrameRight" Grid.Column="1">
+                        <Button Width="20" Height="20" x:Name="ButtonFrameRight" Grid.Column="1" Click="ButtonFrameRight_Click">
                             <Image Source="{StaticResource RightArrow_16x}" Height="16" Width="16"/>
                             <Button.ToolTip>
                                 <Label Content="Shifts the Current Frame over to the right by one"/>
@@ -293,7 +293,7 @@
                             <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"></RectangleGeometry>
                         </Image.Clip>
                     </Image>
-                    <Border BorderBrush="Red" x:Name="HitBoxViewer" BorderThickness="1"                            
+                    <Border Visibility="Hidden" BorderBrush="Red" x:Name="HitBoxViewer" BorderThickness="1"                            
                            Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
                            Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
                            Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
@@ -308,7 +308,7 @@
 
             <DockPanel Grid.Column="4"
                           IsEnabled="{Binding IsAnimationSelected}">
-                <StackPanel Background='{DynamicResource NormalBackground2}'>
+                <StackPanel x:Name="ControlPanel" Background='{DynamicResource NormalBackground2}'>
                     <Grid Margin="0 0 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
@@ -346,12 +346,20 @@
                     </Grid>
                     <GroupBox IsEnabled="{Binding IsNotRunning}">
                         <GroupBox.Header>
-                            <TextBlock Foreground="{DynamicResource NormalText}">
+                            <StackPanel Background="Transparent">
+                                <TextBlock Foreground="{DynamicResource NormalText}">
+                                <Run Text="Current animation "/>
+                                <Run Text="{Binding SelectedAnimationIndex, Mode=OneWay}"/>
+                                <Run Text="- Total "/>
+                                <Run x:Name="AnimationsCountLabel" Text="{Binding AnimationsCount, Mode=OneWay}"/>
+                                </TextBlock>
+                                <TextBlock Foreground="{DynamicResource NormalText}">
                                 <Run Text="Current frame "/>
                                 <Run Text="{Binding SelectedFrameIndex, Mode=OneWay}"/>
                                 <Run Text="- Total "/>
                                 <Run x:Name="FramesCountLabel" Text="{Binding FramesCount, Mode=OneWay}"/>
-                            </TextBlock>
+                                </TextBlock>
+                            </StackPanel>
                         </GroupBox.Header>
                         <StackPanel Background='{DynamicResource NormalBackground2}'>
                             <TextBlock Margin="0 5 0 0" Text="Texture" Foreground="{DynamicResource NormalText}"/>

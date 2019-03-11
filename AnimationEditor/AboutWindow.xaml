@@ -5,29 +5,56 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AnimationEditor"
         mc:Ignorable="d"
-        Title="About" Height="201.997" Width="346.481" WindowStyle="ToolWindow" SizeToContent="WidthAndHeight" Background="{DynamicResource NormalBackground}">
-    <StackPanel Orientation="Horizontal" Margin="10">
-        <Image Width="48" Source="MainIcon.ico" VerticalAlignment="Top" Margin="0 0 10 0">
-            
-        </Image>
-        <StackPanel Orientation="Vertical">
-            <TextBlock Text="RSDK Animation Editor"/>
-            <TextBlock>
+        Title="About" Height="259.997" Width="486.991" WindowStyle="ToolWindow" ResizeMode="NoResize"  SizeToContent="WidthAndHeight" Background="{DynamicResource NormalBackground}">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="107*"></RowDefinition>
+            <RowDefinition Height="70*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="89*"></ColumnDefinition>
+            <ColumnDefinition Width="372*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Image Source="MainIcon.ico" VerticalAlignment="Top" Margin="3,0,13,0" Height="48"/>
+        <StackPanel Grid.Column="1">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="RSDK Animation Editor v2"/>
+                <TextBlock>
                 <Run Text="Version "/>
                 <Run Text="{Binding AppVersion, Mode=OneTime}"/>
-            </TextBlock>
-            <TextBlock Text="Developed by Xeeynamo"/>
-            <TextBlock>
-                <Hyperlink NavigateUri="https://github.com/xeeynamo/rsdk">
-                    https://github.com/xeeynamo/rsdk
-                </Hyperlink>
-            </TextBlock>
-            <Separator/>
-            <TextBlock Text="Additional fixes by:"/>
-            <TextBlock Text="thesupersonic16"/>
-            <TextBlock Text="More Fixes and RSDKvRS and RSDKv1 Support by:" Width="298"/>
-            <TextBlock Text="Rubberduckycooly"/>
-            <TextBlock><Hyperlink NavigateUri="https://github.com/Rubberduckycooly/RSDK"><Run Text="https://github.com/Rubberduckycooly/RSDK"/></Hyperlink></TextBlock>
+                </TextBlock>
+
+                <TextBlock Text="Developed By:"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="● CarJem Generations "/>
+                    <TextBlock><Hyperlink NavigateUri="https://github.com/Rubberduckycooly/RSDK"><Run Text="(Overall Editor / Technical Developer / Maniac Editor Head)"/></Hyperlink></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="● Rubberduckycooly "/>
+                    <TextBlock><Hyperlink NavigateUri="https://github.com/Rubberduckycooly/RSDK"><Run Text="(Current RSDK-Reverse Fork Head / Essential Backend Developer)"/></Hyperlink></TextBlock>
+                </StackPanel>
+
+                <Separator/>
+            </StackPanel>
         </StackPanel>
-    </StackPanel>
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
+            <TextBlock Text="Additional Fixes By:"/>
+            <Separator/>
+            <TextBlock Text="● thesupersonic16 (Frame/Animation Shifting)"/>
+            <Separator/>
+            <TextBlock Text="Special Thanks:"/>
+            <Separator/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="● Xeeynamo "></TextBlock>
+                <TextBlock>
+                <Hyperlink NavigateUri="https://github.com/xeeynamo/rsdk">
+                    (Original RSDK-Reverse Libs and the Original Animation Editor)
+                </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+
+
+        </StackPanel>
+
+    </Grid>
 </Window>

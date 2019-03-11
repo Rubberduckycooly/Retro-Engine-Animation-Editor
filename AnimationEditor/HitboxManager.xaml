@@ -9,21 +9,21 @@
     <Border x:Name="Border" BorderThickness="2">
         <DockPanel Margin="5" >
             <TextBlock DockPanel.Dock="Top" Text="Selected hitbox type" />
-            <TextBox DockPanel.Dock="Top" Margin="0 0 0 5" 
+            <TextBox x:Name="SelectedHitboxTextbox" TextChanged="SelectedHitboxTextbox_TextChanged" DockPanel.Dock="Top" Margin="0 0 0 5" 
                  Text="{Binding SelectedValue, Mode=TwoWay}"/>
             <Grid DockPanel.Dock="Bottom">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="ButtonAdd" Grid.Column="0" Margin="0 5 5 0"
+                <Button x:Name="ButtonAdd" Click="ButtonAdd_Click" Grid.Column="0" Margin="0 5 5 0"
                     IsEnabled="false">
                     <StackPanel Orientation="Horizontal" Background="Transparent">
                         <Image Source="{StaticResource Add_16x}" Width="16" />
                         <TextBlock Text="Add" Margin="3 0 3 0"/>
                     </StackPanel>
                 </Button>
-                <Button x:Name="ButtonRemove" Grid.Column="1" Margin="0 5 0 0"
+                <Button x:Name="ButtonRemove" Click="ButtonRemove_Click" Grid.Column="1" Margin="0 5 0 0"
                             IsEnabled="false">
                     <StackPanel Orientation="Horizontal" Background="Transparent">
                         <Image Source="{StaticResource Remove_color_16x}" Width="16"/>
@@ -31,7 +31,7 @@
                     </StackPanel>
                 </Button>
             </Grid>
-            <ListBox x:Name="List" Grid.Column="0" ItemsSource="{Binding HitboxTypeItems}"
+            <ListBox x:Name="List" SelectionChanged="List_SelectionChanged" Grid.Column="0" ItemsSource="{Binding HitboxTypeItems}"
                          SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                          SelectedValue="{Binding SelectedValue, Mode=TwoWay}"/>
         </DockPanel>
