@@ -26,9 +26,12 @@ namespace AnimationEditor
         public static int AnimationIndex { get; set; }
 
         private PlaybackService PlaybackService;
-        public bool isPlaybackEnabled = false;
 
+        public bool isPlaybackEnabled = false;
         private bool PreventScrollChange = true;
+        public static bool isForcePlaybackOn = false;
+        public static int ForcePlaybackDuration = 256;
+        public static int ForcePlaybackSpeed = 128;
 
         public MainWindow()
         {
@@ -129,11 +132,13 @@ namespace AnimationEditor
 
         private void ButtonAnimationImport_Click(object sender, RoutedEventArgs e)
         {
+            Handler.ImportAnimation();
             Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationExport_Click(object sender, RoutedEventArgs e)
         {
+            Handler.ExportAnimation();
             Interfacer.UpdateUI();
         }
 
@@ -160,11 +165,13 @@ namespace AnimationEditor
 
         private void ButtonFrameImport_Click(object sender, RoutedEventArgs e)
         {
+            Handler.ImportFrame();
             Interfacer.UpdateUI();
         }
 
         private void ButtonFrameExport_Click(object sender, RoutedEventArgs e)
         {
+            Handler.ExportFrame();
             Interfacer.UpdateUI();
         }
 
@@ -383,9 +390,41 @@ namespace AnimationEditor
             if (ViewModel.LoadedAnimationFile != null && ViewModel.SelectedAnimation != null)
             {
                 bool enabled = ButtonPlay.IsChecked.Value && List.SelectedItem != null;
-                Interfacer.EnableUIElements(!enabled);
+                Interfacer.DisablePlaybackModeElements(!enabled);
                 TogglePlayback(enabled);
             }
+        }
+
+        private void MenuViewTransparentSpriteSheets_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.UpdateImage();
+        }
+
+        private void MenuFileUnloadAnimation_Click(object sender, RoutedEventArgs e)
+        {
+            Handler.UnloadAnimationData();
+            FramesList.Items.Clear();
+            Interfacer.UpdateUI();
+        }
+
+        private void PlaybackOptionsButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlaybackOptionsContextMenu.IsOpen = true;
+        }
+
+        private void ForcePlaybackMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            isForcePlaybackOn = ForcePlaybackMenuItem.IsChecked;
+        }
+
+        private void ForcedPlaybackSpeedNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            ForcePlaybackSpeed = ForcedPlaybackSpeedNUD.Value.Value;
+        }
+
+        private void ForcedPlaybackDurationNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            ForcePlaybackDuration = ForcedPlaybackDurationNUD.Value.Value;
         }
     }
 }

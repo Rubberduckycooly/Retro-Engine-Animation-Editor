@@ -25,7 +25,7 @@ namespace AnimationEditor
             RecentItems = new List<MenuItem>();
         }
 
-
+        #region Open File Methods
         public void OpenFile()
         {
             Instance.Interfacer.PreventIndexUpdate = true;
@@ -50,11 +50,14 @@ namespace AnimationEditor
             Instance.Interfacer.PreventIndexUpdate = false;
             Instance.Interfacer.UpdateUI();
         }
+        #endregion
 
+        #region Load File Methods
         public void LoadFile(string filepath)
         {
-            Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
+
             Instance.ViewModel.LoadedAnimationFile = new Animation();
+            Instance.ViewModel.AnimationFilepath = filepath;
             Instance.ViewModel.LoadedAnimationFile.ImportFrom(Instance.AnimationType, filepath);
             LoadAnimationTextures(filepath);
         }
@@ -87,48 +90,16 @@ namespace AnimationEditor
                     break;
             }
 
-            Instance.ViewModel.LoadedAnimationFile = new Animation();
-            Instance.ViewModel.LoadedAnimationFile.ImportFrom(Instance.AnimationType, fd.FileName);
-            LoadAnimationTextures(fd.FileName);
+            LoadFile(fd.FileName);
         }
+        #endregion
 
-        public void LoadAnimationTextures(string filename)
-        {
-            foreach (string path in Instance.ViewModel.SpriteSheetPaths)
-            {
-                string animationDirectory = Path.GetDirectoryName(filename);
-                Instance.ViewModel.AnimationDirectory = animationDirectory;
-                string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, Instance.ViewModel.LoadedAnimationFile.pathmod, path);
-                if (File.Exists(imagePath))
-                {
-                    Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));
-                }
-                else
-                {
-                    Instance.ViewModel.SpriteSheets.Add(new BitmapImage());
-                    Instance.ViewModel.NullSpriteSheetList.Add(path);
-                }
-
-            }
-        }
-
-        public BitmapImage LoadAnimationTexture(string fileName)
-        {
-            FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-
-            var img = new System.Windows.Media.Imaging.BitmapImage();
-            img.BeginInit();
-            img.StreamSource = fileStream;
-            img.EndInit();
-            return img;
-        }
-
+        #region Save File Methods
         public void SaveFile()
         {
-
+            if (Instance.ViewModel.AnimationFilepath != null) Instance.ViewModel.LoadedAnimationFile.ExportTo(Instance.AnimationType, Instance.ViewModel.AnimationFilepath);
+            else SaveFileAs();
         }
-
-
 
         public void SaveFileAs()
         {
@@ -157,16 +128,145 @@ namespace AnimationEditor
                 Instance.ViewModel.LoadedAnimationFile.ExportTo(Instance.AnimationType, fd.FileName);
             }
         }
+        #endregion
+
+        #region Unloading / Loading Methods
 
         public void UnloadAnimationData()
         {
             Instance.List.SelectedIndex = -1;
             Instance.FramesList.SelectedIndex = -1;
-            if (Instance.ViewModel.SpriteSheets != null) Instance.ViewModel.SpriteSheets.Clear();
+            InitlizeSpriteSheets(true);
             Instance.DataContext = new MainViewModel();
-            Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
+            InitlizeSpriteSheets();
             Instance.ViewModel.NullSpriteSheetList.Clear();
         }
+
+        public BitmapImage LoadAnimationTexture(string fileName, bool transparent = false)
+        {
+            if (transparent)
+            {
+                FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                System.Drawing.Bitmap img = new System.Drawing.Bitmap(fileStream);
+                fileStream.Close();
+                var color = img.Palette.Entries[0];
+                img.MakeTransparent(color);
+                return (BitmapImage)BitmapConversion.ToWpfBitmap(img);
+            }
+            else
+            {
+                FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+
+                var img = new System.Windows.Media.Imaging.BitmapImage();
+                img.BeginInit();
+                img.StreamSource = fileStream;
+                img.EndInit();
+                return img;
+            }
+
+        }
+
+        public void LoadAnimationTextures(string filename)
+        {
+            if (Instance.ViewModel.SpriteSheets == null) InitlizeSpriteSheets(true);
+            foreach (string path in Instance.ViewModel.SpriteSheetPaths)
+            {
+                string animationDirectory = Path.GetDirectoryName(filename);
+                Instance.ViewModel.AnimationDirectory = animationDirectory;
+                string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, Instance.ViewModel.LoadedAnimationFile.pathmod, path);
+                if (File.Exists(imagePath))
+                {
+                    Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));
+                    Instance.ViewModel.SpriteSheetsWithTransparency.Add(LoadAnimationTexture(imagePath, true));
+                }
+                else
+                {
+                    Instance.ViewModel.SpriteSheets.Add(new BitmapImage());
+                    Instance.ViewModel.SpriteSheetsWithTransparency.Add(new BitmapImage());
+                    Instance.ViewModel.NullSpriteSheetList.Add(path);
+                    Instance.ViewModel.NullSpriteSheetList.Add(path);
+                }
+
+            }
+        }
+
+        public void InitlizeSpriteSheets(bool clearMode = false)
+        {
+            if (clearMode)
+            {
+                if (Instance.ViewModel.SpriteSheets != null) Instance.ViewModel.SpriteSheets.Clear();
+                if (Instance.ViewModel.SpriteSheetsWithTransparency != null) Instance.ViewModel.SpriteSheetsWithTransparency.Clear();
+            }
+            else
+            {
+                Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
+                Instance.ViewModel.SpriteSheetsWithTransparency = new System.Collections.Generic.List<BitmapImage>();
+            }
+        }
+        #endregion
+
+        #region Import / Export Methods
+
+        public void ImportAnimation()
+        {
+            if (Instance.ViewModel.LoadedAnimationFile == null || Instance.ViewModel.SelectedAnimation == null) return;
+            var fd = new OpenFileDialog();
+            fd.DefaultExt = "*.animv2";
+            fd.Filter = "RSDK-R Animation Files|*.animv2";
+            if (fd.ShowDialog() == true)
+            {
+                EngineType engineType = EngineType.Invalid;
+                var importAnim = new Animation.AnimationEntry();
+                importAnim.ImportFrom(engineType, fd.FileName);
+                Instance.ViewModel.LoadedAnimationFile.Animations.Add(importAnim);
+            }
+
+        }
+
+        public void ExportAnimation()
+        {
+            if (Instance.ViewModel.LoadedAnimationFile == null || Instance.ViewModel.SelectedAnimation == null) return;
+            var fd = new SaveFileDialog();
+            fd.DefaultExt = "*.animv2";
+            fd.Filter = "RSDK-R Animation Files|*.animv2";
+            if (fd.ShowDialog() == true)
+            {
+                EngineType engineType = EngineType.Invalid;
+                Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].ExportTo(engineType, fd.FileName);
+            }
+        }
+
+        public void ImportFrame()
+        {
+            if (Instance.ViewModel.LoadedAnimationFile == null || Instance.ViewModel.SelectedAnimation == null) return;
+            var fd = new OpenFileDialog();
+            fd.DefaultExt = "*.framev2";
+            fd.Filter = "RSDK-R Frame Files|*.framev2";
+            if (fd.ShowDialog() == true)
+            {
+                EngineType engineType = EngineType.Invalid;
+                var importFrame = new Animation.Frame();
+                importFrame.ImportFrom(engineType, fd.FileName);
+                Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Add(importFrame); 
+            }
+        }
+
+        public void ExportFrame()
+        {
+            if (Instance.ViewModel.LoadedAnimationFile == null || Instance.FramesList.SelectedItem == null) return;
+            var fd = new SaveFileDialog();
+            fd.DefaultExt = "*.framev2";
+            fd.Filter = "RSDK-R Frame Files|*.framev2";
+            if (fd.ShowDialog() == true)
+            {
+                EngineType engineType = EngineType.Invalid;
+                Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames[Instance.ViewModel.SelectedFrameIndex].ExportTo(engineType, fd.FileName);
+            }
+        }
+
+
+
+        #endregion
 
         #region Recent Files (Lifted from Maniac Editor)
 

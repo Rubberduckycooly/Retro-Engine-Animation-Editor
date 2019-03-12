@@ -200,7 +200,7 @@ namespace AnimationEditor.Services
         {
             var curAnim = CurrentAnimation;
             if (ms < 0 || curAnim == null ||
-                (CurrentAnimation?.SpeedMultiplyer ?? 0) <= 0)
+                (CurrentAnimation?.SpeedMultiplyer ?? 0) <= 0 && !MainWindow.isForcePlaybackOn)
                 return 0;
 
             int framesCount = curAnim.Frames.Count();
@@ -209,12 +209,13 @@ namespace AnimationEditor.Services
                 return 0;
 
             const int Divisor = 1024;
-            var baseSpeed = CurrentAnimation.SpeedMultiplyer;
+            var baseSpeed = (MainWindow.isForcePlaybackOn ? MainWindow.ForcePlaybackSpeed : CurrentAnimation.SpeedMultiplyer);
             long prevMs;
             do
             {
                 prevMs = ms;
-                var frameSpeed = CurrentFrame?.Delay ?? 256;
+                var frameSpeed = (MainWindow.isForcePlaybackOn ? MainWindow.ForcePlaybackDuration : CurrentFrame?.Delay ?? 256);
+
                 if (frameSpeed > 0)
                 {
                     var realSpeed = (baseSpeed * 64 / frameSpeed);

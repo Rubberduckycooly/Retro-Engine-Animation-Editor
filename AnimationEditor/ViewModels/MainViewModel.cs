@@ -20,8 +20,10 @@ namespace AnimationEditor.ViewModels
         #region Animations and Frames
         public Animation LoadedAnimationFile;
 
+        public string AnimationFilepath { get; set; }
         public string AnimationDirectory { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
+        public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheetsWithTransparency { get; set; }
         public List<string> NullSpriteSheetList { get => SpriteSheetNullList; set => SpriteSheetNullList = value; }
         private List<string> SpriteSheetNullList = new List<string>();
         public Animation.AnimationEntry _SelectedAnimation;
@@ -153,7 +155,7 @@ namespace AnimationEditor.ViewModels
             double FrameTop = SelectedFrameTop ?? 0;
             double FrameCenterY = SelectedFramePivotY ?? 0;
             double FrameHeight = SelectedFrameHeight ?? 0;
-            return (Center - FrameTop * Zoom) + FrameCenterY * Zoom;
+            return (int)(Center - FrameTop * Zoom) + FrameCenterY * Zoom;
         }
 
         public double GetSpriteLeft()
@@ -162,19 +164,19 @@ namespace AnimationEditor.ViewModels
             double FrameLeft = SelectedFrameLeft ?? 0;
             double FrameCenterX = SelectedFramePivotX ?? 0;
             double FrameWidth = SelectedFrameWidth ?? 0;
-            return (Center - FrameLeft * Zoom) + FrameCenterX * Zoom;
+            return (int)(Center - FrameLeft * Zoom) + FrameCenterX * Zoom;
         }
 
         public double GetSpriteRight()
         {
             double FrameWidth = SelectedFrameWidth ?? 0;
-            return (SpriteLeft + FrameWidth * Zoom);
+            return (int)(SpriteLeft + FrameWidth * Zoom);
         }
 
         public double GetSpriteBottom()
         {
             double FrameHeight = SelectedFrameHeight ?? 0;
-            return (SpriteTop + FrameHeight * Zoom);
+            return (int)(SpriteTop + FrameHeight * Zoom);
         }
 
         public double GetHitboxTop()
@@ -547,6 +549,7 @@ namespace AnimationEditor.ViewModels
 
         public void ShiftAnimationUp(int animID)
         {
+            if (LoadedAnimationFile == null) return;
             int parentID = animID - 1;
             if (parentID < 0 || parentID > LoadedAnimationFile.Animations.Count()) return;
             var targetAnimation = LoadedAnimationFile.Animations[animID];
@@ -560,6 +563,7 @@ namespace AnimationEditor.ViewModels
 
         public void ShiftAnimationDown(int animID)
         {
+            if (LoadedAnimationFile == null) return;
             int parentID = animID + 1;
             if (parentID < 0 || parentID > LoadedAnimationFile.Animations.Count()) return;
             var targetAnimation = LoadedAnimationFile.Animations[animID];
