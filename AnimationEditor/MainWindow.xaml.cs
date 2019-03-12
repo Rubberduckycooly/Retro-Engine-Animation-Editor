@@ -377,10 +377,18 @@ namespace AnimationEditor
             }
         }
 
-        public void IntilizePlayback()
+        public void IntilizePlayback(bool kill = false)
         {
-            PlaybackService = new PlaybackService(ViewModel.LoadedAnimationFile, this);
-            PlaybackService.OnFrameChanged += PlaybackService_OnFrameChanged;
+            if (kill)
+            {
+                PlaybackService = null;
+            }
+            else
+            {
+                PlaybackService = new PlaybackService(ViewModel.LoadedAnimationFile, this);
+                PlaybackService.OnFrameChanged += PlaybackService_OnFrameChanged;
+            }
+
         }
 
         #endregion

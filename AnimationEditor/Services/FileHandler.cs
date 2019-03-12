@@ -140,6 +140,7 @@ namespace AnimationEditor
             Instance.DataContext = new MainViewModel();
             InitlizeSpriteSheets();
             Instance.ViewModel.NullSpriteSheetList.Clear();
+            Instance.IntilizePlayback(true);
         }
 
         public BitmapImage LoadAnimationTexture(string fileName, bool transparent = false)
