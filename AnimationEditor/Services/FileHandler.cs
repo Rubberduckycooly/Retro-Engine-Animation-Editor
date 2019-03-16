@@ -174,7 +174,13 @@ namespace AnimationEditor
             {
                 string animationDirectory = Path.GetDirectoryName(filename);
                 Instance.ViewModel.AnimationDirectory = animationDirectory;
-                string imagePath = Path.Combine(Directory.GetParent(animationDirectory).FullName, Instance.ViewModel.LoadedAnimationFile.pathmod, path);
+                int subDirectoryCount = path.Split('/').Length - 1;
+                string parentDirectory = animationDirectory;
+                for (int i = 0; i < subDirectoryCount; i++)
+                {
+                    parentDirectory = Directory.GetParent(parentDirectory).FullName;
+                }
+                string imagePath = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("\\", "/"));
                 if (File.Exists(imagePath))
                 {
                     Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));
@@ -222,6 +228,29 @@ namespace AnimationEditor
                 Instance.ViewModel.LoadedAnimationFile.Animations.Add(importAnim);
             }
 
+        }
+
+        public void ExportAnimationFramesToImages()
+        {
+            if (Instance.ViewModel.LoadedAnimationFile == null || Instance.ViewModel.SelectedAnimation == null) return;
+            var fd = new FolderSelectDialog();
+            fd.Title = "Select A Folder to Save the Images to...";
+            if (fd.ShowDialog() == true)
+            {
+                string placeToSave = fd.FileName;
+                for (int i = 0; i < Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Count; i++)
+                {
+                    var img = Instance.ViewModel.GetFrameImage(i);
+                    string fileName = Path.GetFileNameWithoutExtension(Instance.ViewModel.AnimationFilepath) + string.Format("_{0}_{1}.png", Instance.ViewModel.SelectedAnimationIndex, i);
+                    string filePath = Path.Combine(placeToSave, fileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        BitmapEncoder encoder = new PngBitmapEncoder();
+                        encoder.Frames.Add(BitmapFrame.Create(img));
+                        encoder.Save(fileStream);
+                    }
+                }
+            }
         }
 
         public void ExportAnimation()

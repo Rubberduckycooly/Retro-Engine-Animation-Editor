@@ -16,6 +16,17 @@ namespace AnimationEditor
 
     public partial class App : Application
     {
+        public App()
+        {
+            if (AnimationEditor.Properties.Settings.Default.UseDarkTheme)
+            {
+                Skin = Skin.Dark;
+            }
+            else
+            {
+                Skin = Skin.Light;
+            }
+        }
         public static Skin Skin { get; set; } = Skin.Dark;
     }
 }

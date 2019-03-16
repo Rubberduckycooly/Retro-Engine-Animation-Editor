@@ -20,8 +20,16 @@
                 <Setter Property="Background" Value="{DynamicResource NormalBackground}"></Setter>
             </Style>
             <Style x:Key="{x:Type TextBlock}" TargetType="{x:Type TextBlock}">
-                <Setter Property="Foreground" Value="{DynamicResource NormalText}"></Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Foreground" Value="{DynamicResource DisabledText}"></Setter>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource NormalText}"></Setter>
+                    </Trigger>
+                </Style.Triggers>
             </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

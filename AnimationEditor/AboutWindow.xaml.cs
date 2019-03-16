@@ -33,5 +33,24 @@ namespace AnimationEditor
             InitializeComponent();
             DataContext = this;
         }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/Rubberduckycooly/RSDK");
+        }
+
+        private void Hyperlink_Click_1(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/CarJem");
+        }
+
+        private void Hyperlink_Click_2(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/xeeynamo/rsdk");
+        }
+        private void Hyperlink_Click_3(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/thesupersonic16");
+        }
     }
 }

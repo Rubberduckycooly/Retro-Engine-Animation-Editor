@@ -132,14 +132,16 @@ namespace AnimationEditor
 
         private void ButtonAnimationImport_Click(object sender, RoutedEventArgs e)
         {
-            Handler.ImportAnimation();
-            Interfacer.UpdateUI();
+            ButtonAnimationImport.ContextMenu.IsOpen = true;
+            //Handler.ImportAnimation();
+            //Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationExport_Click(object sender, RoutedEventArgs e)
         {
-            Handler.ExportAnimation();
-            Interfacer.UpdateUI();
+            ButtonAnimationExport.ContextMenu.IsOpen = true;
+            //Handler.ExportAnimation();
+            //Interfacer.UpdateUI();
         }
 
         private void ButtonFrameAdd_Click(object sender, RoutedEventArgs e)
@@ -165,25 +167,30 @@ namespace AnimationEditor
 
         private void ButtonFrameImport_Click(object sender, RoutedEventArgs e)
         {
-            Handler.ImportFrame();
-            Interfacer.UpdateUI();
+            ButtonFrameImport.ContextMenu.IsOpen = true;
+            //Handler.ImportFrame();
+            //Interfacer.UpdateUI();
         }
 
         private void ButtonFrameExport_Click(object sender, RoutedEventArgs e)
         {
-            Handler.ExportFrame();
-            Interfacer.UpdateUI();
+            ButtonFrameExport.ContextMenu.IsOpen = true;
+            //Handler.ExportFrame();
+            //Interfacer.UpdateUI();
         }
 
         private void ButtonZoomIn_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.SpriteScaleX = ViewModel.SpriteScaleX + 1;
-            Interfacer.UpdateUI();
+            if (ViewModel.SpriteScaleX < 8)
+            {
+                ViewModel.SpriteScaleX = ViewModel.SpriteScaleX + 1;
+                Interfacer.UpdateUI();
+            }
         }
 
         private void ButtonZoomOut_Click(object sender, RoutedEventArgs e)
         {
-            if (ViewModel.SpriteScaleX != 1)
+            if (ViewModel.SpriteScaleX > 1)
             {
                 ViewModel.SpriteScaleX = ViewModel.SpriteScaleX - 1;
                 Interfacer.UpdateUI();
@@ -281,7 +288,6 @@ namespace AnimationEditor
 
         private void HitBoxComboBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            HitBoxComboBox.SelectedIndex = -1;
             Interfacer.UpdateUI();
         }
 
@@ -433,6 +439,38 @@ namespace AnimationEditor
         private void ForcedPlaybackDurationNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             ForcePlaybackDuration = ForcedPlaybackDurationNUD.Value.Value;
+        }
+
+        private void ExportAnimationImages_Click(object sender, RoutedEventArgs e)
+        {
+            Handler.ExportAnimationFramesToImages();
+        }
+
+        private void ButtonShowFieldHitbox_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.UpdateUI();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (MenuViewUseDarkTheme.IsChecked)
+            {
+                Properties.Settings.Default.UseDarkTheme = true;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                Properties.Settings.Default.UseDarkTheme = false;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (Properties.Settings.Default.UseDarkTheme)
+            {
+                MenuViewUseDarkTheme.IsChecked = true;
+            }
         }
     }
 }

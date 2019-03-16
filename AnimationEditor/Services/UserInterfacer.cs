@@ -46,6 +46,7 @@ namespace AnimationEditor
 
         }
 
+
         public void UpdateInvalidState()
         {
             if (Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SelectedAnimationIndex != -1)
@@ -110,10 +111,19 @@ namespace AnimationEditor
             }
         }
 
+        public void InvalidateTextureList()
+        {
+            if (Instance.ViewModel.LoadedAnimationFile != null)
+            {
+                Instance.SpriteSheetList.ItemsSource = null;
+                Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
+            }
+        }
+
         #region Image/Hitbox Update Methods
         public void UpdateImage()
         {
-            if (Instance.ViewModel.LoadedAnimationFile != null && Instance.HitBoxComboBox.SelectedItem != null)
+            if (Instance.ViewModel.LoadedAnimationFile != null && Instance.HitBoxComboBox.SelectedItem != null && Instance.ButtonShowFieldHitbox.IsChecked.Value)
             {
                 Instance.HitBoxViewer.Visibility = Visibility.Visible;
             }
@@ -384,6 +394,8 @@ namespace AnimationEditor
                 Instance.ButtonPlay.IsEnabled = enabled;
                 Instance.PlaybackOptionsButton.IsEnabled = enabled;
                 Instance.AnimationScroller.IsEnabled = enabled;
+                Instance.HitboxButton.IsEnabled = enabled;
+                Instance.TextureButton.IsEnabled = enabled;
             }
 
             void UpdateFrameListElements(bool enabled)
@@ -395,10 +407,17 @@ namespace AnimationEditor
                 Instance.ButtonFrameRemove.IsEnabled = enabled;
                 Instance.ButtonFrameLeft.IsEnabled = enabled;
                 Instance.ButtonFrameRight.IsEnabled = enabled;
-                Instance.ButtonZoomIn.IsEnabled = enabled;
-                Instance.ButtonZoomOut.IsEnabled = enabled;
-                Instance.HitboxButton.IsEnabled = enabled;
-                Instance.TextureButton.IsEnabled = enabled;
+                UpdateZoomInOutButtons(enabled);
+                Instance.ButtonShowFieldHitbox.IsEnabled = enabled;
+            }
+
+            void UpdateZoomInOutButtons(bool enabled)
+            {
+                if (Instance.ViewModel.SpriteScaleX < 7) Instance.ButtonZoomIn.IsEnabled = enabled;
+                else Instance.ButtonZoomIn.IsEnabled = false;
+                if (Instance.ViewModel.SpriteScaleX > 1) Instance.ButtonZoomOut.IsEnabled = enabled;
+                else Instance.ButtonZoomOut.IsEnabled = false;
+
             }
 
             void UpdateMenuStripElements(bool enabled)

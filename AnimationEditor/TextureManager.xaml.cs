@@ -1,5 +1,6 @@
 ﻿using AnimationEditor.ViewModels;
 using System;
+using Microsoft.Win32;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -108,6 +109,8 @@ namespace AnimationEditor
 
             InitializeVarriables();
             UpdateUI();
+            ParentInstance.Interfacer.InvalidateTextureList();
+            ListTextures.ItemsSource = null;
             ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
 
@@ -115,18 +118,100 @@ namespace AnimationEditor
 
         public void ReplaceTexture(int index)
         {
+            string parentDirectory = Directory.GetParent(ParentInstance.ViewModel.AnimationDirectory).FullName;
+            var fd = new OpenFileDialog();
+            fd.DefaultExt = "*.gif";
+            fd.Filter = "GIF Files | *.gif";
+            fd.Title = "Add a Spritesheet...";
+            fd.InitialDirectory = parentDirectory;
+            if (fd.ShowDialog() == true)
+            {
+                string selectedImage = fd.FileName;
+                if (!fd.FileName.Contains(parentDirectory))
+                {
+                    MessageBox.Show("You can not add a spritesheet outside of the parent folder of the animation, please use an spritesheet within " + string.Format("{0}", parentDirectory), "Unable to add Spritesheet", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                var image = ParentInstance.Handler.LoadAnimationTexture(selectedImage);
+                bool widthPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Width));
+                bool heightPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Height));
+                if (!heightPowerOf2 || !widthPowerOf2)
+                {
+                    var result = MessageBox.Show("Your spritesheet's width and/or height has a value that is not a power of two. It is not recommended that you use a spritesheet with \"non-power-of-two\" sizes, as it will make the sprites look disorted in-game. Do you still wish to continue?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (result == MessageBoxResult.No) return;
+                }
 
+                string modifiedPath = selectedImage.Replace(parentDirectory, "").Replace("\\", "/");
+                if (modifiedPath[0] == '/') modifiedPath = modifiedPath.Remove(0, 1);
+
+                ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.RemoveAt(index);
+                ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Insert(index, modifiedPath);
+
+                ParentInstance.ViewModel.SpriteSheets.RemoveAt(index);
+                ParentInstance.ViewModel.SpriteSheets.Insert(index, ParentInstance.Handler.LoadAnimationTexture(selectedImage));
+
+                ParentInstance.ViewModel.SpriteSheetsWithTransparency.RemoveAt(index);
+                ParentInstance.ViewModel.SpriteSheetsWithTransparency.Insert(index, ParentInstance.Handler.LoadAnimationTexture(selectedImage, true));
+            }
+
+            InitializeVarriables();
+            UpdateUI();
+            ListTextures.ItemsSource = null;
+            ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
+            ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
+            ParentInstance.TextureManagerPopup.IsOpen = true;
+            ParentInstance.Interfacer.UpdateUI();
         }
 
         public void AddTexture()
         {
+            string parentDirectory = Directory.GetParent(ParentInstance.ViewModel.AnimationDirectory).FullName;
+            var fd = new OpenFileDialog();
+            fd.DefaultExt = "*.gif";
+            fd.Filter = "GIF Files | *.gif";
+            fd.Title = "Add a Spritesheet...";
+            fd.InitialDirectory = parentDirectory;
+            if (fd.ShowDialog() == true)
+            {
+                string selectedImage = fd.FileName;
+                if (!fd.FileName.Contains(parentDirectory))
+                {
+                    MessageBox.Show("You can not add a spritesheet outside of the parent folder of the animation, please use an spritesheet within " + string.Format("{0}", parentDirectory), "Unable to add Spritesheet", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                var image = ParentInstance.Handler.LoadAnimationTexture(selectedImage);
+                bool widthPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Width));
+                bool heightPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Height));
+                if (!heightPowerOf2 || !widthPowerOf2)
+                {
+                    var result = MessageBox.Show("Your spritesheet's width and/or height has a value that is not a power of two. It is not recommended that you use a spritesheet with \"non-power-of-two\" sizes, as it will make the sprites look disorted in-game. Do you still wish to continue?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (result == MessageBoxResult.No) return;
+                }
 
+                string modifiedPath = selectedImage.Replace(parentDirectory, "").Replace("\\", "/");
+                if (modifiedPath[0] == '/') modifiedPath = modifiedPath.Remove(0, 1);
+                ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Add(modifiedPath);
+                ParentInstance.ViewModel.SpriteSheets.Add(ParentInstance.Handler.LoadAnimationTexture(selectedImage));
+                ParentInstance.ViewModel.SpriteSheetsWithTransparency.Add(ParentInstance.Handler.LoadAnimationTexture(selectedImage, true));
+            }
+
+            InitializeVarriables();
+            UpdateUI();
+            ListTextures.ItemsSource = null;
+            ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
+            ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
+            ParentInstance.TextureManagerPopup.IsOpen = true;
+            ParentInstance.Interfacer.UpdateUI();
         }
 
         private void ListTextures_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            SelectedTextureIndex = ListTextures.SelectedIndex;
-            UpdateUI();
+            if (ListTextures.SelectedIndex != -1)
+            {
+                SelectedTextureIndex = ListTextures.SelectedIndex;
+                UpdateUI();
+            }
+
         }
 
         private void ButtonRemove_Click(object sender, RoutedEventArgs e)
@@ -148,12 +233,25 @@ namespace AnimationEditor
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e)
         {
+            AddTexture();
+        }
 
+        bool IsPowerOfTwo(ulong x)
+        {
+            return (x & (x - 1)) == 0;
         }
 
         private void ButtonChange_Click(object sender, RoutedEventArgs e)
         {
-
+            int Index = SelectedTextureIndex;            
+            if (Textures.Count > 1)
+            {
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to replace this spritesheet? Any frames currently using this spritesheet will use the replacement.", "Replace Spritesheet", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+                if (result == MessageBoxResult.Yes)
+                {
+                    ReplaceTexture(Index);
+                }
+            }
         }
     }
 }

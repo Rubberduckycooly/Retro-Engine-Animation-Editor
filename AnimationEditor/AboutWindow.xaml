@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AnimationEditor"
         mc:Ignorable="d"
-        Title="About" Height="259.997" Width="486.991" WindowStyle="ToolWindow" ResizeMode="NoResize"  SizeToContent="WidthAndHeight" Background="{DynamicResource NormalBackground}">
+        Title="About" Height="259.997" Width="486.991" WindowStyle="ToolWindow" ResizeMode="NoResize"  SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner" Background="{DynamicResource NormalBackground}">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="107*"></RowDefinition>
@@ -26,12 +26,12 @@
 
                 <TextBlock Text="Developed By:"/>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Text="● CarJem Generations "/>
-                    <TextBlock><Hyperlink NavigateUri="https://github.com/Rubberduckycooly/RSDK"><Run Text="(Overall Editor / Technical Developer / Maniac Editor Head)"/></Hyperlink></TextBlock>
+                    <TextBlock Text="● CarJem Generations"/>
+                    <TextBlock><Hyperlink Click="Hyperlink_Click_1"><Run Text="(Overall Editor / Technical Developer / Maniac Editor Head)"/></Hyperlink></TextBlock>
                 </StackPanel>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Text="● Rubberduckycooly "/>
-                    <TextBlock><Hyperlink NavigateUri="https://github.com/Rubberduckycooly/RSDK"><Run Text="(Current RSDK-Reverse Fork Head / Essential Backend Developer)"/></Hyperlink></TextBlock>
+                    <TextBlock Text="● Rubberduckycooly"/>
+                    <TextBlock><Hyperlink Click="Hyperlink_Click"><Run Text="(Current RSDK-Reverse Fork Head / Essential Backend Developer)"/></Hyperlink></TextBlock>
                 </StackPanel>
 
                 <Separator/>
@@ -40,15 +40,23 @@
         <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
             <TextBlock Text="Additional Fixes By:"/>
             <Separator/>
-            <TextBlock Text="● thesupersonic16 (Frame/Animation Shifting)"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>
+                <TextBlock Text="● thesupersonic16"/>
+                <Hyperlink Click="Hyperlink_Click_3">
+                     (Original Support for Frame/Animation Shifting)
+                </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+
             <Separator/>
             <TextBlock Text="Special Thanks:"/>
             <Separator/>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="● Xeeynamo "></TextBlock>
                 <TextBlock>
-                <Hyperlink NavigateUri="https://github.com/xeeynamo/rsdk">
-                    (Original RSDK-Reverse Libs and the Original Animation Editor)
+                <Hyperlink Click="Hyperlink_Click_2">
+                    (Original Animation Reverse Engineering and v1 of this Editor)
                 </Hyperlink>
                 </TextBlock>
             </StackPanel>

@@ -412,36 +412,36 @@ namespace AnimationEditor.ViewModels
 
         public Animation.HitBox GetSelectedHitbox()
         {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex];
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex];
             else return null;
         }
         public int GetCurrentHitboxIndex()
         {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].CollisionBox;
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].CollisionBox;
             else return -1;
         }
 
         public short GetCurrentHitboxX()
         {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].X;
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].X;
             else return 0;
         }
 
         public short GetCurrentHitboxY()
         {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Y;
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Y;
             else return 0;
         }
 
         public short GetCurrentHitboxWidth()
         {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Width;
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Width;
             else return 0;
         }
 
         public short GetCurrentHitboxHeight()
         {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Height;
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Height;
             else return 0;
         }
 
