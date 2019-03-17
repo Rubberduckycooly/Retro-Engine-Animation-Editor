@@ -120,6 +120,21 @@ namespace AnimationEditor.ViewModels
             else return;
         }
 
+        public int GetCurrentFrameIndexForAllAnimations()
+        {
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1)
+            {
+                int frames = 0;
+                for (int i = 0; i < SelectedAnimationIndex; i++)
+                {
+                    frames += LoadedAnimationFile.Animations[i].Frames.Count();
+                }
+                frames += SelectedFrameIndex;
+                return frames;
+            }
+            else return -1;
+        }
+
         public int GetCurrentFrameCount()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Count - 1;
@@ -600,6 +615,8 @@ namespace AnimationEditor.ViewModels
         public void AddAnimation(int animID)
         {
             var animation = new Animation.AnimationEntry();
+            animation.AnimName = "New Entry";
+            animation.Frames = new List<Animation.Frame>();
             LoadedAnimationFile.Animations.Insert(animID, animation);
         }
 

@@ -200,6 +200,7 @@ namespace AnimationEditor
 
             Instance.FramesCountLabel.Text = Instance.ViewModel.FramesCount.ToString();
             Instance.AnimationsCountLabel.Text = Instance.ViewModel.AnimationsCount.ToString();
+            Instance.AllFramesCountLabel.Text = Instance.ViewModel.GetCurrentFrameIndexForAllAnimations().ToString();
 
             if (Instance.ViewModel.SelectedAnimationIndex == -1) {
                 Instance.FramesList.Height = 21;
@@ -260,12 +261,12 @@ namespace AnimationEditor
         {
             UpdateAnimatonInfo();
             UpdateFrameInfo();
-            UpdateHitboxInfo();
+            if (Instance.ViewModel.Hitboxes != null && Instance.ViewModel.Hitboxes.Count != 0) UpdateHitboxInfo();
 
 
             void UpdateFrameInfo()
             {
-                UpdateHitboxInfo();
+                if (Instance.ViewModel.Hitboxes != null && Instance.ViewModel.Hitboxes.Count != 0) UpdateHitboxInfo();
 
                 Instance.FrameWidthNUD.Value = Instance.ViewModel.SelectedFrameWidth;
                 Instance.FrameHeightNUD.Value = Instance.ViewModel.SelectedFrameHeight;
@@ -299,7 +300,6 @@ namespace AnimationEditor
             }
             void UpdateHitboxInfo()
             {
-
                 Instance.HitBoxComboBox.ItemsSource = Instance.ViewModel.CollisionBoxesNames;
                 Instance.HitBoxComboBox.SelectedIndex = Instance.ViewModel.SelectedFrameHitboxIndex;
 
@@ -391,8 +391,8 @@ namespace AnimationEditor
                 Instance.ButtonAnimationDuplicate.IsEnabled = enabled;
                 Instance.ButtonAnimationUp.IsEnabled = enabled;
                 Instance.ButtonAnimationDown.IsEnabled = enabled;
-                Instance.ButtonPlay.IsEnabled = enabled;
-                Instance.PlaybackOptionsButton.IsEnabled = enabled;
+                Instance.ButtonPlay.IsEnabled = Instance.FramesList.SelectedItem != null;
+                Instance.PlaybackOptionsButton.IsEnabled = Instance.FramesList.SelectedItem != null;
                 Instance.AnimationScroller.IsEnabled = enabled;
                 Instance.HitboxButton.IsEnabled = enabled;
                 Instance.TextureButton.IsEnabled = enabled;
@@ -400,7 +400,7 @@ namespace AnimationEditor
 
             void UpdateFrameListElements(bool enabled)
             {
-                Instance.ButtonFrameAdd.IsEnabled = enabled;
+                Instance.ButtonFrameAdd.IsEnabled = Instance.List.SelectedItem != null;
                 Instance.ButtonFrameDupe.IsEnabled = enabled;
                 Instance.ButtonFrameExport.IsEnabled = enabled;
                 Instance.ButtonFrameImport.IsEnabled = enabled;

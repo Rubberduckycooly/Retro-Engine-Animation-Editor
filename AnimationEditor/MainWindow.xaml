@@ -462,6 +462,8 @@
                                 <Run Text="{Binding SelectedFrameIndex, Mode=OneWay}"/>
                                 <Run Text="- Total "/>
                                 <Run x:Name="FramesCountLabel" Text="{Binding FramesCount, Mode=OneWay}"/>
+                                <Run Text="- All "/>
+                                <Run x:Name="AllFramesCountLabel"/>
                                 </TextBlock>
                             </StackPanel>
                         </GroupBox.Header>

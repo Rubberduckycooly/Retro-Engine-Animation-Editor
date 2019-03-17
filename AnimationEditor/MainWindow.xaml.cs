@@ -146,7 +146,7 @@ namespace AnimationEditor
 
         private void ButtonFrameAdd_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.AddFrame(ViewModel.SelectedFrameIndex);
+            ViewModel.AddFrame((ViewModel.SelectedFrameIndex != -1 ? ViewModel.SelectedFrameIndex : 0));
             Interfacer.UpdateFramesList();
             Interfacer.UpdateUI(true);
         }
@@ -224,7 +224,13 @@ namespace AnimationEditor
 
         private void List_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Interfacer.UpdateUI();
+            if (ViewModel.SelectedAnimation != null)
+            {
+                ViewModel.Animations[ViewModel.SelectedAnimationIndex].AnimName = RSDKrU.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Annimation:", ViewModel.SelectedAnimation.AnimName);
+                List.ItemsSource = null;
+                Interfacer.UpdateUI();
+            }
+
         }
 
         private void MenuViewTexture_Click(object sender, RoutedEventArgs e)
