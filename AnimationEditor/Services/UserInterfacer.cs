@@ -40,15 +40,22 @@ namespace AnimationEditor
                 UpdateInfo();
                 UpdateViewerLayout();
                 UpdateInvalidState();
-                UpdateAnimationTypeLimitations();
             }
             if (!Instance.isPlaybackEnabled) UpdateNormalElements();
             PreventIndexUpdate = false;
+            UpdateAnimationTypeLimitations();
 
         }
 
         public void UpdateAnimationTypeLimitations()
         {
+            /*
+            - RSDKv5 is the only one that has “ID” and the only one with an editable “delay” value
+            - RSDKvRS and RSDKv1 don’t have editable names
+            - RSDKvRS and RSDKv1 always has to have 3 spritesheets no less no more
+            (The dreamcast version of RSDKvRS only allows 2 spritesheets)
+            - RSDKvRS has a “playerType” value that determines what players moveset tp give
+            */
             switch (Instance.AnimationType)
             {
                 case EngineType.RSDKvRS:
@@ -72,22 +79,28 @@ namespace AnimationEditor
 
             void UpdateRSDKvRSLimits()
             {
-
+                Instance.IdentificationNUD.IsEnabled = false;
+                Instance.DelayNUD.IsEnabled = false;
+                Instance.ButtonAnimationRename.IsEnabled = false;
             }
 
             void UpdateRSDKv1Limits()
             {
-
+                Instance.IdentificationNUD.IsEnabled = false;
+                Instance.DelayNUD.IsEnabled = false;
+                Instance.ButtonAnimationRename.IsEnabled = false;
             }
 
             void UpdateRSDKv2Limits()
             {
-
+                Instance.IdentificationNUD.IsEnabled = false;
+                Instance.DelayNUD.IsEnabled = false;
             }
 
             void UpdateRSDKvBLimits()
             {
-
+                Instance.IdentificationNUD.IsEnabled = false;
+                Instance.DelayNUD.IsEnabled = false;
             }
 
             void UpdateRSDKv5Limits()
@@ -136,7 +149,7 @@ namespace AnimationEditor
                 Instance.FrameTopNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
                 Instance.PivotXBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
                 Instance.PivotYBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.idNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.IdentificationNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
                 Instance.DelayNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
 
                 Instance.SpriteSheetList.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
@@ -376,7 +389,7 @@ namespace AnimationEditor
                 Instance.FrameTopNUD.Value = Instance.ViewModel.SelectedFrameTop;
                 Instance.PivotXBox.Value = Instance.ViewModel.SelectedFramePivotX;
                 Instance.PivotYBox.Value = Instance.ViewModel.SelectedFramePivotY;
-                Instance.idNUD.Value = Instance.ViewModel.SelectedFrameId;
+                Instance.IdentificationNUD.Value = Instance.ViewModel.SelectedFrameId;
                 Instance.DelayNUD.Value = Instance.ViewModel.SelectedFrameDuration;
 
                 Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;

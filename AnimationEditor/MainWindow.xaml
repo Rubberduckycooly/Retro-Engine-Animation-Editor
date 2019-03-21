@@ -686,7 +686,7 @@
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedFramePivotY, Mode=TwoWay}"/>
                                 <TextBlock x:Name="IDLabel" Grid.Column="0" Grid.Row="7" Text="ID" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="idNUD" Grid.Column="1" Grid.Row="7"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="IdentificationNUD" Grid.Column="1" Grid.Row="7"
                                     Minimum="0" Maximum="65535"
                                     Value="{Binding SelectedFrameId, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="7" Text="Duration" Foreground="{DynamicResource NormalText}"/>

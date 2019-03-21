@@ -69,10 +69,10 @@ namespace AnimationEditor
             if (fd.FilterIndex - 1 < 2) { Instance.FlagsSelector.IsEnabled = true; }
 
             //For RSDKvRS, RSDKv1 and RSDKv2 & RSDKvB there is no ID and the Delay is always 256, so there is no point to let users change their values
-            if (fd.FilterIndex - 1 >= 1) { Instance.DelayNUD.IsEnabled = false; Instance.idNUD.IsEnabled = false; }
-            if (fd.FilterIndex - 1 == 3) { Instance.idNUD.IsEnabled = true; Instance.IDLabel.Text = "Player"; }
+            if (fd.FilterIndex - 1 >= 1) { Instance.DelayNUD.IsEnabled = false; Instance.IdentificationNUD.IsEnabled = false; }
+            if (fd.FilterIndex - 1 == 3) { Instance.IdentificationNUD.IsEnabled = true; Instance.IDLabel.Text = "Player"; }
             else { Instance.IDLabel.Text = "ID"; }
-            if (fd.FilterIndex - 1 == 0) { Instance.DelayNUD.IsEnabled = true; Instance.idNUD.IsEnabled = true; }
+            if (fd.FilterIndex - 1 == 0) { Instance.DelayNUD.IsEnabled = true; Instance.IdentificationNUD.IsEnabled = true; }
 
             switch (fd.FilterIndex - 1)
             {
