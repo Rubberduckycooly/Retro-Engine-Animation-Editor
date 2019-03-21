@@ -21,11 +21,11 @@ namespace AnimationEditor.ViewModels
         public Animation LoadedAnimationFile;
 
         public bool FullFrameMode = false;
-
         public string AnimationFilepath { get; set; }
         public string AnimationDirectory { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheetsWithTransparency { get; set; }
+        public List<System.Windows.Media.Color> SpriteSheetTransparentColors { get; set; }
         public List<string> NullSpriteSheetList { get => SpriteSheetNullList; set => SpriteSheetNullList = value; }
         private List<string> SpriteSheetNullList = new List<string>();
         public Animation.AnimationEntry _SelectedAnimation;

@@ -151,6 +151,8 @@ namespace AnimationEditor
                 System.Drawing.Bitmap img = new System.Drawing.Bitmap(fileStream);
                 fileStream.Close();
                 var color = img.Palette.Entries[0];
+                string hex = HexConverter(color);
+                Instance.ViewModel.SpriteSheetTransparentColors.Add((Color)ColorConverter.ConvertFromString(hex));
                 img.MakeTransparent(color);
                 return (BitmapImage)BitmapConversion.ToWpfBitmap(img);
             }
@@ -165,6 +167,11 @@ namespace AnimationEditor
                 return img;
             }
 
+        }
+
+        private static String HexConverter(System.Drawing.Color c)
+        {
+            return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
         }
 
         public void LoadAnimationTextures(string filename)
@@ -189,6 +196,7 @@ namespace AnimationEditor
                 else
                 {
                     Instance.ViewModel.SpriteSheets.Add(new BitmapImage());
+                    Instance.ViewModel.SpriteSheetTransparentColors.Add((Color)ColorConverter.ConvertFromString("#303030"));
                     Instance.ViewModel.SpriteSheetsWithTransparency.Add(new BitmapImage());
                     Instance.ViewModel.NullSpriteSheetList.Add(path);
                     Instance.ViewModel.NullSpriteSheetList.Add(path);
@@ -203,11 +211,14 @@ namespace AnimationEditor
             {
                 if (Instance.ViewModel.SpriteSheets != null) Instance.ViewModel.SpriteSheets.Clear();
                 if (Instance.ViewModel.SpriteSheetsWithTransparency != null) Instance.ViewModel.SpriteSheetsWithTransparency.Clear();
+                if (Instance.ViewModel.SpriteSheetTransparentColors != null) Instance.ViewModel.SpriteSheetTransparentColors.Clear();
             }
             else
             {
                 Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
                 Instance.ViewModel.SpriteSheetsWithTransparency = new System.Collections.Generic.List<BitmapImage>();
+                Instance.ViewModel.SpriteSheetTransparentColors = new List<Color>();
+
             }
         }
         #endregion

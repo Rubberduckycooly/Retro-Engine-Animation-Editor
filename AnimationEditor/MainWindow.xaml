@@ -26,6 +26,15 @@
             <MenuItem Header="_View" Visibility="Visible">
                 <MenuItem x:Name="MenuViewTransparentSpriteSheets" IsCheckable="True" Header="Transparent Sprite Sheets" Click="MenuViewTransparentSpriteSheets_Click"></MenuItem>
                 <MenuItem x:Name="MenuViewFullSpriteSheets" IsCheckable="True" Header="View Full Sprite Sheets" Click="MenuViewFullSpriteSheets_Click"></MenuItem>
+                <MenuItem x:Name="MenuViewSetBackgroundToTransparentColor" IsCheckable="True" Click="MenuViewSetBackgroundToTransparentColor_Click">
+                    <MenuItem.Header>
+                        <StackPanel Background="Transparent">
+                            <TextBlock>Use Sprite Sheet's</TextBlock>
+                            <TextBlock>Transparent Color as Background</TextBlock>
+                        </StackPanel>
+
+                    </MenuItem.Header>
+                </MenuItem>
                 <MenuItem x:Name="MenuViewFrameBorder" IsCheckable="True" Header="View Frame Border" Click="MenuViewFrameBorder_Click"></MenuItem>
                 <Separator></Separator>
                 <MenuItem Header="Editor Settings">
@@ -167,13 +176,19 @@
                                 </Image.RenderTransform>
                             </Image>
                         </Button>
-                        <Button Width="22" IsEnabled="False"></Button>
+                        <Button x:Name="ButtonAnimationRename" BorderThickness="1" Click="ButtonAnimationRename_Click">
+                            <Image Width="16" Source="{StaticResource EditTitleString_16x}"/>
+                            <Button.ToolTip>
+                                <StackPanel>
+                                    <Label>Rename the selected animation.</Label>
+                                </StackPanel>
+                            </Button.ToolTip>
+                        </Button>
                     </ToolBarPanel>
-                    <ListBox  x:Name="List" ItemsSource="{Binding Animations}" DisplayMemberPath="AnimName"
+                    <ListBox x:Name="List" Width="160" HorizontalAlignment="Left" ItemsSource="{Binding Animations}" DisplayMemberPath="AnimName"
                          SelectedItem="{Binding SelectedAnimation, Mode=OneWayToSource}"
                           SelectedIndex="{Binding SelectedAnimationIndex, Mode=TwoWay}"
-                             SelectionChanged="List_SelectionChanged"
-                         MouseDoubleClick="List_MouseDoubleClick"/>
+                             SelectionChanged="List_SelectionChanged"/>
                 </DockPanel>
             </DockPanel>
 
@@ -272,7 +287,7 @@
                                 </StackPanel>
                             </Button.ToolTip>
                         </Button>
-                        <ToggleButton  x:Name="ButtonShowCenter" Visibility="Collapsed" IsEnabled="False">
+                        <ToggleButton  x:Name="ButtonShowCenter" Click="ButtonShowCenter_Click">
                             <Image Width="16" Source="{StaticResource TableInsideBorder_16x}"/>
                             <ToggleButton.ToolTip>
                                 <StackPanel>
@@ -420,24 +435,40 @@
                                     <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"></RectangleGeometry>
                                 </Image.Clip>
                             </Image>
-                            <Border Visibility="Hidden" BorderBrush="Red" x:Name="HitBoxViewer" BorderThickness="1"                            
-                           Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
-                           Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
-                           Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
-                           Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
-                            RenderTransformOrigin="0.5,0.5">
-                                <Grid Visibility="Hidden" x:Name="HitBoxBackground" Background="Red" Opacity="0.5"></Grid>
-                            </Border>
                             <Border Visibility="Visible" BorderBrush="Black" x:Name="BorderMarker" BorderThickness="1"                            
                            Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
                            Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
                            Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
                            Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
                             RenderTransformOrigin="0.5,0.5">
-                                <Grid x:Name="BorderMarkerBackground" Background="Transparent" Opacity="0.5"></Grid>
+                                <Grid x:Name="BorderMarkerBackground" Background="Transparent"></Grid>
                             </Border>
-
+                            <Border Visibility="Hidden" BorderBrush="#FFE700FF" x:Name="HitBoxViewer" BorderThickness="1"                            
+                           Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
+                           Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
+                           Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
+                           Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
+                            RenderTransformOrigin="0.5,0.5">
+                                <Grid Visibility="Hidden" x:Name="HitBoxBackground" Opacity="0.5" Background="#FFE700FF" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" MouseMove="CanvasView_MouseMove">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" Name="Section1"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" Name="Section2"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" Name="Section3"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" Name="Section4"></Grid>
+                                </Grid>
+                            </Border>
                         </Canvas>
+                        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="CenterAxis">
+                            <Grid Visibility="Hidden" Height="1" Name="AxisX" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Red"></Grid>
+                            <Grid Visibility="Hidden" Width="1" Name="AxisY" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="Red"></Grid>
+                        </Grid>
                     </Grid>
                 </Border>
             </DockPanel>
@@ -532,24 +563,47 @@
                                 </Popup>
                             </Grid>
                             <Grid Height="22" Margin="0,5,0,-5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                                    <ColumnDefinition Width="20"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                        <ColumnDefinition Width="24"></ColumnDefinition>
-                                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Hitbox Color:" VerticalAlignment="Center"></TextBlock>
-                                    <xc:ColorPicker Grid.Column="1" SelectedColor="#FFFF0000" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="HitboxColorPicker" Foreground="#7FFF0000"></xc:ColorPicker>
-                                    <Border Grid.Column="1" Margin="2,0" Width="20" Height="20" BorderBrush="Black" BorderThickness="1">
-                                        <Grid x:Name="HitboxColorBox" HorizontalAlignment="Left" Grid.Column="1" Width="18" Height="18" Background="#FFFF0000">
-                                            <Button x:Name="HitboxColorTrigger" Width="18" Height="18" Opacity="0.0" Click="HitboxColorBox_Click"></Button>
-                                        </Grid>
-                                    </Border>
-                                </Grid>
+                                <StackPanel Background="Transparent" Orientation="Horizontal">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            <ColumnDefinition Width="24"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Name="HBLabel" MouseDown="TextBlock_MouseDown" Text="Hitbox Color:" VerticalAlignment="Center"></TextBlock>
+                                        <xc:ColorPicker Grid.Column="1" SelectedColor="#FFE700FF" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="HitboxColorPicker" Foreground="#7FFF0000"></xc:ColorPicker>
+                                        <Border Grid.Column="1" Margin="2,0" Width="20" Height="20" BorderBrush="Black" BorderThickness="1">
+                                            <Grid x:Name="HitboxColorBox" HorizontalAlignment="Left" Grid.Column="1" Width="18" Height="18" Background="#FFE700FF">
+                                                <Button x:Name="HitboxColorTrigger" Width="18" Height="18" Opacity="0.0" Click="HitboxColorBox_Click"></Button>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                    <Grid Margin="0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            <ColumnDefinition Width="24"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Name="AxisLabel" MouseDown="TextBlock_MouseDown" Text="Axis Color:" VerticalAlignment="Center"></TextBlock>
+                                        <xc:ColorPicker Grid.Column="1" SelectedColor="#FFFF0000" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="AxisColorPicker" Foreground="#7FFF0000"></xc:ColorPicker>
+                                        <Border Grid.Column="1" Margin="2,0" Width="20" Height="20" BorderBrush="Black" BorderThickness="1">
+                                            <Grid x:Name="AxisColorBox" HorizontalAlignment="Left" Grid.Column="1" Width="18" Height="18" Background="#FFFF0000">
+                                                <Button x:Name="AxisColorTrigger" Width="18" Height="18" Opacity="0.0" Click="AxisColorTrigger_Click"></Button>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                    <Grid Margin="0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            <ColumnDefinition Width="24"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Name="BGLabel" MouseDown="TextBlock_MouseDown" Text="BG:" VerticalAlignment="Center"></TextBlock>
+                                        <xc:ColorPicker Grid.Column="1" SelectedColor="#303030" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="BGColorPicker" Foreground="#7FFF0000"></xc:ColorPicker>
+                                        <Border Grid.Column="1" Margin="2,0" Width="20" Height="20" BorderBrush="Black" BorderThickness="1">
+                                            <Grid x:Name="BGColorBox" HorizontalAlignment="Left" Grid.Column="1" Width="18" Height="18" Background="#303030">
+                                                <Button x:Name="BGColorTrigger" Width="18" Height="18" Opacity="0.0" Click="BGColorTrigger_Click"></Button>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
                             </Grid>
 
                             <ComboBox x:Name="HitBoxComboBox2" Margin="0,1" Visibility="Hidden"/>
@@ -572,12 +626,12 @@
                                 <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxLeftNUD" Grid.Column="1" Grid.Row="1"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedHitbox_X, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="3" Grid.Row="1" Text="Top" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxTopNUD" Grid.Column="4" Grid.Row="1"
+                                <TextBlock Grid.Column="3" Grid.Row="1" Text="Right" Foreground="{DynamicResource NormalText}"/>
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxRightNUD" Grid.Column="4" Grid.Row="1"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedHitbox_Y, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="0" Grid.Row="3" Text="Right" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxRightNUD" Grid.Column="1" Grid.Row="3"
+                                <TextBlock Grid.Column="0" Grid.Row="3" Text="Top" Foreground="{DynamicResource NormalText}"/>
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxTopNUD" Grid.Column="1" Grid.Row="3"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedHitbox_Width, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="3" Text="Bottom" Foreground="{DynamicResource NormalText}"/>

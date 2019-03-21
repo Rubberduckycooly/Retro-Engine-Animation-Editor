@@ -44,6 +44,8 @@ namespace AnimationEditor
             Handler = new FileHandler(this);
             PreventScrollChange = false;
             HitboxColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
+            AxisColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
+            BGColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
         }
 
         private void PlaybackService_OnFrameChanged(PlaybackService obj)
@@ -55,7 +57,7 @@ namespace AnimationEditor
         private void UpdatePlaybackIndex(int frameIndex)
         {
             FramesList.SelectedIndex = frameIndex;
-            Interfacer.UpdateImage();
+            Interfacer.UpdateViewerLayout();
         }
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
@@ -222,17 +224,6 @@ namespace AnimationEditor
             Interfacer.UpdateUI();
         }
 
-        private void List_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (ViewModel.SelectedAnimation != null)
-            {
-                ViewModel.Animations[ViewModel.SelectedAnimationIndex].AnimName = RSDKrU.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Annimation:", ViewModel.SelectedAnimation.AnimName);
-                List.ItemsSource = null;
-                Interfacer.UpdateUI();
-            }
-
-        }
-
         private void MenuViewTexture_Click(object sender, RoutedEventArgs e)
         {
             TextureManagerMenu.Startup(this);
@@ -354,6 +345,17 @@ namespace AnimationEditor
                 HitBoxBackground.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
                 HitboxColorBox.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
             }
+            if (AxisColorPicker.SelectedColor != null)
+            {
+                AxisX.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
+                AxisY.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
+                AxisColorBox.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
+            }
+            if (BGColorPicker.SelectedColor != null && !MenuViewSetBackgroundToTransparentColor.IsChecked)
+            {
+                CanvasView.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
+                BGColorBox.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
+            }
         }
 
         private void MenuFileOpenRecently_SubmenuOpened(object sender, RoutedEventArgs e)
@@ -417,7 +419,7 @@ namespace AnimationEditor
 
         private void MenuViewTransparentSpriteSheets_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateImage();
+            Interfacer.UpdateViewerLayout();
         }
 
         private void MenuFileUnloadAnimation_Click(object sender, RoutedEventArgs e)
@@ -480,29 +482,125 @@ namespace AnimationEditor
         }
 
         Point AnchorPoint = new Point(0, 0);
+        bool TopLeft = false;
+        bool TopRight = false;
+        bool BottomLeft = false;
+        bool BottomRight = false;
+        double dirX;
+        double dirY;
 
         private void CanvasView_MouseMove(object sender, MouseEventArgs e)
         {
-           /* if (e.LeftButton == MouseButtonState.Pressed)
+            //TODO: Handle Zooming
+            double rate = ViewModel.Zoom;
+            if (e.LeftButton == MouseButtonState.Pressed)
             {
-                double x1 = AnchorPoint.X;
-                double y1 = AnchorPoint.Y;
-                double x2 = e.GetPosition(CanvasView).X;
-                double y2 = e.GetPosition(CanvasView).Y;
+                if (ButtonShowFieldHitbox.IsChecked == true)
+                {
+                    double x1 = AnchorPoint.X;
+                    double y1 = AnchorPoint.Y;
+                    double x2 = e.GetPosition(CanvasView).X;
+                    double y2 = e.GetPosition(CanvasView).Y;
 
-                int distanceX = (int)(x2 - x1);
-                int distanceY = (int)(y2 - y1);
+                    int distanceX = (int)(x2 - x1);
+                    int distanceY = (int)(y2 - y1);
+                    dirX = ((x2 / rate - x1 / rate));
+                    dirY = ((y2 / rate - y1 / rate));
 
-                FrameHeightNUD.Value += distanceY;
-                FrameWidthNUD.Value += distanceX;
+                    if (dirX >= 1 || dirX <= -1)
+                    {
+                        AdjustHitboxSize((int)dirX, (int)dirY, e, true, false);
+                    }
+                    else
+                    {
+                        //dirX = 0;
+                    }
+                    if (dirY >= 1 || dirY <= -1)
+                    {
+                        AdjustHitboxSize((int)dirX, (int)dirY, e, false, true);
+                    }
+                    else
+                    {
+                        //dirY = 0;
+                    }
+                }
 
-                AnchorPoint = e.GetPosition(CanvasView);
 
-            }*/
+
+
+            }
+        }
+
+        private void AdjustHitboxSize(int distanceX, int distanceY, MouseEventArgs e, bool resetX = false, bool resetY = false)
+        {
+            if (BottomRight)
+            {
+                if (HitboxBottomNUD.Value + distanceY >= 1)
+                {
+                    HitboxBottomNUD.Value += (int)(distanceY);
+                    AnchorPoint = e.GetPosition(CanvasView);
+                    if (resetY) dirY = 0;
+                }
+                if (HitboxRightNUD.Value + distanceX >= 1)
+                {
+                    HitboxRightNUD.Value += (int)(distanceX);
+                    AnchorPoint = e.GetPosition(CanvasView);
+                    if (resetX) dirX = 0;
+                }
+            }
+            if (BottomLeft)
+            {
+                if (HitboxBottomNUD.Value + distanceY >= 1)
+                {
+                    HitboxBottomNUD.Value += (int)(distanceY);
+                    AnchorPoint = e.GetPosition(CanvasView);
+                    if (resetY) dirY = 0;
+                }
+                if (HitboxLeftNUD.Value + distanceX <= -1)
+                {
+                    HitboxLeftNUD.Value += (int)(distanceX);
+                    AnchorPoint = e.GetPosition(CanvasView);
+                    if (resetX) dirX = 0;
+                }
+            }
+            if (TopRight)
+            {
+                if (HitboxTopNUD.Value + distanceY <= -1)
+                {
+                    HitboxTopNUD.Value += (int)(distanceY);
+                    AnchorPoint = e.GetPosition(CanvasView);
+                    if (resetY) dirY = 0;
+                }
+                if (HitboxRightNUD.Value + distanceX >= 1)
+                {
+                    HitboxRightNUD.Value += (int)(distanceX);
+                    AnchorPoint = e.GetPosition(CanvasView);
+                    if (resetX) dirX = 0;
+                }
+            }
+            if (TopLeft)
+            {
+                if (HitboxTopNUD.Value + distanceY <= -1)
+                {
+                    HitboxTopNUD.Value += (int)(distanceY);
+                    AnchorPoint = e.GetPosition(CanvasView);
+                    if (resetY) dirY = 0;
+                }
+                if (HitboxLeftNUD.Value + distanceX <= -1)
+                {
+                    HitboxLeftNUD.Value += (int)(distanceX);
+                    AnchorPoint = e.GetPosition(CanvasView);
+                    if (resetX) dirX = 0;
+                }
+            }
         }
 
         private void CanvasView_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (Section1.IsMouseOver) TopLeft = true;
+            else if (Section2.IsMouseOver) TopRight = true;
+            else if(Section3.IsMouseOver) BottomLeft = true;
+            else if(Section4.IsMouseOver) BottomRight = true;
             CanvasView.Focus();
             AnchorPoint = e.GetPosition(CanvasView);
         }
@@ -510,17 +608,21 @@ namespace AnimationEditor
         private void CanvasView_MouseUp(object sender, MouseButtonEventArgs e)
         {
             AnchorPoint = e.GetPosition(CanvasView);
+            TopLeft = false;
+            TopRight = false;
+            BottomLeft = false;
+            BottomRight = false;
         }
 
         private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.FullFrameMode ^= true;
-            Interfacer.UpdateImage();
+            Interfacer.UpdateViewerLayout();
         }
 
         private void MenuViewFrameBorder_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateImage();
+            Interfacer.UpdateViewerLayout();
         }
 
         private void CanvasView_KeyDown(object sender, KeyEventArgs e)
@@ -599,6 +701,55 @@ namespace AnimationEditor
             CanvasView.Focusable = true;
             CanvasView.Focus();
             Keyboard.Focus(CanvasView);
+        }
+
+        private void AxisColorTrigger_Click(object sender, RoutedEventArgs e)
+        {
+            AxisColorPicker.ColorMode = ColorMode.ColorCanvas;
+            AxisColorPicker.ShowStandardColors = false;
+            AxisColorPicker.IsOpen = true;
+        }
+
+        private void ButtonShowCenter_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.UpdateUI();
+        }
+
+        private void ButtonAnimationRename_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.SelectedAnimation != null)
+            {
+                int tempIndex = ViewModel.SelectedAnimationIndex;
+                ViewModel.Animations[ViewModel.SelectedAnimationIndex].AnimName = RSDKrU.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Annimation:", ViewModel.SelectedAnimation.AnimName);
+                List.ItemsSource = null;
+                Interfacer.UpdateUI();
+                List.SelectedIndex = tempIndex;
+            }
+        }
+
+        private void BGColorTrigger_Click(object sender, RoutedEventArgs e)
+        {
+            BGColorPicker.ColorMode = ColorMode.ColorCanvas;
+            BGColorPicker.ShowStandardColors = false;
+            BGColorPicker.IsOpen = true;
+        }
+
+        private void BGColorHyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            CanvasView.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
+            BGColorBox.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
+        }
+
+        private void MenuViewSetBackgroundToTransparentColor_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.UpdateViewerLayout();
+        }
+
+        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender == BGLabel) BGColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#303030");
+            else if (sender == AxisLabel) AxisColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#FFFF0000");
+            else if (sender == HBLabel) HitboxColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#FFE700FF");
         }
     }
 }

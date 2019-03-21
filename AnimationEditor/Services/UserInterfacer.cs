@@ -38,12 +38,62 @@ namespace AnimationEditor
                 UpdateList();
                 if (frameInfoUpdate) UpdateCurrentFrameInList();
                 UpdateInfo();
-                UpdateImage();
+                UpdateViewerLayout();
                 UpdateInvalidState();
+                UpdateAnimationTypeLimitations();
             }
             if (!Instance.isPlaybackEnabled) UpdateNormalElements();
             PreventIndexUpdate = false;
 
+        }
+
+        public void UpdateAnimationTypeLimitations()
+        {
+            switch (Instance.AnimationType)
+            {
+                case EngineType.RSDKvRS:
+                    UpdateRSDKvRSLimits();
+                    break;
+                case EngineType.RSDKv1:
+                    UpdateRSDKv1Limits();
+                    break;
+                case EngineType.RSDKv2:
+                    UpdateRSDKv2Limits();
+                    break;
+                case EngineType.RSDKvB:
+                    UpdateRSDKvBLimits();
+                    break;
+                case EngineType.RSDKv5:
+                    UpdateRSDKv5Limits();
+                    break;
+
+
+            }
+
+            void UpdateRSDKvRSLimits()
+            {
+
+            }
+
+            void UpdateRSDKv1Limits()
+            {
+
+            }
+
+            void UpdateRSDKv2Limits()
+            {
+
+            }
+
+            void UpdateRSDKvBLimits()
+            {
+
+            }
+
+            void UpdateRSDKv5Limits()
+            {
+
+            }
         }
 
 
@@ -68,8 +118,8 @@ namespace AnimationEditor
             void UpdateHitboxInvalidState(bool invalid = true, bool indexNegative = false)
             {
                 Instance.HitboxLeftNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.HitboxRightNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
                 Instance.HitboxTopNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.HitboxRightNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
                 Instance.HitboxBottomNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
 
                 Instance.HitBoxComboBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
@@ -121,7 +171,7 @@ namespace AnimationEditor
         }
 
         #region Image/Hitbox Update Methods
-        public void UpdateImage()
+        public void UpdateViewerLayout()
         {
             if (Instance.ViewModel.LoadedAnimationFile != null && Instance.HitBoxComboBox.SelectedItem != null && Instance.ButtonShowFieldHitbox.IsChecked.Value)
             {
@@ -181,6 +231,31 @@ namespace AnimationEditor
             System.Windows.Controls.Canvas.SetTop(Instance.BorderMarker, Instance.ViewModel.BorderTop);
 
             Instance.BorderMarker.RenderTransformOrigin = Instance.ViewModel.SpriteCenter;
+
+            if (Instance.ButtonShowCenter.IsChecked.Value)
+            {
+                Instance.AxisX.Visibility = Visibility.Visible;
+                Instance.AxisY.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Instance.AxisX.Visibility = Visibility.Hidden;
+                Instance.AxisY.Visibility = Visibility.Hidden;
+            }
+
+            if (Instance.MenuViewSetBackgroundToTransparentColor.IsChecked)
+            {
+                Instance.CanvasView.Background = new SolidColorBrush(Instance.ViewModel.SpriteSheetTransparentColors[Instance.ViewModel.CurrentSpriteSheet.Value]);                
+            }
+            else
+            {
+                if (Instance.BGColorPicker.SelectedColor != null)
+                {
+                    Instance.CanvasView.Background = new SolidColorBrush(Instance.BGColorPicker.SelectedColor.Value);
+                }
+
+            }
+
 
             SetHitboxDimensions();
             SetBorderMarkerDimensions();
@@ -331,8 +406,8 @@ namespace AnimationEditor
                 Instance.HitBoxComboBox.SelectedIndex = Instance.ViewModel.SelectedFrameHitboxIndex;
 
                 Instance.HitboxLeftNUD.Value = Instance.ViewModel.SelectedHitbox_X;
-                Instance.HitboxTopNUD.Value = Instance.ViewModel.SelectedHitbox_Y;
-                Instance.HitboxRightNUD.Value = Instance.ViewModel.SelectedHitbox_Width;
+                Instance.HitboxRightNUD.Value = Instance.ViewModel.SelectedHitbox_Y;
+                Instance.HitboxTopNUD.Value = Instance.ViewModel.SelectedHitbox_Width;
                 Instance.HitboxBottomNUD.Value = Instance.ViewModel.SelectedHitbox_Height;
 
             }
@@ -422,6 +497,7 @@ namespace AnimationEditor
                 Instance.PlaybackOptionsButton.IsEnabled = Instance.FramesList.SelectedItem != null;
                 Instance.AnimationScroller.IsEnabled = enabled;
                 Instance.HitboxButton.IsEnabled = enabled;
+                Instance.ButtonAnimationRename.IsEnabled = enabled;
                 Instance.TextureButton.IsEnabled = enabled;
             }
 
@@ -436,6 +512,7 @@ namespace AnimationEditor
                 Instance.ButtonFrameRight.IsEnabled = enabled;
                 UpdateZoomInOutButtons(enabled);
                 Instance.ButtonShowFieldHitbox.IsEnabled = enabled;
+                Instance.ButtonShowCenter.IsEnabled = enabled;
             }
 
             void UpdateZoomInOutButtons(bool enabled)
