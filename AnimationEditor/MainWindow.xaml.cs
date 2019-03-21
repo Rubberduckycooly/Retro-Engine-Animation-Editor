@@ -274,7 +274,7 @@ namespace AnimationEditor
         private void FramesList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (!isPlaybackEnabled)
-            Interfacer.UpdateUI();
+            Interfacer.UpdateUI(true);
         }
 
         private void SpriteSheetList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -477,6 +477,128 @@ namespace AnimationEditor
             {
                 MenuViewUseDarkTheme.IsChecked = true;
             }
+        }
+
+        Point AnchorPoint = new Point(0, 0);
+
+        private void CanvasView_MouseMove(object sender, MouseEventArgs e)
+        {
+           /* if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                double x1 = AnchorPoint.X;
+                double y1 = AnchorPoint.Y;
+                double x2 = e.GetPosition(CanvasView).X;
+                double y2 = e.GetPosition(CanvasView).Y;
+
+                int distanceX = (int)(x2 - x1);
+                int distanceY = (int)(y2 - y1);
+
+                FrameHeightNUD.Value += distanceY;
+                FrameWidthNUD.Value += distanceX;
+
+                AnchorPoint = e.GetPosition(CanvasView);
+
+            }*/
+        }
+
+        private void CanvasView_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            CanvasView.Focus();
+            AnchorPoint = e.GetPosition(CanvasView);
+        }
+
+        private void CanvasView_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            AnchorPoint = e.GetPosition(CanvasView);
+        }
+
+        private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.FullFrameMode ^= true;
+            Interfacer.UpdateImage();
+        }
+
+        private void MenuViewFrameBorder_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.UpdateImage();
+        }
+
+        private void CanvasView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down)
+            {
+                if (Keyboard.IsKeyDown(Key.LeftShift))
+                {
+                    FrameHeightNUD.Value += 1;
+                }
+                else if (Keyboard.IsKeyDown(Key.LeftCtrl))
+                {
+                    PivotYBox.Value += 1;
+                }
+                else
+                {
+                    FrameTopNUD.Value += 1;
+                }
+            }
+            if (e.Key == Key.Up)
+            {
+                if (Keyboard.IsKeyDown(Key.LeftShift))
+                {
+                    FrameHeightNUD.Value -= 1;
+                }
+                else if (Keyboard.IsKeyDown(Key.LeftCtrl))
+                {
+                    PivotYBox.Value -= 1;
+                }
+                else
+                {
+                    FrameTopNUD.Value -= 1;
+                }
+            }
+            if (e.Key == Key.Left)
+            {
+                if (Keyboard.IsKeyDown(Key.LeftShift))
+                {
+                    FrameWidthNUD.Value -= 1;
+                }
+                else if (Keyboard.IsKeyDown(Key.LeftCtrl))
+                {
+                    PivotXBox.Value -= 1;
+                }
+                else
+                {
+                    FrameLeftNUD.Value -= 1;
+                }
+            }
+            if (e.Key == Key.Right)
+            {
+                if (Keyboard.IsKeyDown(Key.LeftShift))
+                {
+                    FrameWidthNUD.Value += 1;
+                }
+                else if (Keyboard.IsKeyDown(Key.LeftCtrl))
+                {
+                    PivotXBox.Value += 1;
+                }
+                else
+                {
+                    FrameLeftNUD.Value += 1;
+                }
+            }
+
+        }
+
+        private void CanvasView_KeyUp(object sender, KeyEventArgs e)
+        {
+            KeyboardNavigation.SetDirectionalNavigation(this, KeyboardNavigationMode.Continue);
+        }
+
+        private void CanvasView_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            KeyboardNavigation.SetControlTabNavigation(this, KeyboardNavigationMode.None);
+            CanvasView.Focusable = true;
+            CanvasView.Focus();
+            Keyboard.Focus(CanvasView);
         }
     }
 }

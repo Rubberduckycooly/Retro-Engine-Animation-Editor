@@ -126,10 +126,12 @@ namespace AnimationEditor
             if (Instance.ViewModel.LoadedAnimationFile != null && Instance.HitBoxComboBox.SelectedItem != null && Instance.ButtonShowFieldHitbox.IsChecked.Value)
             {
                 Instance.HitBoxViewer.Visibility = Visibility.Visible;
+                Instance.HitBoxBackground.Visibility = Visibility.Visible;
             }
             else
             {
                 Instance.HitBoxViewer.Visibility = Visibility.Hidden;
+                Instance.HitBoxBackground.Visibility = Visibility.Hidden;
             }
             Instance.Geomotry.Rect = Instance.ViewModel.SpriteFrame;
 
@@ -165,7 +167,32 @@ namespace AnimationEditor
             System.Windows.Controls.Canvas.SetLeft(Instance.HitBoxViewer, Instance.ViewModel.HitboxLeft);
             System.Windows.Controls.Canvas.SetTop(Instance.HitBoxViewer, Instance.ViewModel.HitboxTop);
             Instance.HitBoxViewer.RenderTransformOrigin = Instance.ViewModel.SpriteCenter;
+
+
+            if (Instance.MenuViewFrameBorder.IsChecked)
+            {
+                Instance.BorderMarker.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Instance.BorderMarker.Visibility = Visibility.Hidden;
+            }
+            System.Windows.Controls.Canvas.SetLeft(Instance.BorderMarker, Instance.ViewModel.BorderLeft);
+            System.Windows.Controls.Canvas.SetTop(Instance.BorderMarker, Instance.ViewModel.BorderTop);
+
+            Instance.BorderMarker.RenderTransformOrigin = Instance.ViewModel.SpriteCenter;
+
             SetHitboxDimensions();
+            SetBorderMarkerDimensions();
+        }
+
+        public void SetBorderMarkerDimensions()
+        {
+            double width = Instance.ViewModel.SelectedFrameWidth ?? 0;
+            double height = Instance.ViewModel.SelectedFrameHeight ?? 0;
+
+            Instance.BorderMarker.Width = width * Instance.ViewModel.Zoom;
+            Instance.BorderMarker.Height = height * Instance.ViewModel.Zoom;
         }
 
         public void SetHitboxDimensions()

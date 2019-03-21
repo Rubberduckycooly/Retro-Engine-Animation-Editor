@@ -25,6 +25,8 @@
             </MenuItem>
             <MenuItem Header="_View" Visibility="Visible">
                 <MenuItem x:Name="MenuViewTransparentSpriteSheets" IsCheckable="True" Header="Transparent Sprite Sheets" Click="MenuViewTransparentSpriteSheets_Click"></MenuItem>
+                <MenuItem x:Name="MenuViewFullSpriteSheets" IsCheckable="True" Header="View Full Sprite Sheets" Click="MenuViewFullSpriteSheets_Click"></MenuItem>
+                <MenuItem x:Name="MenuViewFrameBorder" IsCheckable="True" Header="View Frame Border" Click="MenuViewFrameBorder_Click"></MenuItem>
                 <Separator></Separator>
                 <MenuItem Header="Editor Settings">
                     <MenuItem x:Name="MenuViewUseDarkTheme" IsCheckable="True" Header="Use Dark Theme (Requires Restart)"></MenuItem>
@@ -33,6 +35,19 @@
             </MenuItem>
             <MenuItem Header="_Info">
                 <MenuItem x:Name="MenuInfoAbout" Header="_About" Click="MenuInfoAbout_Click"/>
+                <MenuItem x:Name="MenuInfoHint" Header="_Hint">
+                    <MenuItem IsEnabled="False">
+                        <MenuItem.Header>
+                            <StackPanel Background="Transparent">
+                                <TextBlock>Controls (Frame Viewer):</TextBlock>
+                                <TextBlock>Arrows (Ctrl) - Frame Width/Height</TextBlock>
+                                <TextBlock>Arrows (Alt) - Pivot X/Y</TextBlock>
+                                <TextBlock>Arrows - Frame X/Y</TextBlock>
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+
+                </MenuItem>
             </MenuItem>
         </Menu>
         <Grid Margin="5" IsEnabled="{Binding IsAnimationDataLoaded}">
@@ -154,7 +169,7 @@
                         </Button>
                         <Button Width="22" IsEnabled="False"></Button>
                     </ToolBarPanel>
-                    <ListBox x:Name="List" ItemsSource="{Binding Animations}" DisplayMemberPath="AnimName"
+                    <ListBox  x:Name="List" ItemsSource="{Binding Animations}" DisplayMemberPath="AnimName"
                          SelectedItem="{Binding SelectedAnimation, Mode=OneWayToSource}"
                           SelectedIndex="{Binding SelectedAnimationIndex, Mode=TwoWay}"
                              SelectionChanged="List_SelectionChanged"
@@ -162,18 +177,22 @@
                 </DockPanel>
             </DockPanel>
 
-            <DockPanel Grid.Column="2">
+            <DockPanel  Grid.Column="2">
                 <DockPanel DockPanel.Dock="Bottom">
                     <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="9*"/>
+                            <ColumnDefinition Width="311*"/>
+                        </Grid.ColumnDefinitions>
                         <ListBox x:Name="FramesList" ScrollViewer.HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch"
-                         SelectedIndex="{Binding SelectedFrameIndex}" SelectionChanged="FramesList_SelectionChanged" MouseDoubleClick="FramesList_MouseDoubleClick" ScrollBar.Scroll="FramesList_Scroll">
+                         SelectedIndex="{Binding SelectedFrameIndex}" SelectionChanged="FramesList_SelectionChanged" MouseDoubleClick="FramesList_MouseDoubleClick" ScrollBar.Scroll="FramesList_Scroll" Grid.ColumnSpan="2">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
                         </ListBox>
-                        <ListBox Visibility="Hidden" x:Name="FakeScrollbar" IsEnabled="False" ScrollViewer.HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch"></ListBox>
+                        <ListBox Visibility="Hidden" x:Name="FakeScrollbar" IsEnabled="False" ScrollViewer.HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch" Grid.ColumnSpan="2"></ListBox>
                     </Grid>
                 </DockPanel>
                 <Grid DockPanel.Dock="Bottom" Margin="0">
@@ -181,8 +200,8 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="40"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-                        <ToggleButton Click="ButtonPlay_Click" Checked="ButtonPlay_CheckChanged" Unchecked="ButtonPlay_CheckChanged" x:Name="ButtonPlay">
+                    <StackPanel  DockPanel.Dock="Bottom" Orientation="Horizontal">
+                        <ToggleButton  Click="ButtonPlay_Click" Checked="ButtonPlay_CheckChanged" Unchecked="ButtonPlay_CheckChanged" x:Name="ButtonPlay">
                             <Image Width="16" Source="{StaticResource Run_16x}"/>
                             <ToggleButton.ToolTip>
                                 <StackPanel>
@@ -190,7 +209,7 @@
                                 </StackPanel>
                             </ToggleButton.ToolTip>
                         </ToggleButton>
-                        <Button Content="..." Width="20" Height="20" x:Name="PlaybackOptionsButton" VerticalContentAlignment="Center" Click="PlaybackOptionsButton_Click">
+                        <Button  Content="..." Width="20" Height="20" x:Name="PlaybackOptionsButton" VerticalContentAlignment="Center" Click="PlaybackOptionsButton_Click">
                             <Button.ContextMenu>
                                 <ContextMenu x:Name="PlaybackOptionsContextMenu">
                                     <MenuItem IsEnabled="False" IsHitTestVisible="False">
@@ -229,7 +248,7 @@
                                 </ContextMenu>
                             </Button.ContextMenu>
                         </Button>
-                        <Button x:Name="ButtonRewind" Visibility="Collapsed">
+                        <Button  x:Name="ButtonRewind" Visibility="Collapsed">
                             <Image Width="16"/>
                             <Button.ToolTip>
                                 <StackPanel>
@@ -237,7 +256,7 @@
                                 </StackPanel>
                             </Button.ToolTip>
                         </Button>
-                        <Button x:Name="ButtonZoomIn" Click="ButtonZoomIn_Click">
+                        <Button  x:Name="ButtonZoomIn" Click="ButtonZoomIn_Click">
                             <Image Width="16" Source="{StaticResource ZoomIn_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
@@ -245,7 +264,7 @@
                                 </StackPanel>
                             </Button.ToolTip>
                         </Button>
-                        <Button x:Name="ButtonZoomOut" Click="ButtonZoomOut_Click">
+                        <Button  x:Name="ButtonZoomOut" Click="ButtonZoomOut_Click">
                             <Image Width="16" Source="{StaticResource ZoomOut_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
@@ -253,7 +272,7 @@
                                 </StackPanel>
                             </Button.ToolTip>
                         </Button>
-                        <ToggleButton x:Name="ButtonShowCenter" Visibility="Collapsed" IsEnabled="False">
+                        <ToggleButton  x:Name="ButtonShowCenter" Visibility="Collapsed" IsEnabled="False">
                             <Image Width="16" Source="{StaticResource TableInsideBorder_16x}"/>
                             <ToggleButton.ToolTip>
                                 <StackPanel>
@@ -261,7 +280,7 @@
                                 </StackPanel>
                             </ToggleButton.ToolTip>
                         </ToggleButton>
-                        <ToggleButton x:Name="ButtonShowFieldHitbox" Visibility="Visible" Click="ButtonShowFieldHitbox_Click">
+                        <ToggleButton  x:Name="ButtonShowFieldHitbox" Visibility="Visible" Click="ButtonShowFieldHitbox_Click">
                             <Image Width="16" Source="{StaticResource AppearanceTabSolid_16x}"/>
                             <ToggleButton.ToolTip>
                                 <StackPanel>
@@ -269,7 +288,7 @@
                                 </StackPanel>
                             </ToggleButton.ToolTip>
                         </ToggleButton>
-                        <ToggleButton x:Name="ButtonShowEntityHitbox" Visibility="Collapsed">
+                        <ToggleButton  x:Name="ButtonShowEntityHitbox" Visibility="Collapsed">
                             <Image Width="16" Source="{StaticResource AppearanceTabSwatch_16x}"/>
                             <ToggleButton.ToolTip>
                                 <StackPanel>
@@ -278,9 +297,9 @@
                             </ToggleButton.ToolTip>
                         </ToggleButton>
 
-                        <Separator Margin="3 0 3 0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                        <Separator  Margin="3 0 3 0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
-                        <Button x:Name="ButtonFrameAdd" Grid.Column="1" Click="ButtonFrameAdd_Click"
+                        <Button  x:Name="ButtonFrameAdd" Grid.Column="1" Click="ButtonFrameAdd_Click"
                             IsEnabled="{Binding IsAnimationSelected}">
                             <Image Source="{StaticResource Add_16x}" Width="16"/>
                             <Button.ToolTip>
@@ -375,42 +394,55 @@
 
                 </Grid>
 
-                <Canvas x:Name="CanvasView" Margin="0 0 0 0" SizeChanged="Canvas_SizeChanged"
+
+                <Border KeyboardNavigation.DirectionalNavigation="Contained" 
+    KeyboardNavigation.TabNavigation="Contained">
+                    <Grid>
+                        <Canvas PreviewKeyDown="CanvasView_PreviewKeyDown" MouseMove="CanvasView_MouseMove" KeyUp="CanvasView_KeyUp" KeyDown="CanvasView_KeyDown" Focusable="True" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" x:Name="CanvasView" Margin="0 0 0 0" SizeChanged="Canvas_SizeChanged"
                         RenderOptions.BitmapScalingMode="NearestNeighbor"
                         ClipToBounds="True" MouseWheel="Canvas_MouseWheel"
                         Background="#303030">
-                    <Image x:Name="CanvasImage"
+                            <Image x:Name="CanvasImage"
                            Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
                            Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
                            Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
                            Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
                            RenderTransformOrigin="{Binding SpriteCenter, Mode=OneWay}">
-                        <Image.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform x:Name="ImageScale" ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"/>
-                                <SkewTransform/>
-                                <RotateTransform/>
-                                <TranslateTransform/>
-                            </TransformGroup>
-                        </Image.RenderTransform>
-                        <Image.Clip>
-                            <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"></RectangleGeometry>
-                        </Image.Clip>
-                    </Image>
-                    <Border Visibility="Hidden" BorderBrush="Red" x:Name="HitBoxViewer" BorderThickness="1"                            
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform x:Name="ImageScale" ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"/>
+                                        <SkewTransform/>
+                                        <RotateTransform/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                                <Image.Clip>
+                                    <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"></RectangleGeometry>
+                                </Image.Clip>
+                            </Image>
+                            <Border Visibility="Hidden" BorderBrush="Red" x:Name="HitBoxViewer" BorderThickness="1"                            
                            Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
                            Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
                            Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
                            Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
-                            RenderTransformOrigin="0.0,0.0">
-                        <Grid x:Name="HitBoxBackground" Background="Red" Opacity="0.5"></Grid>
-                    </Border>
+                            RenderTransformOrigin="0.5,0.5">
+                                <Grid Visibility="Hidden" x:Name="HitBoxBackground" Background="Red" Opacity="0.5"></Grid>
+                            </Border>
+                            <Border Visibility="Visible" BorderBrush="Black" x:Name="BorderMarker" BorderThickness="1"                            
+                           Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
+                           Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
+                           Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
+                           Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
+                            RenderTransformOrigin="0.5,0.5">
+                                <Grid x:Name="BorderMarkerBackground" Background="Transparent" Opacity="0.5"></Grid>
+                            </Border>
 
-
-                </Canvas>
+                        </Canvas>
+                    </Grid>
+                </Border>
             </DockPanel>
 
-            <DockPanel Grid.Column="4"
+            <DockPanel KeyboardNavigation.DirectionalNavigation="None" Grid.Column="4"
                           IsEnabled="{Binding IsAnimationSelected}">
                 <StackPanel x:Name="ControlPanel" Background='{DynamicResource NormalBackground2}'>
                     <Grid Margin="0 0 0 5">

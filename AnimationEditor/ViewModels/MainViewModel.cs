@@ -20,6 +20,8 @@ namespace AnimationEditor.ViewModels
         #region Animations and Frames
         public Animation LoadedAnimationFile;
 
+        public bool FullFrameMode = false;
+
         public string AnimationFilepath { get; set; }
         public string AnimationDirectory { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
@@ -147,6 +149,9 @@ namespace AnimationEditor.ViewModels
             else return -1;
         }
 
+        public double BorderLeft => GetBorderLeft();
+        public double BorderTop => GetBorderTop();
+
         public double SpriteLeft => GetSpriteLeft();
         public double SpriteTop => GetSpriteTop();
         public double SpriteRight => GetSpriteRight();
@@ -154,7 +159,6 @@ namespace AnimationEditor.ViewModels
 
         public double HitboxLeft => GetHitboxLeft();
         public double HitboxTop => GetHitboxTop();
-
         public Rect SpriteFrame => GetFrame();
         public Point SpriteCenter
         {
@@ -163,6 +167,23 @@ namespace AnimationEditor.ViewModels
                 return new Point(0, 0);
             }
         }
+
+        public double GetBorderTop()
+        {
+            double Center = ViewHeight / 2.0;
+            double FrameTop = SelectedFrameTop ?? 0;
+            double FrameCenterY = SelectedFramePivotY ?? 0;
+            return (int)((Center) + FrameCenterY * Zoom);
+        }
+
+        public double GetBorderLeft()
+        {
+            double Center = ViewWidth / 2.0;
+            double FrameLeft = SelectedFrameLeft ?? 0;
+            double FrameCenterX = SelectedFramePivotX ?? 0;
+            return (int)((Center) + FrameCenterX * Zoom);
+        }
+
 
         public double GetSpriteTop()
         {
@@ -184,14 +205,30 @@ namespace AnimationEditor.ViewModels
 
         public double GetSpriteRight()
         {
-            double FrameWidth = SelectedFrameWidth ?? 0;
-            return (int)(SpriteLeft + FrameWidth * Zoom);
+            if (FullFrameMode)
+            {
+                return 0;
+            }
+            else
+            {
+                double FrameWidth = SelectedFrameWidth ?? 0;
+                return (int)(SpriteLeft + FrameWidth * Zoom);
+            }
+
         }
 
         public double GetSpriteBottom()
         {
-            double FrameHeight = SelectedFrameHeight ?? 0;
-            return (int)(SpriteTop + FrameHeight * Zoom);
+            if (FullFrameMode)
+            {
+                return 0;
+            }
+            else
+            {
+                double FrameHeight = SelectedFrameHeight ?? 0;
+                return (int)(SpriteTop + FrameHeight * Zoom);
+            }
+
         }
 
         public double GetHitboxTop()
@@ -204,9 +241,6 @@ namespace AnimationEditor.ViewModels
 
         public double GetHitboxLeft()
         {
-            double FrameX = SelectedFramePivotX ?? 0;
-
-            double FrameCenterX = SelectedFramePivotX ?? 0;
             double Center = ViewWidth / 2.0;
             double HitboxOffset = SelectedHitbox_X * Zoom;
             return Center + HitboxOffset;
@@ -215,10 +249,20 @@ namespace AnimationEditor.ViewModels
         public double SpriteScaleX { get => Zoom; set => Zoom = value; }
 
         public double Zoom = 1;
-
         public Rect GetFrame()
         {
-            if (SelectedFrameLeft != null && SelectedFrameTop != null && SelectedFrameWidth != null && SelectedFrameHeight != null) return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
+            if (SelectedFrameLeft != null && SelectedFrameTop != null && SelectedFrameWidth != null && SelectedFrameHeight != null)
+            {
+                if (FullFrameMode && SpriteSheets != null)
+                {
+                    return new Rect(0, 0, SpriteSheets[(int)CurrentSpriteSheet.Value].Width, SpriteSheets[(int)CurrentSpriteSheet.Value].Height);
+                }
+                else
+                {
+                    return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
+                }
+
+            }
             return new Rect(0, 0, 0.5, 0.5);
 
         }
@@ -603,7 +647,7 @@ namespace AnimationEditor.ViewModels
 
         public void DuplicateFrame(int frameID)
         { 
-            var frame = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID];
+            var frame = (Animation.Frame)LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID].Clone();
             LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
         }
 
