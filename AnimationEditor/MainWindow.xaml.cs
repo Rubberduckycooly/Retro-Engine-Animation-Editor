@@ -134,14 +134,23 @@ namespace AnimationEditor
 
         private void ButtonAnimationImport_Click(object sender, RoutedEventArgs e)
         {
-            ButtonAnimationImport.ContextMenu.IsOpen = true;
             Handler.ImportAnimation();
+            Interfacer.FullUpdateList();
             Interfacer.UpdateUI();
+        }
+
+        private void ButtonAnimationImport_Context(object sender, RoutedEventArgs e)
+        {
+            ButtonAnimationImport.ContextMenu.IsOpen = true;
+        }
+
+        private void ButtonAnimationExport_Context(object sender, RoutedEventArgs e)
+        {
+            ButtonAnimationExport.ContextMenu.IsOpen = true;
         }
 
         private void ButtonAnimationExport_Click(object sender, RoutedEventArgs e)
         {
-            ButtonAnimationExport.ContextMenu.IsOpen = true;
             Handler.ExportAnimation();
             Interfacer.UpdateUI();
         }
@@ -167,16 +176,25 @@ namespace AnimationEditor
             Interfacer.UpdateUI(true);
         }
 
-        private void ButtonFrameImport_Click(object sender, RoutedEventArgs e)
+        private void ButtonFrameImport_Context(object sender, RoutedEventArgs e)
         {
             ButtonFrameImport.ContextMenu.IsOpen = true;
+        }
+
+        private void ButtonFrameExport_Context(object sender, RoutedEventArgs e)
+        {
+            ButtonFrameExport.ContextMenu.IsOpen = true;
+        }
+
+        private void ButtonFrameImport_Click(object sender, RoutedEventArgs e)
+        {
             Handler.ImportFrame();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateFramesList();
+            Interfacer.UpdateUI(true);
         }
 
         private void ButtonFrameExport_Click(object sender, RoutedEventArgs e)
         {
-            ButtonFrameExport.ContextMenu.IsOpen = true;
             Handler.ExportFrame();
             Interfacer.UpdateUI();
         }
@@ -452,6 +470,7 @@ namespace AnimationEditor
         private void ExportAnimationImages_Click(object sender, RoutedEventArgs e)
         {
             Handler.ExportAnimationFramesToImages();
+                        Interfacer.UpdateUI();
         }
 
         private void ButtonShowFieldHitbox_Click(object sender, RoutedEventArgs e)

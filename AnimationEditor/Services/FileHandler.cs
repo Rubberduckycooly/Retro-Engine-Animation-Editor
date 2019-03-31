@@ -55,7 +55,6 @@ namespace AnimationEditor
         #region Load File Methods
         public void LoadFile(string filepath)
         {
-
             Instance.ViewModel.LoadedAnimationFile = new Animation();
             Instance.ViewModel.AnimationFilepath = filepath;
             Instance.ViewModel.LoadedAnimationFile.ImportFrom(Instance.AnimationType, filepath);
@@ -187,7 +186,7 @@ namespace AnimationEditor
                 {
                     parentDirectory = Directory.GetParent(parentDirectory).FullName;
                 }
-                string imagePath = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("\\", "/"));
+                string imagePath = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("/", "\\"));
                 if (File.Exists(imagePath))
                 {
                     Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));

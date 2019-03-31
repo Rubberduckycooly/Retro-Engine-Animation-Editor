@@ -83,7 +83,6 @@ namespace AnimationEditor
                 Instance.DelayNUD.IsEnabled = false;
                 Instance.ButtonAnimationRename.IsEnabled = false;
             }
-
             void UpdateRSDKv1Limits()
             {
                 Instance.IdentificationNUD.IsEnabled = false;
@@ -108,6 +107,7 @@ namespace AnimationEditor
 
             }
         }
+
 
 
         public void UpdateInvalidState()
@@ -201,10 +201,14 @@ namespace AnimationEditor
             Instance.ViewModel.ViewWidth = Instance.CanvasView.ActualWidth;
             Instance.ViewModel.ViewHeight = Instance.CanvasView.ActualHeight;
 
-            System.Windows.Controls.Canvas.SetLeft(Instance.CanvasImage, Instance.ViewModel.SpriteLeft);
-            System.Windows.Controls.Canvas.SetTop(Instance.CanvasImage, Instance.ViewModel.SpriteTop);
-            System.Windows.Controls.Canvas.SetRight(Instance.CanvasImage, Instance.ViewModel.SpriteRight);
-            System.Windows.Controls.Canvas.SetBottom(Instance.CanvasImage, Instance.ViewModel.SpriteBottom);
+            if (Instance.CanvasImage != null)
+            {
+                System.Windows.Controls.Canvas.SetLeft(Instance.CanvasImage, Instance.ViewModel.SpriteLeft);
+                System.Windows.Controls.Canvas.SetTop(Instance.CanvasImage, Instance.ViewModel.SpriteTop);
+                System.Windows.Controls.Canvas.SetRight(Instance.CanvasImage, Instance.ViewModel.SpriteRight);
+                System.Windows.Controls.Canvas.SetBottom(Instance.CanvasImage, Instance.ViewModel.SpriteBottom);
+            }
+
 
             if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SpriteSheets != null)
             {
