@@ -137,7 +137,7 @@
                                 <ContextMenu x:Name="ExportAnimationContext">
                                     <MenuItem IsEnabled="False" Header="Export Animation: "></MenuItem>
                                     <Separator></Separator>
-                                    <MenuItem x:Name="ExportAnimation" Header="Export Animation" IsEnabled="False"></MenuItem>
+                                    <MenuItem x:Name="ExportAnimation" Header="Export Animation" IsEnabled="True"></MenuItem>
                                     <MenuItem x:Name="ExportAnimationImages" Header="Export Animation Frames to PNG..." Click="ExportAnimationImages_Click"></MenuItem>
                                 </ContextMenu>
                             </Button.ContextMenu>
@@ -344,7 +344,7 @@
                                 <ContextMenu x:Name="ImportFrameContext">
                                     <MenuItem IsEnabled="False" Header="Import Frame: "></MenuItem>
                                     <Separator></Separator>
-                                    <MenuItem x:Name="ImportFrames" Header="Import Frame" IsEnabled="False"></MenuItem>
+                                    <MenuItem x:Name="ImportFrames" Header="Import Frame" IsEnabled="True"></MenuItem>
                                     <MenuItem x:Name="ImportFramesImages" Header="Import Image to Frame..." IsEnabled="False" Visibility="Collapsed"></MenuItem>
                                 </ContextMenu>
                             </Button.ContextMenu>
@@ -367,7 +367,7 @@
                                 <ContextMenu x:Name="ExportFrameContext">
                                     <MenuItem IsEnabled="False" Header="Export Frame: "></MenuItem>
                                     <Separator></Separator>
-                                    <MenuItem x:Name="ExportFrame" Header="Export Frame" IsEnabled="False"></MenuItem>
+                                    <MenuItem x:Name="ExportFrame" Header="Export Frame" IsEnabled="True"></MenuItem>
                                     <MenuItem x:Name="ExportFrameImage" Header="Export Frame to PNG..." IsEnabled="False"></MenuItem>
                                 </ContextMenu>
                             </Button.ContextMenu>

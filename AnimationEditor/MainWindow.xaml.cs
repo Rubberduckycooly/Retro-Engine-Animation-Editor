@@ -135,15 +135,15 @@ namespace AnimationEditor
         private void ButtonAnimationImport_Click(object sender, RoutedEventArgs e)
         {
             ButtonAnimationImport.ContextMenu.IsOpen = true;
-            //Handler.ImportAnimation();
-            //Interfacer.UpdateUI();
+            Handler.ImportAnimation();
+            Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationExport_Click(object sender, RoutedEventArgs e)
         {
             ButtonAnimationExport.ContextMenu.IsOpen = true;
-            //Handler.ExportAnimation();
-            //Interfacer.UpdateUI();
+            Handler.ExportAnimation();
+            Interfacer.UpdateUI();
         }
 
         private void ButtonFrameAdd_Click(object sender, RoutedEventArgs e)
@@ -170,15 +170,15 @@ namespace AnimationEditor
         private void ButtonFrameImport_Click(object sender, RoutedEventArgs e)
         {
             ButtonFrameImport.ContextMenu.IsOpen = true;
-            //Handler.ImportFrame();
-            //Interfacer.UpdateUI();
+            Handler.ImportFrame();
+            Interfacer.UpdateUI();
         }
 
         private void ButtonFrameExport_Click(object sender, RoutedEventArgs e)
         {
             ButtonFrameExport.ContextMenu.IsOpen = true;
-            //Handler.ExportFrame();
-            //Interfacer.UpdateUI();
+            Handler.ExportFrame();
+            Interfacer.UpdateUI();
         }
 
         private void ButtonZoomIn_Click(object sender, RoutedEventArgs e)

@@ -225,22 +225,6 @@ namespace AnimationEditor
 
         #region Import / Export Methods
 
-        public void ImportAnimation()
-        {
-            if (Instance.ViewModel.LoadedAnimationFile == null || Instance.ViewModel.SelectedAnimation == null) return;
-            var fd = new OpenFileDialog();
-            fd.DefaultExt = "*.animv2";
-            fd.Filter = "RSDK-R Animation Files|*.animv2";
-            if (fd.ShowDialog() == true)
-            {
-                EngineType engineType = EngineType.Invalid;
-                var importAnim = new Animation.AnimationEntry();
-                importAnim.ImportFrom(engineType, fd.FileName);
-                Instance.ViewModel.LoadedAnimationFile.Animations.Add(importAnim);
-            }
-
-        }
-
         public void ExportAnimationFramesToImages()
         {
             if (Instance.ViewModel.LoadedAnimationFile == null || Instance.ViewModel.SelectedAnimation == null) return;
@@ -264,16 +248,30 @@ namespace AnimationEditor
             }
         }
 
+        public void ImportAnimation()
+        {
+            if (Instance.ViewModel.LoadedAnimationFile == null || Instance.ViewModel.SelectedAnimation == null) return;
+            var fd = new OpenFileDialog();
+            fd.DefaultExt = "*.anim";
+            fd.Filter = "RSDK Animation Files|*.anim";
+            if (fd.ShowDialog() == true)
+            {
+                var importAnim = new Animation.AnimationEntry();
+                importAnim.ImportFrom(EngineType.RSDKv5, fd.FileName);
+                Instance.ViewModel.LoadedAnimationFile.Animations.Add(importAnim);
+            }
+
+        }
+
         public void ExportAnimation()
         {
             if (Instance.ViewModel.LoadedAnimationFile == null || Instance.ViewModel.SelectedAnimation == null) return;
             var fd = new SaveFileDialog();
-            fd.DefaultExt = "*.animv2";
-            fd.Filter = "RSDK-R Animation Files|*.animv2";
+            fd.DefaultExt = "*.anim";
+            fd.Filter = "RSDK Animation Files|*.anim";
             if (fd.ShowDialog() == true)
             {
-                EngineType engineType = EngineType.Invalid;
-                Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].ExportTo(engineType, fd.FileName);
+                Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].ExportTo(EngineType.RSDKv5, fd.FileName);
             }
         }
 
@@ -281,13 +279,12 @@ namespace AnimationEditor
         {
             if (Instance.ViewModel.LoadedAnimationFile == null || Instance.ViewModel.SelectedAnimation == null) return;
             var fd = new OpenFileDialog();
-            fd.DefaultExt = "*.framev2";
-            fd.Filter = "RSDK-R Frame Files|*.framev2";
+            fd.DefaultExt = "*.frame";
+            fd.Filter = "RSDK Frame Files|*.frame";
             if (fd.ShowDialog() == true)
             {
-                EngineType engineType = EngineType.Invalid;
                 var importFrame = new Animation.Frame();
-                importFrame.ImportFrom(engineType, fd.FileName);
+                importFrame.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Add(importFrame); 
             }
         }
@@ -296,12 +293,11 @@ namespace AnimationEditor
         {
             if (Instance.ViewModel.LoadedAnimationFile == null || Instance.FramesList.SelectedItem == null) return;
             var fd = new SaveFileDialog();
-            fd.DefaultExt = "*.framev2";
-            fd.Filter = "RSDK-R Frame Files|*.framev2";
+            fd.DefaultExt = "*.frame";
+            fd.Filter = "RSDK Frame Files|*.frame";
             if (fd.ShowDialog() == true)
             {
-                EngineType engineType = EngineType.Invalid;
-                Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames[Instance.ViewModel.SelectedFrameIndex].ExportTo(engineType, fd.FileName);
+                Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames[Instance.ViewModel.SelectedFrameIndex].ExportTo(EngineType.RSDKv5, fd.FileName);
             }
         }
 

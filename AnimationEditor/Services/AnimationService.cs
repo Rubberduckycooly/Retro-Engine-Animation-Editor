@@ -191,7 +191,7 @@ namespace AnimationEditor
                             frame.CollisionBox = Frames[i].CollisionBox;
                             frame.Delay = Frames[i].Delay;
                             frame.Height = Frames[i].Height;
-                            frame.ID = (ushort)Frames[i].ID;
+                            frame.ID = (short)Frames[i].ID;
                             frame.PivotX = Frames[i].PivotX;
                             frame.PivotY = Frames[i].PivotY;
                             frame.Width = Frames[i].Width;
@@ -350,7 +350,9 @@ namespace AnimationEditor
                 switch (type)
                 {
                     case EngineType.RSDKv5:
-                        RSDKv5.Animation.AnimationEntry.Frame framev5 = new RSDKv5.Animation.AnimationEntry.Frame(new RSDKv5.Reader(filepath));
+                        RSDKv5.Reader readerv5 = new RSDKv5.Reader(filepath);
+                        RSDKv5.Animation.AnimationEntry.Frame framev5 = new RSDKv5.Animation.AnimationEntry.Frame(readerv5);
+                        readerv5.Close();
                         CollisionBox = framev5.CollisionBox;
                         Delay = framev5.Delay;
                         Height = framev5.Height;
@@ -372,7 +374,9 @@ namespace AnimationEditor
                         }
                         break;
                     case EngineType.RSDKvB:
-                        RSDKvB.Animation.AnimationEntry.Frame framevB = new RSDKvB.Animation.AnimationEntry.Frame(new RSDKvB.Reader(filepath));
+                        RSDKvB.Reader readervB = new RSDKvB.Reader(filepath);
+                        RSDKvB.Animation.AnimationEntry.Frame framevB = new RSDKvB.Animation.AnimationEntry.Frame(readervB);
+                        readervB.Close();
                         CollisionBox = framevB.CollisionBox;
                         Height = framevB.Height;
                         PivotX = framevB.PivotX;
@@ -383,7 +387,9 @@ namespace AnimationEditor
                         Y = framevB.Y;
                         break;
                     case EngineType.RSDKv2:
-                        RSDKv2.Animation.AnimationEntry.Frame framev2 = new RSDKv2.Animation.AnimationEntry.Frame(new RSDKv2.Reader(filepath));
+                        RSDKv2.Reader readerv2 = new RSDKv2.Reader(filepath);
+                        RSDKv2.Animation.AnimationEntry.Frame framev2 = new RSDKv2.Animation.AnimationEntry.Frame(readerv2);
+                        readerv2.Close();
                         CollisionBox = framev2.CollisionBox;
                         Height = framev2.Height;
                         PivotX = framev2.PivotX;
@@ -394,7 +400,9 @@ namespace AnimationEditor
                         Y = framev2.Y;
                         break;
                     case EngineType.RSDKv1:
-                        RSDKv1.Animation.AnimationEntry.Frame framev1 = new RSDKv1.Animation.AnimationEntry.Frame(new RSDKv1.Reader(filepath));
+                        RSDKv1.Reader readerv1 = new RSDKv1.Reader(filepath);
+                        RSDKv1.Animation.AnimationEntry.Frame framev1 = new RSDKv1.Animation.AnimationEntry.Frame(readerv1);
+                        readerv1.Close();
                         CollisionBox = framev1.CollisionBox;
                         Height = framev1.Height;
                         PivotX = framev1.PivotX;
@@ -405,7 +413,9 @@ namespace AnimationEditor
                         Y = framev1.Y;
                         break;
                     case EngineType.RSDKvRS:
-                        RSDKvRS.Animation.AnimationEntry.Frame framevRS = new RSDKvRS.Animation.AnimationEntry.Frame(new RSDKvRS.Reader(filepath));
+                        RSDKvRS.Reader readervRS = new RSDKvRS.Reader(filepath);
+                        RSDKvRS.Animation.AnimationEntry.Frame framevRS = new RSDKvRS.Animation.AnimationEntry.Frame(readervRS);
+                        readervRS.Close();
                         //CollisionBox = framevRS.CollisionBox;
                         Height = framevRS.Height;
                         PivotX = framevRS.PivotX;
@@ -427,7 +437,7 @@ namespace AnimationEditor
                         framev5.CollisionBox = CollisionBox;
                         framev5.Delay = Delay;
                         framev5.Height = Height;
-                        framev5.ID = (ushort)ID;
+                        framev5.ID = (short)ID;
                         framev5.PivotX = PivotX;
                         framev5.PivotY = PivotY;
                         framev5.SpriteSheet = SpriteSheet;
@@ -443,7 +453,9 @@ namespace AnimationEditor
                             hb.X = HitBoxes[i].X;
                             framev5.HitBoxes.Add(hb);
                         }
-                        framev5.Write(new RSDKv5.Writer(filepath));
+                        RSDKv5.Writer writerv5 = new RSDKv5.Writer(filepath);
+                        framev5.Write(writerv5);
+                        writerv5.Close();
                         break;
                     case EngineType.RSDKvB:
                         RSDKvB.Animation.AnimationEntry.Frame framevB = new RSDKvB.Animation.AnimationEntry.Frame();
@@ -455,7 +467,9 @@ namespace AnimationEditor
                         framevB.Width = (byte)Width;
                         framevB.X = (byte)X;
                         framevB.Y = (byte)Y;
-                        framevB.Write(new RSDKvB.Writer(filepath));
+                        RSDKvB.Writer writervB = new RSDKvB.Writer(filepath);
+                        framevB.Write(writervB);
+                        writervB.Close();
                         break;
                     case EngineType.RSDKv2:
                         RSDKv2.Animation.AnimationEntry.Frame framev2 = new RSDKv2.Animation.AnimationEntry.Frame();
@@ -467,7 +481,9 @@ namespace AnimationEditor
                         framev2.Width = (byte)Width;
                         framev2.X = (byte)X;
                         framev2.Y = (byte)Y;
-                        framev2.Write(new RSDKv2.Writer(filepath));
+                        RSDKv2.Writer writerv2 = new RSDKv2.Writer(filepath);
+                        framev2.Write(writerv2);
+                        writerv2.Close();
                         break;
                     case EngineType.RSDKv1:
                         RSDKv1.Animation.AnimationEntry.Frame framev1 = new RSDKv1.Animation.AnimationEntry.Frame();
@@ -479,7 +495,9 @@ namespace AnimationEditor
                         framev1.Width = (byte)Width;
                         framev1.X = (byte)X;
                         framev1.Y = (byte)Y;
-                        framev1.Write(new RSDKv1.Writer(filepath));
+                        RSDKv1.Writer writerv1 = new RSDKv1.Writer(filepath);
+                        framev1.Write(writerv1);
+                        writerv1.Close();
                         break;
                     case EngineType.RSDKvRS:
                         RSDKvRS.Animation.AnimationEntry.Frame framevRS = new RSDKvRS.Animation.AnimationEntry.Frame();
@@ -491,7 +509,9 @@ namespace AnimationEditor
                         framevRS.Width = (byte)Width;
                         framevRS.X = (byte)X;
                         framevRS.Y = (byte)Y;
-                        framevRS.Write(new RSDKvRS.Writer(filepath));
+                        RSDKvRS.Writer writervRS = new RSDKvRS.Writer(filepath);
+                        framevRS.Write(writervRS);
+                        writervRS.Close();
                         break;
                 }
             }
@@ -812,7 +832,7 @@ namespace AnimationEditor
                             frame.SpriteSheet = Animations[a].Frames[i].SpriteSheet;
                             frame.Delay = Animations[a].Frames[i].Delay;
                             frame.Height = Animations[a].Frames[i].Height;
-                            frame.ID = (ushort)Animations[a].Frames[i].ID;
+                            frame.ID = (short)Animations[a].Frames[i].ID;
                             frame.PivotX = Animations[a].Frames[i].PivotX;
                             frame.PivotY = Animations[a].Frames[i].PivotY;
                             frame.Width = Animations[a].Frames[i].Width;
