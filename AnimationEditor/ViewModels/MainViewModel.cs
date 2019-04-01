@@ -23,6 +23,8 @@ namespace AnimationEditor.ViewModels
         public bool FullFrameMode = false;
         public string AnimationFilepath { get; set; }
         public string AnimationDirectory { get; set; }
+
+        public string SpriteDirectory { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
         public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheetsWithTransparency { get; set; }
         public List<System.Windows.Media.Color> SpriteSheetTransparentColors { get; set; }
@@ -255,7 +257,9 @@ namespace AnimationEditor.ViewModels
             {
                 if (FullFrameMode && SpriteSheets != null)
                 {
-                    return new Rect(0, 0, SpriteSheets[(int)CurrentSpriteSheet.Value].Width, SpriteSheets[(int)CurrentSpriteSheet.Value].Height);
+                    if (!NullSpriteSheetList.Contains(SpriteSheetPaths[(int)CurrentSpriteSheet.Value])) return new Rect(0, 0, SpriteSheets[(int)CurrentSpriteSheet.Value].Width, SpriteSheets[(int)CurrentSpriteSheet.Value].Height);
+                    else return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
+
                 }
                 else
                 {

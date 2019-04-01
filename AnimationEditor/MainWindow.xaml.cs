@@ -19,6 +19,7 @@ namespace AnimationEditor
         public MainViewModel ViewModel => (MainViewModel)DataContext;
 
         public UserInterfacer Interfacer;
+        public InputController InputControl;
         public FileHandler Handler;
         public Brush DefaultBorderBrush;
         public Brush DefaultTextBrush;
@@ -38,6 +39,7 @@ namespace AnimationEditor
             DefaultBorderBrush = (Brush)FindResource("ComboBoxBorder");
             DefaultTextBrush = (Brush)FindResource("NormalText");
             InitializeComponent();
+            InputControl = new InputController(this);
             DataContext = new MainViewModel();
             List.AllowDrop = true;
             Interfacer = new UserInterfacer(this);
@@ -272,6 +274,7 @@ namespace AnimationEditor
         private void NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             Interfacer.UpdateUI(true);
+            Interfacer.UpdateFrameNUDMaxMin();
         }
 
         private void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -500,142 +503,25 @@ namespace AnimationEditor
             }
         }
 
-        Point AnchorPoint = new Point(0, 0);
-        bool TopLeft = false;
-        bool TopRight = false;
-        bool BottomLeft = false;
-        bool BottomRight = false;
-        double dirX;
-        double dirY;
+
 
         private void CanvasView_MouseMove(object sender, MouseEventArgs e)
         {
-            //TODO: Handle Zooming
-            double rate = ViewModel.Zoom;
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                if (ButtonShowFieldHitbox.IsChecked == true)
-                {
-                    double x1 = AnchorPoint.X;
-                    double y1 = AnchorPoint.Y;
-                    double x2 = e.GetPosition(CanvasView).X;
-                    double y2 = e.GetPosition(CanvasView).Y;
-
-                    int distanceX = (int)(x2 - x1);
-                    int distanceY = (int)(y2 - y1);
-                    dirX = ((x2 / rate - x1 / rate));
-                    dirY = ((y2 / rate - y1 / rate));
-
-                    if (dirX >= 1 || dirX <= -1)
-                    {
-                        AdjustHitboxSize((int)dirX, (int)dirY, e, true, false);
-                    }
-                    else
-                    {
-                        //dirX = 0;
-                    }
-                    if (dirY >= 1 || dirY <= -1)
-                    {
-                        AdjustHitboxSize((int)dirX, (int)dirY, e, false, true);
-                    }
-                    else
-                    {
-                        //dirY = 0;
-                    }
-                }
-
-
-
-
-            }
-        }
-
-        private void AdjustHitboxSize(int distanceX, int distanceY, MouseEventArgs e, bool resetX = false, bool resetY = false)
-        {
-            if (BottomRight)
-            {
-                if (HitboxBottomNUD.Value + distanceY >= 1)
-                {
-                    HitboxBottomNUD.Value += (int)(distanceY);
-                    AnchorPoint = e.GetPosition(CanvasView);
-                    if (resetY) dirY = 0;
-                }
-                if (HitboxRightNUD.Value + distanceX >= 1)
-                {
-                    HitboxRightNUD.Value += (int)(distanceX);
-                    AnchorPoint = e.GetPosition(CanvasView);
-                    if (resetX) dirX = 0;
-                }
-            }
-            if (BottomLeft)
-            {
-                if (HitboxBottomNUD.Value + distanceY >= 1)
-                {
-                    HitboxBottomNUD.Value += (int)(distanceY);
-                    AnchorPoint = e.GetPosition(CanvasView);
-                    if (resetY) dirY = 0;
-                }
-                if (HitboxLeftNUD.Value + distanceX <= -1)
-                {
-                    HitboxLeftNUD.Value += (int)(distanceX);
-                    AnchorPoint = e.GetPosition(CanvasView);
-                    if (resetX) dirX = 0;
-                }
-            }
-            if (TopRight)
-            {
-                if (HitboxTopNUD.Value + distanceY <= -1)
-                {
-                    HitboxTopNUD.Value += (int)(distanceY);
-                    AnchorPoint = e.GetPosition(CanvasView);
-                    if (resetY) dirY = 0;
-                }
-                if (HitboxRightNUD.Value + distanceX >= 1)
-                {
-                    HitboxRightNUD.Value += (int)(distanceX);
-                    AnchorPoint = e.GetPosition(CanvasView);
-                    if (resetX) dirX = 0;
-                }
-            }
-            if (TopLeft)
-            {
-                if (HitboxTopNUD.Value + distanceY <= -1)
-                {
-                    HitboxTopNUD.Value += (int)(distanceY);
-                    AnchorPoint = e.GetPosition(CanvasView);
-                    if (resetY) dirY = 0;
-                }
-                if (HitboxLeftNUD.Value + distanceX <= -1)
-                {
-                    HitboxLeftNUD.Value += (int)(distanceX);
-                    AnchorPoint = e.GetPosition(CanvasView);
-                    if (resetX) dirX = 0;
-                }
-            }
+            InputControl.MouseMove(sender, e);
         }
 
         private void CanvasView_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Section1.IsMouseOver) TopLeft = true;
-            else if (Section2.IsMouseOver) TopRight = true;
-            else if(Section3.IsMouseOver) BottomLeft = true;
-            else if(Section4.IsMouseOver) BottomRight = true;
-            CanvasView.Focus();
-            AnchorPoint = e.GetPosition(CanvasView);
+            InputControl.MouseDown(sender, e);
         }
 
         private void CanvasView_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            AnchorPoint = e.GetPosition(CanvasView);
-            TopLeft = false;
-            TopRight = false;
-            BottomLeft = false;
-            BottomRight = false;
+            InputControl.MouseUp(sender, e);
         }
 
         private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.FullFrameMode ^= true;
+        {            
             Interfacer.UpdateViewerLayout();
         }
 
@@ -646,67 +532,7 @@ namespace AnimationEditor
 
         private void CanvasView_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Down)
-            {
-                if (Keyboard.IsKeyDown(Key.LeftShift))
-                {
-                    FrameHeightNUD.Value += 1;
-                }
-                else if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                {
-                    PivotYBox.Value += 1;
-                }
-                else
-                {
-                    FrameTopNUD.Value += 1;
-                }
-            }
-            if (e.Key == Key.Up)
-            {
-                if (Keyboard.IsKeyDown(Key.LeftShift))
-                {
-                    FrameHeightNUD.Value -= 1;
-                }
-                else if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                {
-                    PivotYBox.Value -= 1;
-                }
-                else
-                {
-                    FrameTopNUD.Value -= 1;
-                }
-            }
-            if (e.Key == Key.Left)
-            {
-                if (Keyboard.IsKeyDown(Key.LeftShift))
-                {
-                    FrameWidthNUD.Value -= 1;
-                }
-                else if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                {
-                    PivotXBox.Value -= 1;
-                }
-                else
-                {
-                    FrameLeftNUD.Value -= 1;
-                }
-            }
-            if (e.Key == Key.Right)
-            {
-                if (Keyboard.IsKeyDown(Key.LeftShift))
-                {
-                    FrameWidthNUD.Value += 1;
-                }
-                else if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                {
-                    PivotXBox.Value += 1;
-                }
-                else
-                {
-                    FrameLeftNUD.Value += 1;
-                }
-            }
-
+            InputControl.KeyDown(sender, e);
         }
 
         private void CanvasView_KeyUp(object sender, KeyEventArgs e)
@@ -769,6 +595,11 @@ namespace AnimationEditor
             if (sender == BGLabel) BGColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#303030");
             else if (sender == AxisLabel) AxisColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#FFFF0000");
             else if (sender == HBLabel) HitboxColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#FFE700FF");
+        }
+
+        private void ButtonHelp_Click(object sender, RoutedEventArgs e)
+        {
+            ButtonHelp.ContextMenu.IsOpen = true;
         }
     }
 }

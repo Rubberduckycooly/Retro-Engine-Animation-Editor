@@ -50,7 +50,7 @@ namespace AnimationEditor
 
         public void UpdatePaths()
         {
-            Instance.SpriteDirectoryLabel.Text = string.Format("Sprite Directory: {0}", (Instance.ViewModel.AnimationDirectory != "" && Instance.ViewModel.AnimationDirectory != null ? Instance.ViewModel.AnimationDirectory : "N/A"));
+            Instance.SpriteDirectoryLabel.Text = string.Format("Sprite Directory: {0}", (Instance.ViewModel.SpriteDirectory != "" && Instance.ViewModel.SpriteDirectory != null ? Instance.ViewModel.SpriteDirectory : "N/A"));
             Instance.AnimationPathLabel.Text = string.Format("Animation Path: {0}", (Instance.ViewModel.AnimationFilepath != "" && Instance.ViewModel.AnimationFilepath != null ? Instance.ViewModel.AnimationFilepath : "N/A"));
         }
 
@@ -154,8 +154,8 @@ namespace AnimationEditor
                 Instance.FrameHeightNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
                 Instance.FrameLeftNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
                 Instance.FrameTopNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.PivotXBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.PivotYBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.PivotX_NUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+                Instance.PivotY_NUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
                 Instance.IdentificationNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
                 Instance.DelayNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
 
@@ -193,6 +193,8 @@ namespace AnimationEditor
         #region Image/Hitbox Update Methods
         public void UpdateViewerLayout()
         {
+            if (Instance.MenuViewFullSpriteSheets.IsChecked) Instance.ViewModel.FullFrameMode = true;
+            else if (!Instance.MenuViewFullSpriteSheets.IsChecked) Instance.ViewModel.FullFrameMode = false;
             if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.SpriteSheets != null)
             {
                 if (Instance.ViewModel.CurrentSpriteSheet.Value - 1 > Instance.ViewModel.SpriteSheets.Count) Instance.ViewModel.CurrentSpriteSheet = 0;
@@ -208,6 +210,8 @@ namespace AnimationEditor
                 Instance.HitBoxViewer.Visibility = Visibility.Hidden;
                 Instance.HitBoxBackground.Visibility = Visibility.Hidden;
             }
+
+
             Instance.Geomotry.Rect = Instance.ViewModel.SpriteFrame;
 
             Instance.ViewModel.ViewWidth = Instance.CanvasView.ActualWidth;
@@ -250,11 +254,11 @@ namespace AnimationEditor
 
             if (Instance.MenuViewFrameBorder.IsChecked)
             {
-                Instance.BorderMarker.Visibility = Visibility.Visible;
+                Instance.BorderMarker.BorderBrush = new SolidColorBrush(Colors.Black);
             }
             else
             {
-                Instance.BorderMarker.Visibility = Visibility.Hidden;
+                Instance.BorderMarker.BorderBrush = new SolidColorBrush(Colors.Transparent);
             }
             System.Windows.Controls.Canvas.SetLeft(Instance.BorderMarker, Instance.ViewModel.BorderLeft);
             System.Windows.Controls.Canvas.SetTop(Instance.BorderMarker, Instance.ViewModel.BorderTop);
@@ -403,10 +407,13 @@ namespace AnimationEditor
                 Instance.FrameHeightNUD.Value = Instance.ViewModel.SelectedFrameHeight;
                 Instance.FrameLeftNUD.Value = Instance.ViewModel.SelectedFrameLeft;
                 Instance.FrameTopNUD.Value = Instance.ViewModel.SelectedFrameTop;
-                Instance.PivotXBox.Value = Instance.ViewModel.SelectedFramePivotX;
-                Instance.PivotYBox.Value = Instance.ViewModel.SelectedFramePivotY;
+                Instance.PivotX_NUD.Value = Instance.ViewModel.SelectedFramePivotX;
+                Instance.PivotY_NUD.Value = Instance.ViewModel.SelectedFramePivotY;
                 Instance.IdentificationNUD.Value = Instance.ViewModel.SelectedFrameId;
                 Instance.DelayNUD.Value = Instance.ViewModel.SelectedFrameDuration;
+
+                UpdateFrameNUDMaxMin();
+
 
                 Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
                 Instance.SpriteSheetList.SelectedIndex = (Instance.ViewModel.CurrentSpriteSheet.HasValue ? Instance.ViewModel.CurrentSpriteSheet.Value : 0);
@@ -449,6 +456,35 @@ namespace AnimationEditor
         }
         #endregion
 
+        public void UpdateFrameNUDMaxMin()
+        {
+            Instance.FrameWidthNUD.Minimum = 0;
+            Instance.FrameHeightNUD.Minimum = 0;
+            Instance.FrameLeftNUD.Minimum = 0;
+            Instance.FrameTopNUD.Minimum = 0;
+
+            if (Instance.ViewModel.SpriteSheets != null)
+            {
+                int SheetHeight = (int)Instance.ViewModel.SpriteSheets[(int)Instance.ViewModel.CurrentSpriteSheet].Height;
+                int SheetWidth = (int)Instance.ViewModel.SpriteSheets[(int)Instance.ViewModel.CurrentSpriteSheet].Width;
+                int FrameTop = (int)Instance.ViewModel.SelectedFrameTop.Value;
+                int FrameHeight = (int)Instance.ViewModel.SelectedFrameHeight.Value;
+                int FrameWidth = (int)Instance.ViewModel.SelectedFrameWidth.Value;
+                int FrameLeft = (int)Instance.ViewModel.SelectedFrameLeft.Value;
+
+                Instance.FrameWidthNUD.Maximum = (FrameLeft + FrameWidth < SheetWidth ? SheetWidth - FrameLeft : 0);
+                Instance.FrameHeightNUD.Maximum = (FrameTop + FrameHeight < SheetHeight ? SheetHeight - FrameTop : 0);
+                Instance.FrameLeftNUD.Maximum = SheetWidth - FrameWidth;
+                Instance.FrameTopNUD.Maximum = SheetHeight - FrameHeight;
+            }
+            else
+            {
+                Instance.FrameWidthNUD.Maximum = 0;
+                Instance.FrameHeightNUD.Maximum = 0;
+                Instance.FrameLeftNUD.Maximum = 0;
+                Instance.FrameTopNUD.Maximum = 0;
+            }
+        }
         public void UpdateFrameIndex(bool subtract = false, bool updateUI = true)
         {
             if (Instance.FramesList.Items != null && Instance.FramesList.Items.Count > 0)

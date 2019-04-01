@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"       
         xmlns:local="clr-namespace:AnimationEditor"
         mc:Ignorable="d"
-        Title="RSDK Animation Editor v2" MinHeight="540" Height="540" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="750" Width="750" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
+        Title="RSDK Animation Editor v2" MinHeight="540" Height="540" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="772" Width="772" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
     <DockPanel x:Name="MainPanel">
         <Menu DockPanel.Dock="Top" x:Name="MenuStrip" Background="{DynamicResource MenuBar}" Foreground="{DynamicResource NormalText}">
             <MenuItem Header="_File">
@@ -44,19 +44,6 @@
             </MenuItem>
             <MenuItem Header="_Info">
                 <MenuItem x:Name="MenuInfoAbout" Header="_About" Click="MenuInfoAbout_Click"/>
-                <MenuItem x:Name="MenuInfoHint" Header="_Hint">
-                    <MenuItem IsEnabled="False">
-                        <MenuItem.Header>
-                            <StackPanel Background="Transparent">
-                                <TextBlock>Controls (Frame Viewer):</TextBlock>
-                                <TextBlock>Arrows (Ctrl) - Frame Width/Height</TextBlock>
-                                <TextBlock>Arrows (Alt) - Pivot X/Y</TextBlock>
-                                <TextBlock>Arrows - Frame X/Y</TextBlock>
-                            </StackPanel>
-                        </MenuItem.Header>
-                    </MenuItem>
-
-                </MenuItem>
             </MenuItem>
         </Menu>
         <Grid Margin="5" IsEnabled="{Binding IsAnimationDataLoaded}">
@@ -406,6 +393,25 @@
                                 <Label Content="Shifts the Current Frame over to the right by one"/>
                             </Button.ToolTip>
                         </Button>
+                        <Button Width="20" Height="20" Content="?" Name="ButtonHelp" Click="ButtonHelp_Click">
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <StackPanel Background="Transparent">
+                                        <TextBlock>Controls (Frame Viewer):</TextBlock>
+                                        <TextBlock>Arrows (Ctrl) - Frame Width/Height</TextBlock>
+                                        <TextBlock Visibility="Collapsed">Arrows (Alt) - Pivot X/Y</TextBlock>
+                                        <TextBlock>Arrows (Shift) - Frame Top/Left</TextBlock>
+                                        <Separator></Separator>
+                                        <TextBlock>Mouse (Ctrl) - Frame Width/Height</TextBlock>
+                                        <TextBlock>Mouse (Alt) - Pivot X/Y</TextBlock>
+                                        <TextBlock>Mouse (Shift) - Frame Top/Left</TextBlock>
+                                    </StackPanel>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                            <Button.ToolTip>
+                                <Label Content="Help"/>
+                            </Button.ToolTip>
+                        </Button>
                         <Button Width="20" Height="20" Grid.Column="1" Visibility="Hidden"></Button>
                         <Button Width="20" Height="20" Grid.Column="1" Visibility="Hidden"></Button>
                     </StackPanel>
@@ -439,13 +445,27 @@
                                     <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"></RectangleGeometry>
                                 </Image.Clip>
                             </Image>
+
                             <Border Visibility="Visible" BorderBrush="Black" x:Name="BorderMarker" BorderThickness="1"                            
                            Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
                            Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
                            Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
                            Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
                             RenderTransformOrigin="0.5,0.5">
-                                <Grid x:Name="BorderMarkerBackground" Background="Transparent"></Grid>
+                                <Grid Visibility="Visible" x:Name="BorderMarkerBackground" Opacity="0.5" Background="Transparent" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" MouseMove="CanvasView_MouseMove">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" Name="ImageSection1"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" Name="ImageSection2"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" Name="ImageSection3"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" Name="ImageSection4"></Grid>
+                                </Grid>
                             </Border>
                             <Border Visibility="Hidden" BorderBrush="#FFE700FF" x:Name="HitBoxViewer" BorderThickness="1"                            
                            Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
@@ -462,10 +482,10 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" Name="Section1"></Grid>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" Name="Section2"></Grid>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" Name="Section3"></Grid>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" Name="Section4"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" Name="HitboxSection1"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" Name="HitboxSection2"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" Name="HitboxSection3"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" Name="HitboxSection4"></Grid>
                                 </Grid>
                             </Border>
                         </Canvas>
@@ -682,11 +702,11 @@
                                     Minimum="0" Maximum="32767"
                                     Value="{Binding SelectedFrameHeight, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="0" Grid.Row="5" Text="PivotX" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="PivotXBox" Grid.Column="1" Grid.Row="5"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="PivotX_NUD" Grid.Column="1" Grid.Row="5"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedFramePivotX, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="3" Grid.Row="5" Text="PivotY" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="PivotYBox" Grid.Column="4" Grid.Row="5"
+                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="PivotY_NUD" Grid.Column="4" Grid.Row="5"
                                     Minimum="-32768" Maximum="32767"
                                     Value="{Binding SelectedFramePivotY, Mode=TwoWay}"/>
                                 <TextBlock x:Name="IDLabel" Grid.Column="0" Grid.Row="7" Text="ID" Foreground="{DynamicResource NormalText}"/>

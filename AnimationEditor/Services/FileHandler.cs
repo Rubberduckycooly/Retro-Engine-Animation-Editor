@@ -49,6 +49,7 @@ namespace AnimationEditor
             UpdateRecentsDropDown();
             Instance.Interfacer.PreventIndexUpdate = false;
             Instance.Interfacer.UpdateUI();
+            Instance.Interfacer.UpdateViewerLayout();
         }
         #endregion
 
@@ -186,6 +187,7 @@ namespace AnimationEditor
                 {
                     parentDirectory = Directory.GetParent(parentDirectory).FullName;
                 }
+                Instance.ViewModel.SpriteDirectory = parentDirectory;
                 string imagePath = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("/", "\\"));
                 if (File.Exists(imagePath))
                 {

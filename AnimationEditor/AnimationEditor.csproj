@@ -80,6 +80,7 @@
     <Compile Include="Services\BitmapConversion.cs" />
     <Compile Include="Services\FileHandler.cs" />
     <Compile Include="Services\FolderSelectDialog.cs" />
+    <Compile Include="Services\InputController.cs" />
     <Compile Include="Services\PlaybackService.cs" />
     <Compile Include="Services\Reflector.cs" />
     <Compile Include="Services\SkinResourceDictionary.cs" />

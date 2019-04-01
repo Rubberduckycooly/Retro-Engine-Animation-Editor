@@ -118,7 +118,7 @@ namespace AnimationEditor
 
         public void ReplaceTexture(int index)
         {
-            string parentDirectory = Directory.GetParent(ParentInstance.ViewModel.AnimationDirectory).FullName;
+            string parentDirectory = ParentInstance.ViewModel.SpriteDirectory;
             var fd = new OpenFileDialog();
             fd.DefaultExt = "*.gif";
             fd.Filter = "GIF Files | *.gif";
@@ -165,7 +165,7 @@ namespace AnimationEditor
 
         public void AddTexture()
         {
-            string parentDirectory = Directory.GetParent(ParentInstance.ViewModel.AnimationDirectory).FullName;
+            string parentDirectory = ParentInstance.ViewModel.SpriteDirectory;
             var fd = new OpenFileDialog();
             fd.DefaultExt = "*.gif";
             fd.Filter = "GIF Files | *.gif";
