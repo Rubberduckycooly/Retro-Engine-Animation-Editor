@@ -40,11 +40,18 @@ namespace AnimationEditor
                 UpdateInfo();
                 UpdateViewerLayout();
                 UpdateInvalidState();
+                UpdatePaths();
             }
             if (!Instance.isPlaybackEnabled) UpdateNormalElements();
             PreventIndexUpdate = false;
             UpdateAnimationTypeLimitations();
 
+        }
+
+        public void UpdatePaths()
+        {
+            Instance.SpriteDirectoryLabel.Text = string.Format("Sprite Directory: {0}", (Instance.ViewModel.AnimationDirectory != "" && Instance.ViewModel.AnimationDirectory != null ? Instance.ViewModel.AnimationDirectory : "N/A"));
+            Instance.AnimationPathLabel.Text = string.Format("Animation Path: {0}", (Instance.ViewModel.AnimationFilepath != "" && Instance.ViewModel.AnimationFilepath != null ? Instance.ViewModel.AnimationFilepath : "N/A"));
         }
 
         public void UpdateAnimationTypeLimitations()
@@ -186,6 +193,11 @@ namespace AnimationEditor
         #region Image/Hitbox Update Methods
         public void UpdateViewerLayout()
         {
+            if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.SpriteSheets != null)
+            {
+                if (Instance.ViewModel.CurrentSpriteSheet.Value - 1 > Instance.ViewModel.SpriteSheets.Count) Instance.ViewModel.CurrentSpriteSheet = 0;
+            }
+
             if (Instance.ViewModel.LoadedAnimationFile != null && Instance.HitBoxComboBox.SelectedItem != null && Instance.ButtonShowFieldHitbox.IsChecked.Value)
             {
                 Instance.HitBoxViewer.Visibility = Visibility.Visible;
@@ -551,6 +563,8 @@ namespace AnimationEditor
 
         private BitmapImage GetSpriteSheet()
         {
+
+
             if (Instance.MenuViewTransparentSpriteSheets.IsChecked)
             {
                 var image = Instance.ViewModel.SpriteSheetsWithTransparency[Instance.ViewModel.CurrentSpriteSheet.Value];

@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"       
         xmlns:local="clr-namespace:AnimationEditor"
         mc:Ignorable="d"
-        Title="RSDK Animation Editor v2" MinHeight="500" Height="500" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="750" Width="750" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
+        Title="RSDK Animation Editor v2" MinHeight="540" Height="540" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="750" Width="750" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
     <DockPanel x:Name="MainPanel">
         <Menu DockPanel.Dock="Top" x:Name="MenuStrip" Background="{DynamicResource MenuBar}" Foreground="{DynamicResource NormalText}">
             <MenuItem Header="_File">
@@ -67,6 +67,10 @@
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+            </Grid.RowDefinitions>
 
             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Margin="40,0" x:Name="PopupHost"></Grid>
 
@@ -700,6 +704,15 @@
 
                 </StackPanel>
             </DockPanel>
+
+            <StatusBar Grid.Row="1" Grid.ColumnSpan="5" Background="{DynamicResource StatusBarBackground}">
+                <StatusBarItem>
+                    <StackPanel Background="{DynamicResource StatusBarBackground}">
+                        <TextBlock Name="SpriteDirectoryLabel" Text="Sprite Directory: N/A"></TextBlock>
+                        <TextBlock Name="AnimationPathLabel" Text="Animation Path: N/A"></TextBlock>
+                    </StackPanel>
+                </StatusBarItem>
+            </StatusBar>
         </Grid>
     </DockPanel>
 </Window>
