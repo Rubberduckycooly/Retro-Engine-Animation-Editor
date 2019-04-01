@@ -507,17 +507,17 @@ namespace AnimationEditor
 
         private void CanvasView_MouseMove(object sender, MouseEventArgs e)
         {
-            InputControl.MouseMove(sender, e);
+            if (!isPlaybackEnabled) InputControl.MouseMove(sender, e);
         }
 
         private void CanvasView_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            InputControl.MouseDown(sender, e);
+            if (!isPlaybackEnabled) InputControl.MouseDown(sender, e);
         }
 
         private void CanvasView_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            InputControl.MouseUp(sender, e);
+            if (!isPlaybackEnabled) InputControl.MouseUp(sender, e);
         }
 
         private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
@@ -532,7 +532,7 @@ namespace AnimationEditor
 
         private void CanvasView_KeyDown(object sender, KeyEventArgs e)
         {
-            InputControl.KeyDown(sender, e);
+            if (!isPlaybackEnabled) InputControl.KeyDown(sender, e);
         }
 
         private void CanvasView_KeyUp(object sender, KeyEventArgs e)
