@@ -189,6 +189,7 @@ namespace AnimationEditor
                 }
                 Instance.ViewModel.SpriteDirectory = parentDirectory;
                 string imagePath = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("/", "\\"));
+                imagePath = imagePath.Replace("Characters\\Characters", "Characters"); //Fix for RSDKvRS
                 if (File.Exists(imagePath))
                 {
                     Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));
