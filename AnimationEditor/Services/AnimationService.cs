@@ -780,6 +780,8 @@ namespace AnimationEditor
                     PlayerType = animsetvRS.PlayerType;
                     Unknown = animsetvRS.Unknown;
 
+                    CollisionBoxes.Add("Hitbox");
+
                     for (int i = 0; i < animsetvRS.SpriteSheets.Length; i++)
                     {
                         SpriteSheets.Add(animsetvRS.SpriteSheets[i]);
@@ -804,6 +806,11 @@ namespace AnimationEditor
                             Animations[a].Frames[i].Y = animsetvRS.Animations[a].Frames[i].Y;
                             Animations[a].Frames[i].SpriteSheet = animsetvRS.Animations[a].Frames[i].SpriteSheet;
 
+                            Animations[a].Frames[i].HitBoxes.Add(new HitBox());
+                            Animations[a].Frames[i].HitBoxes[0].Height = animsetvRS.Animations[a].Frames[i].CollisionBox.Height;
+                            Animations[a].Frames[i].HitBoxes[0].Width = animsetvRS.Animations[a].Frames[i].CollisionBox.Width;
+                            Animations[a].Frames[i].HitBoxes[0].X = animsetvRS.Animations[a].Frames[i].CollisionBox.X;
+                            Animations[a].Frames[i].HitBoxes[0].Y = animsetvRS.Animations[a].Frames[i].CollisionBox.Y;
                         }
                     }
                     break;

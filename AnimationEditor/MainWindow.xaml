@@ -685,11 +685,11 @@
                                     <RowDefinition Height="20"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Left" Foreground="{DynamicResource NormalText}"/>
+                                <TextBlock Grid.Column="0" Grid.Row="1" Text="X" Foreground="{DynamicResource NormalText}"/>
                                 <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="FrameLeftNUD" Grid.Column="1" Grid.Row="1"
                                     Minimum="0" Maximum="32767"
                                     Value="{Binding SelectedFrameLeft, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="3" Grid.Row="1" Text="Top" Foreground="{DynamicResource NormalText}"/>
+                                <TextBlock Grid.Column="3" Grid.Row="1" Text="Y" Foreground="{DynamicResource NormalText}"/>
                                 <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="FrameTopNUD" Grid.Column="4" Grid.Row="1"
                                     Minimum="0" Maximum="32767"
                                     Value="{Binding SelectedFrameTop, Mode=TwoWay}"/>

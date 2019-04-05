@@ -32,7 +32,7 @@ namespace AnimationEditor
             UnloadAnimationData();
             var fd = new OpenFileDialog();
             fd.DefaultExt = "*.bin";
-            fd.Filter = "RSDKv5 Animation Files|*.bin|RSDKv2 and RSDKvB Animation Files|*.ani|RSDKv1 Animation Files|*.ani|RSDKvRS Animation Files|*.ani";
+            fd.Filter = "RSDKv5 (Sonic Mania) Animation Files|*.bin|RSDKv2 (Sonic CD) and RSDKvB (Sonic 1 & 2) Animation Files|*.ani|RSDKv1 (Sonic Nexus) Animation Files|*.ani|RSDKvRS (Retro-Sonic) Animation Files|*.ani";
             if (fd.ShowDialog() == true)
             {
                 AddRecentDataFolder(fd.FileName);
@@ -70,7 +70,7 @@ namespace AnimationEditor
 
             //For RSDKvRS, RSDKv1 and RSDKv2 & RSDKvB there is no ID and the Delay is always 256, so there is no point to let users change their values
             if (fd.FilterIndex - 1 >= 1) { Instance.DelayNUD.IsEnabled = false; Instance.IdentificationNUD.IsEnabled = false; }
-            if (fd.FilterIndex - 1 == 3) { Instance.IdentificationNUD.IsEnabled = true; Instance.IDLabel.Text = "Player"; }
+            if (fd.FilterIndex - 1 == 3) { Instance.IdentificationNUD.IsEnabled = true; Instance.IDLabel.Text = "PlayerID"; }
             else { Instance.IDLabel.Text = "ID"; }
             if (fd.FilterIndex - 1 == 0) { Instance.DelayNUD.IsEnabled = true; Instance.IdentificationNUD.IsEnabled = true; }
 
