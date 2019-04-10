@@ -226,7 +226,7 @@ namespace AnimationEditor
             }
 
 
-            if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SpriteSheets != null)
+            if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SpriteSheetPaths != null && Instance.ViewModel.SpriteSheets != null)
             {
                 if (!Instance.ViewModel.NullSpriteSheetList.Contains(Instance.ViewModel.SpriteSheetPaths[Instance.ViewModel.CurrentSpriteSheet.Value]))
                 {
