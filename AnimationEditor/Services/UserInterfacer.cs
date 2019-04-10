@@ -278,7 +278,7 @@ namespace AnimationEditor
 
             if (Instance.MenuViewSetBackgroundToTransparentColor.IsChecked)
             {
-                Instance.CanvasView.Background = new SolidColorBrush(Instance.ViewModel.SpriteSheetTransparentColors[Instance.ViewModel.CurrentSpriteSheet.Value]);                
+                Instance.CanvasView.Background = new SolidColorBrush(Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value].TransparentColor);                
             }
             else
             {
@@ -463,10 +463,10 @@ namespace AnimationEditor
             Instance.FrameLeftNUD.Minimum = 0;
             Instance.FrameTopNUD.Minimum = 0;
 
-            if (Instance.ViewModel.SpriteSheets != null)
+            if (Instance.ViewModel.SpriteSheets != null && Instance.ViewModel.SpriteSheets.Count > 0 && Instance.ViewModel.isCurrentSpriteSheetValid())
             {
-                int SheetHeight = (int)Instance.ViewModel.SpriteSheets[(int)Instance.ViewModel.CurrentSpriteSheet].Height;
-                int SheetWidth = (int)Instance.ViewModel.SpriteSheets[(int)Instance.ViewModel.CurrentSpriteSheet].Width;
+                int SheetHeight = (int)Instance.ViewModel.SpriteSheets[(int)Instance.ViewModel.CurrentSpriteSheet].Image.Height;
+                int SheetWidth = (int)Instance.ViewModel.SpriteSheets[(int)Instance.ViewModel.CurrentSpriteSheet].Image.Width;
                 int FrameTop = (int)Instance.ViewModel.SelectedFrameTop.Value;
                 int FrameHeight = (int)Instance.ViewModel.SelectedFrameHeight.Value;
                 int FrameWidth = (int)Instance.ViewModel.SelectedFrameWidth.Value;
@@ -603,13 +603,15 @@ namespace AnimationEditor
 
             if (Instance.MenuViewTransparentSpriteSheets.IsChecked)
             {
-                var image = Instance.ViewModel.SpriteSheetsWithTransparency[Instance.ViewModel.CurrentSpriteSheet.Value];
-                return image;
+                var image = Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value];
+                if (image.isReady) return image.TransparentImage;
+                else return null;
             }
             else
             {
                 var image = Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value];
-                return image;
+                if (image.isReady) return image.Image;
+                else return null;
             }
 
         }

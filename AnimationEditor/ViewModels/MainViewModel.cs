@@ -25,11 +25,33 @@ namespace AnimationEditor.ViewModels
         public string AnimationDirectory { get; set; }
 
         public string SpriteDirectory { get; set; }
-        public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheets { get; set; }
-        public List<System.Windows.Media.Imaging.BitmapImage> SpriteSheetsWithTransparency { get; set; }
-        public List<System.Windows.Media.Color> SpriteSheetTransparentColors { get; set; }
+        public List<Spritesheet> SpriteSheets { get; set; }
+
+        public class Spritesheet
+        {
+            public System.Windows.Media.Imaging.BitmapImage Image;
+            public System.Windows.Media.Imaging.BitmapImage TransparentImage;
+            public System.Windows.Media.Color TransparentColor = (System.Windows.Media.Color)ColorConverter.ConvertFromString("#303030");
+
+            public bool isReady = false;
+            public bool isInvalid = false;
+            public Spritesheet(System.Windows.Media.Imaging.BitmapImage _Image, System.Windows.Media.Imaging.BitmapImage _TransparentImage, System.Windows.Media.Color _TransparentColor)
+            {
+                Image = _Image;
+                TransparentImage = _TransparentImage;
+            }
+
+            public Spritesheet(System.Windows.Media.Imaging.BitmapImage _Image, System.Windows.Media.Imaging.BitmapImage _TransparentImage, bool _isInvalid)
+            {
+                Image = _Image;
+                isInvalid = _isInvalid;
+            }
+        }
+
         public List<string> NullSpriteSheetList { get => SpriteSheetNullList; set => SpriteSheetNullList = value; }
+
         private List<string> SpriteSheetNullList = new List<string>();
+
         public Animation.AnimationEntry _SelectedAnimation;
         public List<Animation.AnimationEntry> Animations { get => GetAnimations(); set => SetAnimations(value); }
         public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
@@ -69,11 +91,11 @@ namespace AnimationEditor.ViewModels
                 return _frames[tuple] = bitmap;
             }
 
-            if (frame.Width > 0 && frame.Height > 0 && textureBitmap != null)
+            if (frame.Width > 0 && frame.Height > 0 && textureBitmap != null && textureBitmap.isReady)
             {
                 try
                 {
-                    bitmap = new CroppedBitmap(textureBitmap,
+                    bitmap = new CroppedBitmap(textureBitmap.Image,
                     new System.Windows.Int32Rect()
                     {
                         X = frame.X,
@@ -255,19 +277,40 @@ namespace AnimationEditor.ViewModels
         {
             if (SelectedFrameLeft != null && SelectedFrameTop != null && SelectedFrameWidth != null && SelectedFrameHeight != null)
             {
-                if (FullFrameMode && SpriteSheets != null)
+                if (SpriteSheets != null && isCurrentSpriteSheetValid())
                 {
-                    if (!NullSpriteSheetList.Contains(SpriteSheetPaths[(int)CurrentSpriteSheet.Value])) return new Rect(0, 0, SpriteSheets[(int)CurrentSpriteSheet.Value].Width, SpriteSheets[(int)CurrentSpriteSheet.Value].Height);
-                    else return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
+                    if (FullFrameMode)
+                    {
+                        if (!NullSpriteSheetList.Contains(SpriteSheetPaths[(int)CurrentSpriteSheet.Value])) return new Rect(0, 0, SpriteSheets[(int)CurrentSpriteSheet.Value].Image.Width, SpriteSheets[(int)CurrentSpriteSheet.Value].Image.Height);
+                        else return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
 
+                    }
+                    else
+                    {
+                        return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
+                    }
                 }
                 else
                 {
-                    return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
+                    return new Rect(0, 0, 0.5, 0.5);
+
                 }
+
 
             }
             return new Rect(0, 0, 0.5, 0.5);
+
+        }
+
+
+        public bool isCurrentSpriteSheetValid()
+        {
+            if ((int)CurrentSpriteSheet < SpriteSheets.Count)
+            {
+                if (SpriteSheets[(int)CurrentSpriteSheet].isReady) return true;
+                else return false;
+            }
+            else return false;
 
         }
 

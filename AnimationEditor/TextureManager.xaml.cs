@@ -71,7 +71,7 @@ namespace AnimationEditor
 
         public void UpdateUI()
         {
-            CurrentTexture = ParentInstance.ViewModel.SpriteSheets[SelectedTextureIndex];
+            CurrentTexture = ParentInstance.ViewModel.SpriteSheets[SelectedTextureIndex].Image;
             if (CurrentTexture != null && !ParentInstance.ViewModel.NullSpriteSheetList.Contains(ParentInstance.ViewModel.SpriteSheetPaths[SelectedTextureIndex]))
             {
                 SizeText.Text = string.Format("Size: {0} x {1}", CurrentTexture.Width, CurrentTexture.Height);
@@ -133,8 +133,8 @@ namespace AnimationEditor
                     return;
                 }
                 var image = ParentInstance.Handler.LoadAnimationTexture(selectedImage);
-                bool widthPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Width));
-                bool heightPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Height));
+                bool widthPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Item1.Width));
+                bool heightPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Item1.Height));
                 if (!heightPowerOf2 || !widthPowerOf2)
                 {
                     var result = MessageBox.Show("Your spritesheet's width and/or height has a value that is not a power of two. It is not recommended that you use a spritesheet with \"non-power-of-two\" sizes, as it will make the sprites look disorted in-game. Do you still wish to continue?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
@@ -147,11 +147,13 @@ namespace AnimationEditor
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.RemoveAt(index);
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Insert(index, modifiedPath);
 
-                ParentInstance.ViewModel.SpriteSheets.RemoveAt(index);
-                ParentInstance.ViewModel.SpriteSheets.Insert(index, ParentInstance.Handler.LoadAnimationTexture(selectedImage));
+                var normalTexture = ParentInstance.Handler.LoadAnimationTexture(selectedImage, false);
+                var transparentTexture = ParentInstance.Handler.LoadAnimationTexture(selectedImage, true);
 
-                ParentInstance.ViewModel.SpriteSheetsWithTransparency.RemoveAt(index);
-                ParentInstance.ViewModel.SpriteSheetsWithTransparency.Insert(index, ParentInstance.Handler.LoadAnimationTexture(selectedImage, true));
+
+
+                ParentInstance.ViewModel.SpriteSheets.RemoveAt(index);
+                ParentInstance.ViewModel.SpriteSheets.Insert(index, new MainViewModel.Spritesheet(normalTexture.Item1, transparentTexture.Item1, transparentTexture.Item2));
             }
 
             InitializeVarriables();
@@ -179,9 +181,13 @@ namespace AnimationEditor
                     MessageBox.Show("You can not add a spritesheet outside of the parent folder of the animation, please use an spritesheet within " + string.Format("{0}", parentDirectory), "Unable to add Spritesheet", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
+
                 var image = ParentInstance.Handler.LoadAnimationTexture(selectedImage);
-                bool widthPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Width));
-                bool heightPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Height));
+                var transparentimage = ParentInstance.Handler.LoadAnimationTexture(selectedImage, true);
+
+
+                bool widthPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Item1.Width));
+                bool heightPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Item1.Height));
                 if (!heightPowerOf2 || !widthPowerOf2)
                 {
                     var result = MessageBox.Show("Your spritesheet's width and/or height has a value that is not a power of two. It is not recommended that you use a spritesheet with \"non-power-of-two\" sizes, as it will make the sprites look disorted in-game. Do you still wish to continue?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
@@ -191,8 +197,7 @@ namespace AnimationEditor
                 string modifiedPath = selectedImage.Replace(parentDirectory, "").Replace("\\", "/");
                 if (modifiedPath[0] == '/') modifiedPath = modifiedPath.Remove(0, 1);
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Add(modifiedPath);
-                ParentInstance.ViewModel.SpriteSheets.Add(ParentInstance.Handler.LoadAnimationTexture(selectedImage));
-                ParentInstance.ViewModel.SpriteSheetsWithTransparency.Add(ParentInstance.Handler.LoadAnimationTexture(selectedImage, true));
+                ParentInstance.ViewModel.SpriteSheets.Add(new MainViewModel.Spritesheet(image.Item1, transparentimage.Item1, transparentimage.Item2));
             }
 
             InitializeVarriables();

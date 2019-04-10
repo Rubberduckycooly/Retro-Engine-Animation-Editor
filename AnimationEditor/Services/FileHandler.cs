@@ -143,7 +143,7 @@ namespace AnimationEditor
             Instance.IntilizePlayback(true);
         }
 
-        public BitmapImage LoadAnimationTexture(string fileName, bool transparent = false)
+        public Tuple<BitmapImage, Color> LoadAnimationTexture(string fileName, bool transparent = false)
         {
             if (transparent)
             {
@@ -152,9 +152,8 @@ namespace AnimationEditor
                 fileStream.Close();
                 var color = img.Palette.Entries[0];
                 string hex = HexConverter(color);
-                Instance.ViewModel.SpriteSheetTransparentColors.Add((Color)ColorConverter.ConvertFromString(hex));
                 img.MakeTransparent(color);
-                return (BitmapImage)BitmapConversion.ToWpfBitmap(img);
+                return new Tuple<BitmapImage, Color>((BitmapImage)BitmapConversion.ToWpfBitmap(img), (Color)ColorConverter.ConvertFromString(hex));
             }
             else
             {
@@ -164,7 +163,7 @@ namespace AnimationEditor
                 img.BeginInit();
                 img.StreamSource = fileStream;
                 img.EndInit();
-                return img;
+                return new Tuple<BitmapImage, Color>(img, Colors.Black);
             }
 
         }
@@ -191,19 +190,24 @@ namespace AnimationEditor
                 string imagePath = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("/", "\\"));
                 if (File.Exists(imagePath))
                 {
-                    Instance.ViewModel.SpriteSheets.Add(LoadAnimationTexture(imagePath));
-                    Instance.ViewModel.SpriteSheetsWithTransparency.Add(LoadAnimationTexture(imagePath, true));
+                    var normalImage = LoadAnimationTexture(imagePath);
+                    var transparentImage = LoadAnimationTexture(imagePath, true);
+                    Instance.ViewModel.SpriteSheets.Add(new MainViewModel.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
                 }
                 else
                 {
-                    Instance.ViewModel.SpriteSheets.Add(new BitmapImage());
-                    Instance.ViewModel.SpriteSheetTransparentColors.Add((Color)ColorConverter.ConvertFromString("#303030"));
-                    Instance.ViewModel.SpriteSheetsWithTransparency.Add(new BitmapImage());
-                    Instance.ViewModel.NullSpriteSheetList.Add(path);
+                    Instance.ViewModel.SpriteSheets.Add(new MainViewModel.Spritesheet(new BitmapImage(), new BitmapImage(), true));
                     Instance.ViewModel.NullSpriteSheetList.Add(path);
                 }
 
             }
+
+
+            foreach(var spritesheet in Instance.ViewModel.SpriteSheets)
+            {
+                if (!spritesheet.isInvalid) spritesheet.isReady = true;
+            }
+
         }
 
         public void InitlizeSpriteSheets(bool clearMode = false)
@@ -211,14 +215,10 @@ namespace AnimationEditor
             if (clearMode)
             {
                 if (Instance.ViewModel.SpriteSheets != null) Instance.ViewModel.SpriteSheets.Clear();
-                if (Instance.ViewModel.SpriteSheetsWithTransparency != null) Instance.ViewModel.SpriteSheetsWithTransparency.Clear();
-                if (Instance.ViewModel.SpriteSheetTransparentColors != null) Instance.ViewModel.SpriteSheetTransparentColors.Clear();
             }
             else
             {
-                Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<BitmapImage>();
-                Instance.ViewModel.SpriteSheetsWithTransparency = new System.Collections.Generic.List<BitmapImage>();
-                Instance.ViewModel.SpriteSheetTransparentColors = new List<Color>();
+                Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<MainViewModel.Spritesheet>();
 
             }
         }
