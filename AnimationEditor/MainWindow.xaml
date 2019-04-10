@@ -1,44 +1,45 @@
-﻿<Window x:Class="AnimationEditor.MainWindow"
+﻿<Window
         xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"       
         xmlns:local="clr-namespace:AnimationEditor"
+        xmlns:Themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit" x:Class="AnimationEditor.MainWindow"
         mc:Ignorable="d"
         Title="RSDK Animation Editor v2" MinHeight="540" Height="540" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="772" Width="772" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
     <DockPanel x:Name="MainPanel">
         <Menu DockPanel.Dock="Top" x:Name="MenuStrip" Background="{DynamicResource MenuBar}" Foreground="{DynamicResource NormalText}">
             <MenuItem Header="_File">
                 <MenuItem x:Name="MenuFileOpen" Header="_Open" Click="MenuFileOpen_Click"/>
-                <Separator></Separator>
-                <MenuItem x:Name="MenuFileOpenRecently" Header="_Recently Opened..." MenuItem.SubmenuOpened="MenuFileOpenRecently_SubmenuOpened">
-                    <MenuItem Header="No Recent Items" IsEnabled="False" x:Name="NoRecentFiles" Tag="0"></MenuItem>
+                <Separator/>
+                <MenuItem x:Name="MenuFileOpenRecently" Header="_Recently Opened..." SubmenuOpened="MenuFileOpenRecently_SubmenuOpened">
+                    <MenuItem Header="No Recent Items" IsEnabled="False" x:Name="NoRecentFiles" Tag="0"/>
                 </MenuItem>
-                <Separator></Separator>
+                <Separator/>
                 <MenuItem x:Name="MenuFileSave" Header="_Save" Click="MenuFileSave_Click"/>
                 <MenuItem x:Name="MenuFileSaveAs" Header="Save _as" Click="MenuFileSaveAs_Click"/>
-                <Separator></Separator>
+                <Separator/>
                 <MenuItem x:Name="MenuFileUnloadAnimation" Header="Unload _Animation" Click="MenuFileUnloadAnimation_Click"/>
-                <Separator></Separator>
+                <Separator/>
                 <MenuItem x:Name="MenuFileExit" Header="E_xit" Click="MenuFileExit_Click"/>
             </MenuItem>
             <MenuItem Header="_View" Visibility="Visible">
-                <MenuItem x:Name="MenuViewTransparentSpriteSheets" IsCheckable="True" Header="Transparent Sprite Sheets" Click="MenuViewTransparentSpriteSheets_Click"></MenuItem>
-                <MenuItem x:Name="MenuViewFullSpriteSheets" IsCheckable="True" Header="View Full Sprite Sheets" Click="MenuViewFullSpriteSheets_Click"></MenuItem>
+                <MenuItem x:Name="MenuViewTransparentSpriteSheets" IsCheckable="True" Header="Transparent Sprite Sheets" Click="MenuViewTransparentSpriteSheets_Click"/>
+                <MenuItem x:Name="MenuViewFullSpriteSheets" IsCheckable="True" Header="View Full Sprite Sheets" Click="MenuViewFullSpriteSheets_Click"/>
                 <MenuItem x:Name="MenuViewSetBackgroundToTransparentColor" IsCheckable="True" Click="MenuViewSetBackgroundToTransparentColor_Click">
                     <MenuItem.Header>
                         <StackPanel Background="Transparent">
-                            <TextBlock>Use Sprite Sheet's</TextBlock>
-                            <TextBlock>Transparent Color as Background</TextBlock>
+                            <TextBlock><Run Text="Use Sprite Sheet's"/></TextBlock>
+                            <TextBlock><Run Text="Transparent Color as Background"/></TextBlock>
                         </StackPanel>
 
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem x:Name="MenuViewFrameBorder" IsCheckable="True" Header="View Frame Border" Click="MenuViewFrameBorder_Click"></MenuItem>
-                <Separator></Separator>
+                <MenuItem x:Name="MenuViewFrameBorder" IsCheckable="True" Header="View Frame Border" Click="MenuViewFrameBorder_Click"/>
+                <Separator/>
                 <MenuItem Header="Editor Settings">
-                    <MenuItem x:Name="MenuViewUseDarkTheme" IsCheckable="True" Header="Use Dark Theme (Requires Restart)"></MenuItem>
+                    <MenuItem x:Name="MenuViewUseDarkTheme" IsCheckable="True" Header="Use Dark Theme (Requires Restart)"/>
                 </MenuItem>
 
             </MenuItem>
@@ -55,61 +56,74 @@
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition/>
+                <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
 
-            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Margin="40,0" x:Name="PopupHost"></Grid>
+            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Margin="40,0" x:Name="PopupHost"/>
 
             <DockPanel Grid.Column="0">
                 <DockPanel Grid.Column="0">
                     <ToolBarPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
 
                         <Button x:Name="ButtonAnimationAdd" BorderThickness="1" Click="ButtonAnimationAdd_Click">
-                            <Image Width="16" Source="{StaticResource Add_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
-                                    <Label>Create an empty animation.</Label>
+                                    <Label Content="Create an empty animation."/>
                                 </StackPanel>
                             </Button.ToolTip>
+                            <Image Width="16" Source="{StaticResource Add_16x}"/>
                         </Button>
 
                         <Button x:Name="ButtonAnimationDuplicate" BorderThickness="1" Click="ButtonAnimationDuplicate_Click">
-                            <Image Width="16" Source="{StaticResource Copy_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
-                                    <Label>Duplicate the selected animation.</Label>
+                                    <Label Content="Duplicate the selected animation."/>
                                 </StackPanel>
                             </Button.ToolTip>
+                            <Image Width="16" Source="{StaticResource Copy_16x}"/>
                         </Button>
 
                         <Button x:Name="ButtonAnimationRemove" BorderThickness="1" Click="ButtonAnimationRemove_Click">
-                            <Image Width="16" Source="{StaticResource Remove_color_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
-                                    <Label>Remove the selected animation.</Label>
+                                    <Label Content="Remove the selected animation."/>
                                 </StackPanel>
                             </Button.ToolTip>
+                            <Image Width="16" Source="{StaticResource Remove_color_16x}"/>
                         </Button>
 
                         <Button x:Name="ButtonAnimationImport" BorderThickness="1" Click="ButtonAnimationImport_Context">
-                            <Image Width="16" Source="{StaticResource Import_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
-                                    <Label>Import the selected animation from a file.</Label>
+                                    <Label Content="Import the selected animation from a file."/>
                                 </StackPanel>
                             </Button.ToolTip>
                             <Button.ContextMenu>
                                 <ContextMenu x:Name="ImportAnimationContext">
-                                    <MenuItem IsEnabled="False" Header="Import Animation: "></MenuItem>
-                                    <Separator></Separator>
-                                    <MenuItem x:Name="ImportAnimations" Header="Import Animation" IsEnabled="False" Click="ButtonAnimationImport_Click"></MenuItem>
-                                    <MenuItem x:Name="ImportAnimationImages" Header="Import Images to Animation..." IsEnabled="False" Visibility="Collapsed"></MenuItem>
+                                    <MenuItem IsEnabled="False" Header="Import Animation: "/>
+                                    <Separator/>
+                                    <MenuItem x:Name="ImportAnimations" Header="Import Animation" IsEnabled="False" Click="ButtonAnimationImport_Click"/>
+                                    <MenuItem x:Name="ImportAnimationImages" Header="Import Images to Animation..." IsEnabled="False" Visibility="Collapsed"/>
                                 </ContextMenu>
                             </Button.ContextMenu>
+                            <Image Width="16" Source="{StaticResource Import_16x}"/>
                         </Button>
 
                         <Button x:Name="ButtonAnimationExport" BorderThickness="1" Width="20" Height="20" Click="ButtonAnimationExport_Context">
+                            <Button.ToolTip>
+                                <StackPanel>
+                                    <Label Content="Export the selected animation to a file."/>
+                                </StackPanel>
+                            </Button.ToolTip>
+                            <Button.ContextMenu>
+                                <ContextMenu x:Name="ExportAnimationContext">
+                                    <MenuItem IsEnabled="False" Header="Export Animation: "/>
+                                    <Separator/>
+                                    <MenuItem x:Name="ExportAnimation" Header="Export Animation" IsEnabled="True" Click="ButtonAnimationExport_Click"/>
+                                    <MenuItem x:Name="ExportAnimationImages" Header="Export Animation Frames to PNG..." Click="ExportAnimationImages_Click"/>
+                                </ContextMenu>
+                            </Button.ContextMenu>
                             <Image Source="{StaticResource Export_16x}" Height="16" Width="14" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
@@ -119,21 +133,13 @@
                                     </TransformGroup>
                                 </Image.RenderTransform>
                             </Image>
-                            <Button.ToolTip>
-                                <StackPanel>
-                                    <Label>Export the selected animation to a file.</Label>
-                                </StackPanel>
-                            </Button.ToolTip>
-                            <Button.ContextMenu>
-                                <ContextMenu x:Name="ExportAnimationContext">
-                                    <MenuItem IsEnabled="False" Header="Export Animation: "></MenuItem>
-                                    <Separator></Separator>
-                                    <MenuItem x:Name="ExportAnimation" Header="Export Animation" IsEnabled="True" Click="ButtonAnimationExport_Click"></MenuItem>
-                                    <MenuItem x:Name="ExportAnimationImages" Header="Export Animation Frames to PNG..." Click="ExportAnimationImages_Click"></MenuItem>
-                                </ContextMenu>
-                            </Button.ContextMenu>
                         </Button>
                         <Button x:Name="ButtonAnimationUp" BorderThickness="1" Click="ButtonAnimationUp_Click">
+                            <Button.ToolTip>
+                                <StackPanel>
+                                    <Label Content="Shifts the Current Animation Up by one"/>
+                                </StackPanel>
+                            </Button.ToolTip>
                             <Image Source="{StaticResource Arrow}" Height="16" Width="16" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
@@ -144,11 +150,6 @@
                                     </TransformGroup>
                                 </Image.RenderTransform>
                             </Image>
-                            <Button.ToolTip>
-                                <StackPanel>
-                                    <Label Content="Shifts the Current Animation Up by one"/>
-                                </StackPanel>
-                            </Button.ToolTip>
                         </Button>
                         <Button x:Name="ButtonAnimationDown" BorderThickness="1" Click="ButtonAnimationDown_Click">
                             <Button.ToolTip>
@@ -168,12 +169,12 @@
                             </Image>
                         </Button>
                         <Button x:Name="ButtonAnimationRename" BorderThickness="1" Click="ButtonAnimationRename_Click">
-                            <Image Width="16" Source="{StaticResource EditTitleString_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
-                                    <Label>Rename the selected animation.</Label>
+                                    <Label Content="Rename the selected animation."/>
                                 </StackPanel>
                             </Button.ToolTip>
+                            <Image Width="16" Source="{StaticResource EditTitleString_16x}"/>
                         </Button>
                     </ToolBarPanel>
                     <ListBox x:Name="List" Width="160" HorizontalAlignment="Left" ItemsSource="{Binding Animations}" DisplayMemberPath="AnimName"
@@ -198,55 +199,55 @@
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
                         </ListBox>
-                        <ListBox Visibility="Hidden" x:Name="FakeScrollbar" IsEnabled="False" ScrollViewer.HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch" Grid.ColumnSpan="2"></ListBox>
+                        <ListBox Visibility="Hidden" x:Name="FakeScrollbar" IsEnabled="False" ScrollViewer.HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch" Grid.ColumnSpan="2"/>
                     </Grid>
                 </DockPanel>
                 <Grid DockPanel.Dock="Bottom" Margin="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="40"></ColumnDefinition>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="40"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel  DockPanel.Dock="Bottom" Orientation="Horizontal">
                         <ToggleButton  Click="ButtonPlay_Click" Checked="ButtonPlay_CheckChanged" Unchecked="ButtonPlay_CheckChanged" x:Name="ButtonPlay">
-                            <Image Width="16" Source="{StaticResource Run_16x}"/>
                             <ToggleButton.ToolTip>
                                 <StackPanel>
-                                    <Label>Play the current animation</Label>
+                                    <Label Content="Play the current animation"/>
                                 </StackPanel>
                             </ToggleButton.ToolTip>
+                            <Image Width="16" Source="{StaticResource Run_16x}"/>
                         </ToggleButton>
                         <Button  Content="..." Width="20" Height="20" x:Name="PlaybackOptionsButton" VerticalContentAlignment="Center" Click="PlaybackOptionsButton_Click">
                             <Button.ContextMenu>
                                 <ContextMenu x:Name="PlaybackOptionsContextMenu">
                                     <MenuItem IsEnabled="False" IsHitTestVisible="False">
                                         <MenuItem.Header>
-                                            <TextBlock Text="Playback Options: " Foreground="{DynamicResource DisabledText}"></TextBlock>
+                                            <TextBlock Text="Playback Options: " Foreground="{DynamicResource DisabledText}"/>
                                         </MenuItem.Header>
                                     </MenuItem>
-                                    <Separator></Separator>
+                                    <Separator/>
                                     <MenuItem Header="Forced Playback Mode...">
                                         <MenuItem x:Name="ForcePlaybackMenuItem" StaysOpenOnClick="True" Click="ForcePlaybackMenuItem_Click" IsCheckable="True">
                                             <MenuItem.Header>
                                                 <StackPanel Background="Transparent">
-                                                    <TextBlock Text="Forced Playback Mode " Background="Transparent"></TextBlock>
-                                                    <TextBlock Text="(For Slow/Manual Animations)" Background="Transparent"></TextBlock>
+                                                    <TextBlock Text="Forced Playback Mode " Background="Transparent"/>
+                                                    <TextBlock Text="(For Slow/Manual Animations)" Background="Transparent"/>
                                                 </StackPanel>
                                             </MenuItem.Header>
                                         </MenuItem>
-                                        <Separator></Separator>
+                                        <Separator/>
                                         <MenuItem StaysOpenOnClick="True">
                                             <MenuItem.Header>
                                                 <StackPanel Background="Transparent">
-                                                    <TextBlock Text="Forced Speed" Background="Transparent"></TextBlock>
-                                                    <xc:IntegerUpDown x:Name="ForcedPlaybackSpeedNUD" IsHitTestVisible="True" DefaultValue="128" Value="128" ValueChanged="ForcedPlaybackSpeedNUD_ValueChanged"></xc:IntegerUpDown>
+                                                    <TextBlock Text="Forced Speed" Background="Transparent"/>
+                                                    <xc:IntegerUpDown x:Name="ForcedPlaybackSpeedNUD" IsHitTestVisible="True" DefaultValue="128" Value="128" ValueChanged="ForcedPlaybackSpeedNUD_ValueChanged"/>
                                                 </StackPanel>
                                             </MenuItem.Header>
                                         </MenuItem>
                                         <MenuItem StaysOpenOnClick="True">
                                             <MenuItem.Header>
                                                 <StackPanel Background="Transparent">
-                                                    <TextBlock Text="Forced Duration" Background="Transparent"></TextBlock>
-                                                    <xc:IntegerUpDown x:Name="ForcedPlaybackDurationNUD" Value="256" DefaultValue="256" ValueChanged="ForcedPlaybackDurationNUD_ValueChanged"></xc:IntegerUpDown>
+                                                    <TextBlock Text="Forced Duration" Background="Transparent"/>
+                                                    <xc:IntegerUpDown x:Name="ForcedPlaybackDurationNUD" Value="256" DefaultValue="256" ValueChanged="ForcedPlaybackDurationNUD_ValueChanged"/>
                                                 </StackPanel>
                                             </MenuItem.Header>
                                         </MenuItem>
@@ -255,93 +256,104 @@
                             </Button.ContextMenu>
                         </Button>
                         <Button  x:Name="ButtonRewind" Visibility="Collapsed">
-                            <Image Width="16"/>
                             <Button.ToolTip>
                                 <StackPanel>
-                                    <Label>Restart the animation from the first frame</Label>
+                                    <Label Content="Restart the animation from the first frame"/>
                                 </StackPanel>
                             </Button.ToolTip>
+                            <Image Width="16"/>
                         </Button>
                         <Button  x:Name="ButtonZoomIn" Click="ButtonZoomIn_Click">
-                            <Image Width="16" Source="{StaticResource ZoomIn_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
-                                    <Label>Zoom in</Label>
+                                    <Label Content="Zoom in"/>
                                 </StackPanel>
                             </Button.ToolTip>
+                            <Image Width="16" Source="{StaticResource ZoomIn_16x}"/>
                         </Button>
                         <Button  x:Name="ButtonZoomOut" Click="ButtonZoomOut_Click">
-                            <Image Width="16" Source="{StaticResource ZoomOut_16x}"/>
                             <Button.ToolTip>
                                 <StackPanel>
-                                    <Label>Zoom out</Label>
+                                    <Label Content="Zoom out"/>
                                 </StackPanel>
                             </Button.ToolTip>
+                            <Image Width="16" Source="{StaticResource ZoomOut_16x}"/>
                         </Button>
                         <ToggleButton  x:Name="ButtonShowCenter" Click="ButtonShowCenter_Click">
-                            <Image Width="16" Source="{StaticResource TableInsideBorder_16x}"/>
                             <ToggleButton.ToolTip>
                                 <StackPanel>
-                                    <Label>Show a guide to center a frame</Label>
+                                    <Label Content="Show a guide to center a frame"/>
                                 </StackPanel>
                             </ToggleButton.ToolTip>
+                            <Image Width="16" Source="{StaticResource TableInsideBorder_16x}"/>
                         </ToggleButton>
                         <ToggleButton  x:Name="ButtonShowFieldHitbox" Visibility="Visible" Click="ButtonShowFieldHitbox_Click">
-                            <Image Width="16" Source="{StaticResource AppearanceTabSolid_16x}"/>
                             <ToggleButton.ToolTip>
                                 <StackPanel>
-                                    <Label>Show the hitbox used for field collision</Label>
+                                    <Label Content="Show the hitbox used for field collision"/>
                                 </StackPanel>
                             </ToggleButton.ToolTip>
+                            <Image Width="16" Source="{StaticResource AppearanceTabSolid_16x}"/>
                         </ToggleButton>
                         <ToggleButton  x:Name="ButtonShowEntityHitbox" Visibility="Collapsed">
-                            <Image Width="16" Source="{StaticResource AppearanceTabSwatch_16x}"/>
                             <ToggleButton.ToolTip>
                                 <StackPanel>
-                                    <Label>Show the hitbox used for entity collision</Label>
+                                    <Label Content="Show the hitbox used for entity collision"/>
                                 </StackPanel>
                             </ToggleButton.ToolTip>
+                            <Image Width="16" Source="{StaticResource AppearanceTabSwatch_16x}"/>
                         </ToggleButton>
 
                         <Separator  Margin="3 0 3 0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
                         <Button  x:Name="ButtonFrameAdd" Grid.Column="1" Click="ButtonFrameAdd_Click"
                             IsEnabled="{Binding IsAnimationSelected}">
-                            <Image Source="{StaticResource Add_16x}" Width="16"/>
                             <Button.ToolTip>
                                 <Label Content="Create an empty frame"/>
                             </Button.ToolTip>
+                            <Image Source="{StaticResource Add_16x}" Width="16"/>
                         </Button>
                         <Button x:Name="ButtonFrameDupe" Grid.Column="1" Click="ButtonFrameDupe_Click"
                             IsEnabled="{Binding IsFrameSelected}">
-                            <Image Source="{StaticResource Copy_16x}" Width="16"/>
                             <Button.ToolTip>
                                 <Label Content="Duplicate selected frame"/>
                             </Button.ToolTip>
+                            <Image Source="{StaticResource Copy_16x}" Width="16"/>
                         </Button>
                         <Button x:Name="ButtonFrameRemove" Grid.Column="1" Click="ButtonFrameRemove_Click"
                             IsEnabled="{Binding IsFrameSelected}">
-                            <Image Source="{StaticResource Remove_color_16x}" Width="16"/>
                             <Button.ToolTip>
                                 <Label Content="Delete the selected frame"/>
                             </Button.ToolTip>
+                            <Image Source="{StaticResource Remove_color_16x}" Width="16"/>
                         </Button>
                         <Button x:Name="ButtonFrameImport" Grid.Column="1" Click="ButtonFrameImport_Context">
-                            <Image Source="{StaticResource Import_16x}" Width="16"/>
                             <Button.ToolTip>
                                 <Label Content="Import an existing frame"/>
                             </Button.ToolTip>
                             <Button.ContextMenu>
                                 <ContextMenu x:Name="ImportFrameContext">
-                                    <MenuItem IsEnabled="False" Header="Import Frame: "></MenuItem>
-                                    <Separator></Separator>
-                                    <MenuItem x:Name="ImportFrames" Header="Import Frame" IsEnabled="True" Click="ButtonFrameImport_Click"></MenuItem>
-                                    <MenuItem x:Name="ImportFramesImages" Header="Import Image to Frame..." IsEnabled="False" Visibility="Collapsed"></MenuItem>
+                                    <MenuItem IsEnabled="False" Header="Import Frame: "/>
+                                    <Separator/>
+                                    <MenuItem x:Name="ImportFrames" Header="Import Frame" IsEnabled="True" Click="ButtonFrameImport_Click"/>
+                                    <MenuItem x:Name="ImportFramesImages" Header="Import Image to Frame..." IsEnabled="False" Visibility="Collapsed"/>
                                 </ContextMenu>
                             </Button.ContextMenu>
+                            <Image Source="{StaticResource Import_16x}" Width="16"/>
                         </Button>
                         <Button x:Name="ButtonFrameExport" Grid.Column="1" Height="20" Width="20" Click="ButtonFrameExport_Context"
                             IsEnabled="{Binding IsFrameSelected}">
+                            <Button.ToolTip>
+                                <Label Content="Export the selected frame"/>
+                            </Button.ToolTip>
+                            <Button.ContextMenu>
+                                <ContextMenu x:Name="ExportFrameContext">
+                                    <MenuItem IsEnabled="False" Header="Export Frame: "/>
+                                    <Separator/>
+                                    <MenuItem x:Name="ExportFrame" Header="Export Frame" IsEnabled="True" Click="ButtonFrameExport_Click"/>
+                                    <MenuItem x:Name="ExportFrameImage" Header="Export Frame to PNG..." IsEnabled="False"/>
+                                </ContextMenu>
+                            </Button.ContextMenu>
                             <Image Source="{StaticResource Export_16x}" Height="16" Width="14" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
@@ -351,19 +363,11 @@
                                     </TransformGroup>
                                 </Image.RenderTransform>
                             </Image>
-                            <Button.ToolTip>
-                                <Label Content="Export the selected frame"/>
-                            </Button.ToolTip>
-                            <Button.ContextMenu>
-                                <ContextMenu x:Name="ExportFrameContext">
-                                    <MenuItem IsEnabled="False" Header="Export Frame: "></MenuItem>
-                                    <Separator></Separator>
-                                    <MenuItem x:Name="ExportFrame" Header="Export Frame" IsEnabled="True" Click="ButtonFrameExport_Click"></MenuItem>
-                                    <MenuItem x:Name="ExportFrameImage" Header="Export Frame to PNG..." IsEnabled="False"></MenuItem>
-                                </ContextMenu>
-                            </Button.ContextMenu>
                         </Button>
                         <Button Width="20" Height="20" x:Name="ButtonFrameLeft" Grid.Column="1" Click="ButtonFrameLeft_Click">
+                            <Button.ToolTip>
+                                <Label Content="Shifts the Current Frame over to the left by one"/>
+                            </Button.ToolTip>
                             <Image Source="{StaticResource Arrow}" Height="16" Width="16" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
@@ -374,11 +378,11 @@
                                     </TransformGroup>
                                 </Image.RenderTransform>
                             </Image>
-                            <Button.ToolTip>
-                                <Label Content="Shifts the Current Frame over to the left by one"/>
-                            </Button.ToolTip>
                         </Button>
                         <Button Width="20" Height="20" x:Name="ButtonFrameRight" Grid.Column="1" Click="ButtonFrameRight_Click">
+                            <Button.ToolTip>
+                                <Label Content="Shifts the Current Frame over to the right by one"/>
+                            </Button.ToolTip>
                             <Image Source="{StaticResource Arrow}" Height="16" Width="16">
                                 <Image.RenderTransform>
                                     <TransformGroup>
@@ -389,22 +393,19 @@
                                     </TransformGroup>
                                 </Image.RenderTransform>
                             </Image>
-                            <Button.ToolTip>
-                                <Label Content="Shifts the Current Frame over to the right by one"/>
-                            </Button.ToolTip>
                         </Button>
-                        <Button Width="20" Height="20" Content="?" Name="ButtonHelp" Click="ButtonHelp_Click">
+                        <Button Width="20" Height="20" Content="?" x:Name="ButtonHelp" Click="ButtonHelp_Click">
                             <Button.ContextMenu>
                                 <ContextMenu>
                                     <StackPanel Background="Transparent">
-                                        <TextBlock>Controls (Frame Viewer):</TextBlock>
-                                        <TextBlock>Arrows (Ctrl) - Frame Width/Height</TextBlock>
-                                        <TextBlock Visibility="Collapsed">Arrows (Alt) - Pivot X/Y</TextBlock>
-                                        <TextBlock>Arrows (Shift) - Frame Top/Left</TextBlock>
-                                        <Separator></Separator>
-                                        <TextBlock>Mouse (Ctrl) - Frame Width/Height</TextBlock>
-                                        <TextBlock>Mouse (Alt) - Pivot X/Y</TextBlock>
-                                        <TextBlock>Mouse (Shift) - Frame Top/Left</TextBlock>
+                                        <TextBlock><Run Text="Controls (Frame Viewer):"/></TextBlock>
+                                        <TextBlock><Run Text="Arrows (Ctrl) - Frame Width/Height"/></TextBlock>
+                                        <TextBlock Visibility="Collapsed"><Run Text="Arrows (Alt) - Pivot X/Y"/></TextBlock>
+                                        <TextBlock><Run Text="Arrows (Shift) - Frame Top/Left"/></TextBlock>
+                                        <Separator/>
+                                        <TextBlock><Run Text="Mouse (Ctrl) - Frame Width/Height"/></TextBlock>
+                                        <TextBlock><Run Text="Mouse (Alt) - Pivot X/Y"/></TextBlock>
+                                        <TextBlock><Run Text="Mouse (Shift) - Frame Top/Left"/></TextBlock>
                                     </StackPanel>
                                 </ContextMenu>
                             </Button.ContextMenu>
@@ -412,10 +413,10 @@
                                 <Label Content="Help"/>
                             </Button.ToolTip>
                         </Button>
-                        <Button Width="20" Height="20" Grid.Column="1" Visibility="Hidden"></Button>
-                        <Button Width="20" Height="20" Grid.Column="1" Visibility="Hidden"></Button>
+                        <Button Width="20" Height="20" Grid.Column="1" Visibility="Hidden"/>
+                        <Button Width="20" Height="20" Grid.Column="1" Visibility="Hidden"/>
                     </StackPanel>
-                    <ScrollBar Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Width="40" Height="20" x:Name="AnimationScroller" ValueChanged="AnimationScroller_ValueChanged" SmallChange="1" Value="2" Maximum="3" Minimum="0"></ScrollBar>
+                    <ScrollBar Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Width="40" Height="20" x:Name="AnimationScroller" ValueChanged="AnimationScroller_ValueChanged" SmallChange="1" Value="2" Maximum="3" Minimum="0"/>
 
                 </Grid>
 
@@ -442,7 +443,7 @@
                                     </TransformGroup>
                                 </Image.RenderTransform>
                                 <Image.Clip>
-                                    <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"></RectangleGeometry>
+                                    <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"/>
                                 </Image.Clip>
                             </Image>
 
@@ -461,10 +462,10 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" Name="ImageSection1"></Grid>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" Name="ImageSection2"></Grid>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" Name="ImageSection3"></Grid>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" Name="ImageSection4"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" x:Name="ImageSection1"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" x:Name="ImageSection2"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" x:Name="ImageSection3"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" x:Name="ImageSection4"/>
                                 </Grid>
                             </Border>
                             <Border Visibility="Hidden" BorderBrush="#FFE700FF" x:Name="HitBoxViewer" BorderThickness="1"                            
@@ -482,16 +483,16 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" Name="HitboxSection1"></Grid>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" Name="HitboxSection2"></Grid>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" Name="HitboxSection3"></Grid>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" Name="HitboxSection4"></Grid>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" x:Name="HitboxSection1"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" x:Name="HitboxSection2"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" x:Name="HitboxSection3"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" x:Name="HitboxSection4"/>
                                 </Grid>
                             </Border>
                         </Canvas>
-                        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="CenterAxis">
-                            <Grid Visibility="Hidden" Height="1" Name="AxisX" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Red"></Grid>
-                            <Grid Visibility="Hidden" Width="1" Name="AxisY" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="Red"></Grid>
+                        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="CenterAxis">
+                            <Grid Visibility="Hidden" Height="1" x:Name="AxisX" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Red"/>
+                            <Grid Visibility="Hidden" Width="1" x:Name="AxisY" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="Red"/>
                         </Grid>
                     </Grid>
                 </Border>
@@ -538,35 +539,22 @@
                     <GroupBox IsEnabled="{Binding IsNotRunning}">
                         <GroupBox.Header>
                             <StackPanel Background="Transparent">
-                                <TextBlock Foreground="{DynamicResource NormalText}">
-                                <Run Text="Current animation "/>
-                                <Run Text="{Binding SelectedAnimationIndex, Mode=OneWay}"/>
-                                <Run Text="- Total "/>
-                                <Run x:Name="AnimationsCountLabel" Text="{Binding AnimationsCount, Mode=OneWay}"/>
-                                </TextBlock>
-                                <TextBlock Foreground="{DynamicResource NormalText}">
-                                <Run Text="Current frame "/>
-                                <Run Text="{Binding SelectedFrameIndex, Mode=OneWay}"/>
-                                <Run Text="- Total "/>
-                                <Run x:Name="FramesCountLabel" Text="{Binding FramesCount, Mode=OneWay}"/>
-                                <Run Text="- All "/>
-                                <Run x:Name="AllFramesCountLabel"/>
-                                </TextBlock>
+                                <TextBlock Foreground="{DynamicResource NormalText}"><Run Text="Current animation "/><Run Text=" "/><Run Text="{Binding SelectedAnimationIndex, Mode=OneWay}"/><Run Text=" "/><Run Text="- Total "/><Run Text=" "/><Run x:Name="AnimationsCountLabel" Text="{Binding AnimationsCount, Mode=OneWay}"/></TextBlock>
+                                <TextBlock Foreground="{DynamicResource NormalText}"><Run Text="Current frame "/><Run Text=" "/><Run Text="{Binding SelectedFrameIndex, Mode=OneWay}"/><Run Text=" "/><Run Text="- Total "/><Run Text=" "/><Run x:Name="FramesCountLabel" Text="{Binding FramesCount, Mode=OneWay}"/><Run Text=" "/><Run Text="- All "/><Run Text=" "/><Run x:Name="AllFramesCountLabel"/></TextBlock>
                             </StackPanel>
                         </GroupBox.Header>
                         <StackPanel Background='{DynamicResource NormalBackground2}'>
                             <TextBlock Margin="0 5 0 0" Text="Texture" Foreground="{DynamicResource NormalText}"/>
                             <Grid Height="22">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                                    <ColumnDefinition Width="20"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="20"/>
                                 </Grid.ColumnDefinitions>
                                 <ComboBox x:Name="SpriteSheetList" SelectionChanged="SpriteSheetList_SelectionChanged" ItemsSource="{Binding SpriteSheetPaths}" SelectedIndex="{Binding CurrentSpriteSheet, Mode=TwoWay}"/>
-                                <Button x:Name="TextureButton"  Click="MenuViewTexture_Click" Grid.Column="1" Content="..." VerticalContentAlignment="Top">
-                                </Button>
+                                <Button x:Name="TextureButton"  Click="MenuViewTexture_Click" Grid.Column="1" Content="..." VerticalContentAlignment="Top"/>
                                 <Popup x:Name="TextureManagerPopup" StaysOpen="False" Width="{Binding ActualWidth, ElementName=PopupHost}" Height="{Binding ActualHeight, ElementName=PopupHost}" VerticalOffset="{Binding ActualHeight, ElementName=PopupHost}" PlacementTarget="{Binding ElementName=PopupHost}" Placement="Top" IsOpen="False" LostFocus="TextureManagerPopup_LostFocus">
                                     <StackPanel>
-                                        <local:TextureManager Width="{Binding ActualWidth, ElementName=PopupHost}" Height="{Binding ActualHeight, ElementName=PopupHost}" x:Name="TextureManagerMenu" Margin="0" Padding="0"></local:TextureManager>
+                                        <local:TextureManager Width="{Binding ActualWidth, ElementName=PopupHost}" Height="{Binding ActualHeight, ElementName=PopupHost}" x:Name="TextureManagerMenu" Margin="0" Padding="0"/>
                                     </StackPanel>
                                 </Popup>
                             </Grid>
@@ -574,15 +562,14 @@
                             <TextBlock Margin="0 5 0 0" Text="Hitbox" Foreground="{DynamicResource NormalText}"/>
                             <Grid Height="22">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                                    <ColumnDefinition Width="20"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="20"/>
                                 </Grid.ColumnDefinitions>
                                 <ComboBox SelectionChanged="HitBoxComboBox_SelectionChanged" MouseDoubleClick="HitBoxComboBox_MouseDoubleClick" x:Name="HitBoxComboBox" ItemsSource="{Binding CollisionBoxesNames}" Visibility="{Binding HitboxV3Visibility}" SelectedIndex="{Binding SelectedFrameHitboxIndex, Mode=TwoWay}"/>
-                                <Button x:Name="HitboxButton"  Click="MenuViewHitbox_Click" Grid.Column="1" Content="..." VerticalContentAlignment="Top">
-                                </Button>
+                                <Button x:Name="HitboxButton"  Click="MenuViewHitbox_Click" Grid.Column="1" Content="..." VerticalContentAlignment="Top"/>
                                 <Popup x:Name="HitboxManagerPopup" PlacementTarget="{Binding ElementName=HitboxButton}" Placement="Left" HorizontalOffset="{Binding ActualWidth, ElementName=HitboxButton}" VerticalOffset="{Binding ActualHeight, ElementName=HitboxButton}" StaysOpen="False" IsOpen="False" LostFocus="HitboxManagerPopup_LostFocus">
                                     <StackPanel>
-                                        <local:HitboxManager x:Name="HitboxManagerMenu" Margin="0" Padding="0"></local:HitboxManager>
+                                        <local:HitboxManager x:Name="HitboxManagerMenu" Margin="0" Padding="0"/>
                                     </StackPanel>
                                 </Popup>
                             </Grid>
@@ -590,40 +577,44 @@
                                 <StackPanel Background="Transparent" Orientation="Horizontal">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                            <ColumnDefinition Width="24"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="24"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Name="HBLabel" MouseDown="TextBlock_MouseDown" Text="Hitbox Color:" VerticalAlignment="Center"></TextBlock>
-                                        <xc:ColorPicker Grid.Column="1" SelectedColor="#FFE700FF" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="HitboxColorPicker" Foreground="#7FFF0000"></xc:ColorPicker>
+                                        <TextBlock x:Name="HBLabel" MouseDown="TextBlock_MouseDown" Text="Hitbox Color:" VerticalAlignment="Center"/>
+                                        <xc:ColorPicker Grid.Column="1" SelectedColor="#FFE700FF" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="HitboxColorPicker" Foreground="#7FFF0000" Style="{DynamicResource ColorPicker1}"/>
                                         <Border Grid.Column="1" Margin="2,0" Width="20" Height="20" BorderBrush="Black" BorderThickness="1">
                                             <Grid x:Name="HitboxColorBox" HorizontalAlignment="Left" Grid.Column="1" Width="18" Height="18" Background="#FFE700FF">
-                                                <Button x:Name="HitboxColorTrigger" Width="18" Height="18" Opacity="0.0" Click="HitboxColorBox_Click"></Button>
+                                                <Button x:Name="HitboxColorTrigger" Width="18" Height="18" Opacity="0.0" Click="HitboxColorBox_Click"/>
                                             </Grid>
                                         </Border>
                                     </Grid>
                                     <Grid Margin="0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="13*"/>
+                                            <RowDefinition Height="9*"/>
+                                        </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                            <ColumnDefinition Width="24"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="24"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Name="AxisLabel" MouseDown="TextBlock_MouseDown" Text="Axis Color:" VerticalAlignment="Center"></TextBlock>
-                                        <xc:ColorPicker Grid.Column="1" SelectedColor="#FFFF0000" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="AxisColorPicker" Foreground="#7FFF0000"></xc:ColorPicker>
-                                        <Border Grid.Column="1" Margin="2,0" Width="20" Height="20" BorderBrush="Black" BorderThickness="1">
+                                        <TextBlock x:Name="AxisLabel" MouseDown="TextBlock_MouseDown" Text="Axis Color:" VerticalAlignment="Center" Margin="0,3" Grid.RowSpan="2"/>
+                                        <xc:ColorPicker Grid.Column="1" SelectedColor="#FFFF0000" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="AxisColorPicker" Foreground="#7FFF0000" Style="{DynamicResource ColorPicker1}" Grid.RowSpan="2"/>
+                                        <Border Grid.Column="1" Margin="2,1" Width="20" Height="20" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="2">
                                             <Grid x:Name="AxisColorBox" HorizontalAlignment="Left" Grid.Column="1" Width="18" Height="18" Background="#FFFF0000">
-                                                <Button x:Name="AxisColorTrigger" Width="18" Height="18" Opacity="0.0" Click="AxisColorTrigger_Click"></Button>
+                                                <Button x:Name="AxisColorTrigger" Width="18" Height="18" Opacity="0.0" Click="AxisColorTrigger_Click"/>
                                             </Grid>
                                         </Border>
                                     </Grid>
                                     <Grid Margin="0,0">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                            <ColumnDefinition Width="24"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="24"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Name="BGLabel" MouseDown="TextBlock_MouseDown" Text="BG:" VerticalAlignment="Center"></TextBlock>
-                                        <xc:ColorPicker Grid.Column="1" SelectedColor="#303030" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="BGColorPicker" Foreground="#7FFF0000"></xc:ColorPicker>
+                                        <TextBlock x:Name="BGLabel" MouseDown="TextBlock_MouseDown" Text="BG:" VerticalAlignment="Center"/>
+                                        <xc:ColorPicker Grid.Column="1" SelectedColor="#303030" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Hidden" x:Name="BGColorPicker" Foreground="#7FFF0000" Style="{DynamicResource ColorPicker1}"/>
                                         <Border Grid.Column="1" Margin="2,0" Width="20" Height="20" BorderBrush="Black" BorderThickness="1">
                                             <Grid x:Name="BGColorBox" HorizontalAlignment="Left" Grid.Column="1" Width="18" Height="18" Background="#303030">
-                                                <Button x:Name="BGColorTrigger" Width="18" Height="18" Opacity="0.0" Click="BGColorTrigger_Click"></Button>
+                                                <Button x:Name="BGColorTrigger" Width="18" Height="18" Opacity="0.0" Click="BGColorTrigger_Click"/>
                                             </Grid>
                                         </Border>
                                     </Grid>
@@ -664,8 +655,7 @@
                                     Value="{Binding SelectedHitbox_Height, Mode=TwoWay}"/>
                             </Grid>
 
-                            <TextBlock Margin="0 5 0 0" Foreground="{DynamicResource NormalText}"><Run Text="Sprite property"/><InlineUIContainer>
-                                </InlineUIContainer></TextBlock>
+                            <TextBlock Margin="0 5 0 0" Foreground="{DynamicResource NormalText}"><Run Text="Sprite property"/><InlineUIContainer/></TextBlock>
                             <Grid Margin="3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="35"/>
@@ -728,8 +718,8 @@
             <StatusBar Grid.Row="1" Grid.ColumnSpan="5" Background="{DynamicResource StatusBarBackground}">
                 <StatusBarItem>
                     <StackPanel Background="{DynamicResource StatusBarBackground}">
-                        <TextBlock Name="SpriteDirectoryLabel" Text="Sprite Directory: N/A"></TextBlock>
-                        <TextBlock Name="AnimationPathLabel" Text="Animation Path: N/A"></TextBlock>
+                        <TextBlock x:Name="SpriteDirectoryLabel" Text="Sprite Directory: N/A"/>
+                        <TextBlock x:Name="AnimationPathLabel" Text="Animation Path: N/A"/>
                     </StackPanel>
                 </StatusBarItem>
             </StatusBar>
