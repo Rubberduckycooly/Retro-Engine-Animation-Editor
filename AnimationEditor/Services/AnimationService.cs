@@ -349,7 +349,8 @@ namespace AnimationEditor
                 engineType = type;
                 switch (type)
                 {
-                    case EngineType.RSDKv5:
+                    //case EngineType.RSDKv5:
+                    default:
                         RSDKv5.Reader readerv5 = new RSDKv5.Reader(filepath);
                         RSDKv5.Animation.AnimationEntry.Frame framev5 = new RSDKv5.Animation.AnimationEntry.Frame(readerv5);
                         readerv5.Close();
@@ -753,6 +754,7 @@ namespace AnimationEditor
                     for (int a = 0; a < animsetv1.Animations.Count; a++)
                     {
                         Animations.Add(new AnimationEntry());
+                        Animations[a].AnimName = animsetv1.AnimNames[a];
                         Animations[a].LoopIndex = animsetv1.Animations[a].LoopIndex;
                         Animations[a].SpeedMultiplyer = animsetv1.Animations[a].SpeedMultiplyer;
 
@@ -778,6 +780,8 @@ namespace AnimationEditor
                     PlayerType = animsetvRS.PlayerType;
                     Unknown = animsetvRS.Unknown;
 
+                    CollisionBoxes.Add("Hitbox");
+
                     for (int i = 0; i < animsetvRS.SpriteSheets.Length; i++)
                     {
                         SpriteSheets.Add(animsetvRS.SpriteSheets[i]);
@@ -786,6 +790,7 @@ namespace AnimationEditor
                     for (int a = 0; a < animsetvRS.Animations.Count; a++)
                     {
                         Animations.Add(new AnimationEntry());
+                        Animations[a].AnimName = animsetvRS.AnimNames[a];
                         Animations[a].LoopIndex = animsetvRS.Animations[a].LoopIndex;
                         Animations[a].SpeedMultiplyer = animsetvRS.Animations[a].SpeedMultiplyer;
 
@@ -801,6 +806,11 @@ namespace AnimationEditor
                             Animations[a].Frames[i].Y = animsetvRS.Animations[a].Frames[i].Y;
                             Animations[a].Frames[i].SpriteSheet = animsetvRS.Animations[a].Frames[i].SpriteSheet;
 
+                            Animations[a].Frames[i].HitBoxes.Add(new HitBox());
+                            Animations[a].Frames[i].HitBoxes[0].Height = animsetvRS.Animations[a].Frames[i].CollisionBox.Height;
+                            Animations[a].Frames[i].HitBoxes[0].Width = animsetvRS.Animations[a].Frames[i].CollisionBox.Width;
+                            Animations[a].Frames[i].HitBoxes[0].X = animsetvRS.Animations[a].Frames[i].CollisionBox.X;
+                            Animations[a].Frames[i].HitBoxes[0].Y = animsetvRS.Animations[a].Frames[i].CollisionBox.Y;
                         }
                     }
                     break;
