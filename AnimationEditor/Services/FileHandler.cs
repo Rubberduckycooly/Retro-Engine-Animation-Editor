@@ -143,6 +143,13 @@ namespace AnimationEditor
             Instance.IntilizePlayback(true);
         }
 
+        public string GetImagePath(string path, string parentDirectory)
+        {
+            string result = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("/", "\\"));
+            if (Instance.AnimationType == EngineType.RSDKvRS) result = result.Replace("Characters\\Characters", "Characters"); //Fix for RSDKvRS
+            return result;
+        }
+
         public Tuple<BitmapImage, Color> LoadAnimationTexture(string fileName, bool transparent = false)
         {
             if (transparent)
@@ -187,8 +194,7 @@ namespace AnimationEditor
                     parentDirectory = Directory.GetParent(parentDirectory).FullName;
                 }
                 Instance.ViewModel.SpriteDirectory = parentDirectory;
-                string imagePath = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("/", "\\"));
-                imagePath = imagePath.Replace("Characters\\Characters", "Characters"); //Fix for RSDKvRS
+                string imagePath = GetImagePath(path, parentDirectory);
                 if (File.Exists(imagePath))
                 {
                     var normalImage = LoadAnimationTexture(imagePath);
