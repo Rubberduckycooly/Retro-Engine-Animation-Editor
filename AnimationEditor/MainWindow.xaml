@@ -39,7 +39,7 @@
                 <MenuItem x:Name="MenuViewFrameBorder" IsCheckable="True" Header="View Frame Border" Click="MenuViewFrameBorder_Click"/>
                 <Separator/>
                 <MenuItem Header="Editor Settings">
-                    <MenuItem x:Name="MenuViewUseDarkTheme" IsCheckable="True" Header="Use Dark Theme (Requires Restart)"/>
+                    <MenuItem x:Name="MenuViewUseDarkTheme" IsCheckable="True" Unchecked="MenuViewUseDarkTheme_Unchecked" Checked="MenuViewUseDarkTheme_Checked" Header="Use Dark Theme"/>
                 </MenuItem>
 
             </MenuItem>

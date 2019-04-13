@@ -35,7 +35,7 @@ namespace AnimationEditor
             }
         }
 
-        private void UpdateSource()
+        public void UpdateSource()
         {
             var val = App.Skin == Skin.Dark ? DarkSource : LightSource;
             if (val != null && base.Source != val)

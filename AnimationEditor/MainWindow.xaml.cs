@@ -601,5 +601,19 @@ namespace AnimationEditor
         {
             ButtonHelp.ContextMenu.IsOpen = true;
         }
+
+        private void MenuViewUseDarkTheme_Checked(object sender, RoutedEventArgs e)
+        {
+            App.ChangeSkin(Skin.Dark);
+            this.Refresh();
+        }
+
+        private void MenuViewUseDarkTheme_Unchecked(object sender, RoutedEventArgs e)
+        {
+            App.ChangeSkin(Skin.Light);
+            this.Refresh();
+        }
     }
+
+
 }

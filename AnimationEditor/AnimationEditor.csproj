@@ -78,6 +78,7 @@
       <DependentUpon>HitboxManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\BitmapConversion.cs" />
+    <Compile Include="Services\Extensions.cs" />
     <Compile Include="Services\FileHandler.cs" />
     <Compile Include="Services\FolderSelectDialog.cs" />
     <Compile Include="Services\InputController.cs" />

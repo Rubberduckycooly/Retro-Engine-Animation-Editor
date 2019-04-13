@@ -27,6 +27,34 @@ namespace AnimationEditor
                 Skin = Skin.Light;
             }
         }
-        public static Skin Skin { get; set; } = Skin.Dark;
+        public static Skin Skin { get; set; }
+
+        public static void ChangeSkin(Skin newSkin)
+        {
+            Skin = newSkin;
+
+            foreach (ResourceDictionary dict in App.Current.Resources.MergedDictionaries)
+            {
+
+                if (dict is SkinResourceDictionary skinDict)
+                    skinDict.UpdateSource();
+                else
+                    dict.Source = dict.Source;
+            }
+        }
+
+        private void ApplyResources(string src)
+        {
+            var dict = new ResourceDictionary() { Source = new Uri(src, UriKind.Relative) };
+            foreach (var mergeDict in dict.MergedDictionaries)
+            {
+                Resources.MergedDictionaries.Add(mergeDict);
+            }
+
+            foreach (var key in dict.Keys)
+            {
+                Resources[key] = dict[key];
+            }
+        }
     }
 }
