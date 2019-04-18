@@ -20,6 +20,8 @@ namespace AnimationEditor.ViewModels
         #region Animations and Frames
         public Animation LoadedAnimationFile;
 
+        public EngineType AnimationType = EngineType.RSDKv5;
+
         public bool FullFrameMode = false;
         public string AnimationFilepath { get; set; }
         public string AnimationDirectory { get; set; }
@@ -688,7 +690,7 @@ namespace AnimationEditor.ViewModels
 
         public void AddFrame(int frameID)
         {
-            var frame = new Animation.Frame();
+            var frame = new Animation.Frame(AnimationType);
             LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
         }
 
@@ -705,7 +707,7 @@ namespace AnimationEditor.ViewModels
 
         public void AddAnimation(int animID)
         {
-            var animation = new Animation.AnimationEntry();
+            var animation = new Animation.AnimationEntry(AnimationType);
             animation.AnimName = "New Entry";
             animation.Frames = new List<Animation.Frame>();
             LoadedAnimationFile.Animations.Insert(animID, animation);

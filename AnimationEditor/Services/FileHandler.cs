@@ -41,11 +41,11 @@ namespace AnimationEditor
             Instance.Interfacer.PreventIndexUpdate = false;
         }
 
-        public void OpenFile(string file)
+        public void OpenFile(string file, EngineType type = EngineType.Invalid)
         {
             Instance.Interfacer.PreventIndexUpdate = true;
             UnloadAnimationData();
-            LoadFile(file);
+            LoadFile(file, type);
             UpdateRecentsDropDown();
             Instance.Interfacer.PreventIndexUpdate = false;
             Instance.Interfacer.UpdateUI();
@@ -54,12 +54,21 @@ namespace AnimationEditor
         #endregion
 
         #region Load File Methods
-        public void LoadFile(string filepath)
+        public void LoadFile(string filepath, EngineType type = EngineType.Invalid)
         {
-            Instance.ViewModel.LoadedAnimationFile = new Animation();
-            Instance.ViewModel.AnimationFilepath = filepath;
-            Instance.ViewModel.LoadedAnimationFile.ImportFrom(Instance.AnimationType, filepath);
-            LoadAnimationTextures(filepath);
+            try
+            {
+                Instance.ViewModel.LoadedAnimationFile = new Animation(Instance.AnimationType);
+                Instance.ViewModel.AnimationFilepath = filepath;
+                Instance.ViewModel.LoadedAnimationFile.ImportFrom((type != EngineType.Invalid ? type : Instance.AnimationType), filepath);
+                LoadAnimationTextures(filepath);
+            }
+            catch (Exception ex)
+            {
+                RSDKrU.MessageBox.Show(ex.ToString());
+                UnloadAnimationData();
+            }
+
         }
 
         public void LoadFile(OpenFileDialog fd)
@@ -145,9 +154,17 @@ namespace AnimationEditor
 
         public string GetImagePath(string path, string parentDirectory)
         {
-            string result = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("/", "\\"));
-            if (Instance.AnimationType == EngineType.RSDKvRS) result = result.Replace("Characters\\Characters", "Characters"); //Fix for RSDKvRS
-            return result;
+            try
+            {
+                string result = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("/", "\\"));
+                if (Instance.AnimationType == EngineType.RSDKvRS) result = result.Replace("Characters\\Characters", "Characters"); //Fix for RSDKvRS
+                return result;
+            }
+            catch
+            {
+                return "<none>";
+            }
+
         }
 
         public Tuple<BitmapImage, Color> LoadAnimationTexture(string fileName, bool transparent = false)
@@ -195,7 +212,15 @@ namespace AnimationEditor
                 }
                 Instance.ViewModel.SpriteDirectory = parentDirectory;
                 string imagePath = GetImagePath(path, parentDirectory);
-                if (File.Exists(imagePath))
+
+
+
+                bool result = false;
+                if (imagePath == "<none>") result = false;
+                else result = File.Exists(imagePath);
+
+
+                if (result)
                 {
                     var normalImage = LoadAnimationTexture(imagePath);
                     var transparentImage = LoadAnimationTexture(imagePath, true);
@@ -215,6 +240,13 @@ namespace AnimationEditor
                 if (!spritesheet.isInvalid) spritesheet.isReady = true;
             }
 
+        }
+
+        public void LoadNewAnimationTexture(string imagePath)
+        {
+            var normalImage = LoadAnimationTexture(imagePath);
+            var transparentImage = LoadAnimationTexture(imagePath, true);
+            Instance.ViewModel.SpriteSheets.Add(new MainViewModel.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
         }
 
         public void InitlizeSpriteSheets(bool clearMode = false)
@@ -264,7 +296,7 @@ namespace AnimationEditor
             fd.Filter = "RSDK Animation Files|*.anim";
             if (fd.ShowDialog() == true)
             {
-                var importAnim = new Animation.AnimationEntry();
+                var importAnim = new Animation.AnimationEntry(EngineType.RSDKv5);
                 importAnim.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations.Add(importAnim);
             }
@@ -291,7 +323,7 @@ namespace AnimationEditor
             fd.Filter = "RSDK Frame Files|*.frame";
             if (fd.ShowDialog() == true)
             {
-                var importFrame = new Animation.Frame();
+                var importFrame = new Animation.Frame(EngineType.RSDKv5);
                 importFrame.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Add(importFrame); 
             }
@@ -328,8 +360,9 @@ namespace AnimationEditor
             var dataDirectories = Properties.Settings.Default.RecentFiles;
             if (File.Exists(dataDirectory))
             {
+                EngineType type = GetInputGestureTextEngineType(menuItem.InputGestureText);
                 AddRecentDataFolder(dataDirectory);
-                OpenFile(dataDirectory);
+                OpenFile(dataDirectory, type);
             }
             else
             {
@@ -384,6 +417,43 @@ namespace AnimationEditor
             return newItem;
         }
 
+        private EngineType GetInputGestureTextEngineType(string gesture)
+        {
+            switch (gesture)
+            {
+                case "RSDKv5":
+                    return EngineType.RSDKv5;
+                case "RSDKvB":
+                    return EngineType.RSDKvB;
+                case "RSDKv2":
+                    return EngineType.RSDKv2;
+                case "RSDKv1":
+                    return EngineType.RSDKv1;
+                case "RSDKvRS":
+                    return EngineType.RSDKvRS;
+                case "?":
+                    return DetermineVersionManually();
+                default:
+                    return EngineType.Invalid;
+            }
+
+            EngineType DetermineVersionManually()
+            {
+                MessageBoxResult result = RSDKrU.MessageBox.ShowYesNoCancel("Which version is this animation file for?", "Help Me!", "RSDKv2", "RSDKvB", "RSDKvRS");
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        return EngineType.RSDKv2;
+                    case MessageBoxResult.No:
+                        return EngineType.RSDKvB;
+                    case MessageBoxResult.Cancel:
+                        return EngineType.RSDKvRS;
+                    default:
+                        return EngineType.Invalid;
+                }
+            }
+        }
+
         private string GetRecentItemFileVersion(string target)
         {
             byte[] Header = null;
@@ -414,7 +484,20 @@ namespace AnimationEditor
             }
             else
             {
-                return "?";
+                /*if (Instance.AnimationType == EngineType.RSDKvB)
+                {
+                    return "RSDKvB";
+                }
+                else if (Instance.AnimationType == EngineType.RSDKv2)
+                {
+                    return "RSDKv2";
+                }
+                else if (Instance.AnimationType == EngineType.RSDKvRS)
+                {
+                    return "RSDKvRS";
+                }
+                else*/ return "?";
+
             }
         }
 

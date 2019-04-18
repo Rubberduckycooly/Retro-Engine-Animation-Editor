@@ -55,8 +55,9 @@ namespace AnimationEditor
             /// </summary>
             public byte RotationFlags;
 
-            public AnimationEntry()
+            public AnimationEntry(EngineType type)
             {
+                engineType = type;
                 Frames = new List<Frame>();
             }
 
@@ -75,7 +76,7 @@ namespace AnimationEditor
 
                         for (int i = 0; i < animv5.Frames.Count; i++)
                         {
-                            Frame frame = new Frame();
+                            Frame frame = new Frame(EngineType.RSDKv5);
                             frame.CollisionBox = animv5.Frames[i].CollisionBox;
                             frame.Delay = animv5.Frames[i].Delay;
                             frame.Height = animv5.Frames[i].Height;
@@ -97,7 +98,7 @@ namespace AnimationEditor
 
                         for (int i = 0; i < animvB.Frames.Count; i++)
                         {
-                            Frame frame = new Frame();
+                            Frame frame = new Frame(EngineType.RSDKvB);
                             frame.CollisionBox = animvB.Frames[i].CollisionBox;
                             frame.Delay = animvB.Frames[i].Delay;
                             frame.Height = animvB.Frames[i].Height;
@@ -118,7 +119,7 @@ namespace AnimationEditor
 
                         for (int i = 0; i < animv2.Frames.Count; i++)
                         {
-                            Frame frame = new Frame();
+                            Frame frame = new Frame(EngineType.RSDKv2);
                             frame.CollisionBox = animv2.Frames[i].CollisionBox;
                             frame.Delay = animv2.Frames[i].Delay;
                             frame.Height = animv2.Frames[i].Height;
@@ -139,7 +140,7 @@ namespace AnimationEditor
 
                         for (int i = 0; i < animv1.Frames.Count; i++)
                         {
-                            Frame frame = new Frame();
+                            Frame frame = new Frame(EngineType.RSDKv1);
                             frame.CollisionBox = animv1.Frames[i].CollisionBox;
                             frame.Delay = animv1.Frames[i].Delay;
                             frame.Height = animv1.Frames[i].Height;
@@ -160,7 +161,7 @@ namespace AnimationEditor
 
                         for (int i = 0; i < animvRS.Frames.Count; i++)
                         {
-                            Frame frame = new Frame();
+                            Frame frame = new Frame(EngineType.RSDKvRS);
                             frame.Delay = animvRS.Frames[i].Delay;
                             frame.Height = animvRS.Frames[i].Height;
                             frame.PivotX = animvRS.Frames[i].PivotX;
@@ -340,8 +341,9 @@ namespace AnimationEditor
             /// </summary>
             public short PivotY = 0;
 
-            public Frame()
+            public Frame(EngineType type)
             {
+                engineType = type;
             }
 
             public void ImportFrom(EngineType type, string filepath)
@@ -624,9 +626,9 @@ namespace AnimationEditor
         /// </summary>
         public byte PlayerType = 0;
 
-        public Animation()
+        public Animation(EngineType type)
         {
-            Animations.Add(new AnimationEntry());
+            Animations.Add(new AnimationEntry(type));
         }
 
         public EngineType GetFormat(string filepath)
@@ -653,7 +655,7 @@ namespace AnimationEditor
 
                     for (int a = 0; a < animsetv5.Animations.Count; a++)
                     {
-                        Animations.Add(new AnimationEntry());
+                        Animations.Add(new AnimationEntry(EngineType.RSDKv5));
                         Animations[a].Frames.Clear();
                         Animations[a].AnimName = animsetv5.Animations[a].AnimName;
                         Animations[a].LoopIndex = animsetv5.Animations[a].LoopIndex;
@@ -662,7 +664,7 @@ namespace AnimationEditor
 
                         for (int i = 0; i < animsetv5.Animations[a].Frames.Count; i++)
                         {
-                            Animations[a].Frames.Add(new Frame());
+                            Animations[a].Frames.Add(new Frame(EngineType.RSDKv5));
                             Animations[a].Frames[i].HitBoxes.Clear();
                             Animations[a].Frames[i].CollisionBox = animsetv5.Animations[a].Frames[i].CollisionBox;
                             Animations[a].Frames[i].Delay = animsetv5.Animations[a].Frames[i].Delay;
@@ -693,7 +695,7 @@ namespace AnimationEditor
 
                     for (int a = 0; a < animsetvB.Animations.Count; a++)
                     {
-                        Animations.Add(new AnimationEntry());
+                        Animations.Add(new AnimationEntry(EngineType.RSDKvB));
                         Animations[a].AnimName = animsetvB.Animations[a].AnimName;
                         Animations[a].LoopIndex = animsetvB.Animations[a].LoopIndex;
                         Animations[a].SpeedMultiplyer = animsetvB.Animations[a].SpeedMultiplyer;
@@ -701,7 +703,7 @@ namespace AnimationEditor
 
                         for (int i = 0; i < animsetvB.Animations[a].Frames.Count; i++)
                         {
-                            Animations[a].Frames.Add(new Frame());
+                            Animations[a].Frames.Add(new Frame(EngineType.RSDKvB));
                             Animations[a].Frames[i].CollisionBox = animsetvB.Animations[a].Frames[i].CollisionBox;
                             Animations[a].Frames[i].Delay = animsetvB.Animations[a].Frames[i].Delay;
                             Animations[a].Frames[i].Height = animsetvB.Animations[a].Frames[i].Height;
@@ -716,12 +718,11 @@ namespace AnimationEditor
                     break;
                 case EngineType.RSDKv2:
                     RSDKv2.Animation animsetv2 = new RSDKv2.Animation(new RSDKv2.Reader(filepath));
-
                     SpriteSheets = animsetv2.SpriteSheets;
 
                     for (int a = 0; a < animsetv2.Animations.Count; a++)
                     {
-                        Animations.Add(new AnimationEntry());
+                        Animations.Add(new AnimationEntry(EngineType.RSDKv2));
                         Animations[a].AnimName = animsetv2.Animations[a].AnimName;
                         Animations[a].LoopIndex = animsetv2.Animations[a].LoopIndex;
                         Animations[a].SpeedMultiplyer = animsetv2.Animations[a].SpeedMultiplyer;
@@ -729,7 +730,7 @@ namespace AnimationEditor
 
                         for (int i = 0; i < animsetv2.Animations[a].Frames.Count; i++)
                         {
-                            Animations[a].Frames.Add(new Frame());
+                            Animations[a].Frames.Add(new Frame(EngineType.RSDKv2));
                             Animations[a].Frames[i].CollisionBox = animsetv2.Animations[a].Frames[i].CollisionBox;
                             Animations[a].Frames[i].Delay = animsetv2.Animations[a].Frames[i].Delay;
                             Animations[a].Frames[i].Height = animsetv2.Animations[a].Frames[i].Height;
@@ -753,14 +754,14 @@ namespace AnimationEditor
 
                     for (int a = 0; a < animsetv1.Animations.Count; a++)
                     {
-                        Animations.Add(new AnimationEntry());
+                        Animations.Add(new AnimationEntry(EngineType.RSDKv1));
                         Animations[a].AnimName = animsetv1.AnimNames[a];
                         Animations[a].LoopIndex = animsetv1.Animations[a].LoopIndex;
                         Animations[a].SpeedMultiplyer = animsetv1.Animations[a].SpeedMultiplyer;
 
                         for (int i = 0; i < animsetv1.Animations[a].Frames.Count; i++)
                         {
-                            Animations[a].Frames.Add(new Frame());
+                            Animations[a].Frames.Add(new Frame(EngineType.RSDKv2));
                             Animations[a].Frames[i].CollisionBox = animsetv1.Animations[a].Frames[i].CollisionBox;
                             Animations[a].Frames[i].Delay = animsetv1.Animations[a].Frames[i].Delay;
                             Animations[a].Frames[i].Height = animsetv1.Animations[a].Frames[i].Height;
@@ -789,14 +790,14 @@ namespace AnimationEditor
 
                     for (int a = 0; a < animsetvRS.Animations.Count; a++)
                     {
-                        Animations.Add(new AnimationEntry());
+                        Animations.Add(new AnimationEntry(EngineType.RSDKvRS));
                         Animations[a].AnimName = animsetvRS.AnimNames[a];
                         Animations[a].LoopIndex = animsetvRS.Animations[a].LoopIndex;
                         Animations[a].SpeedMultiplyer = animsetvRS.Animations[a].SpeedMultiplyer;
 
                         for (int i = 0; i < animsetvRS.Animations[a].Frames.Count; i++)
                         {
-                            Animations[a].Frames.Add(new Frame());
+                            Animations[a].Frames.Add(new Frame(EngineType.RSDKvRS));
                             Animations[a].Frames[i].Delay = animsetvRS.Animations[a].Frames[i].Delay;
                             Animations[a].Frames[i].Height = animsetvRS.Animations[a].Frames[i].Height;
                             Animations[a].Frames[i].PivotX = animsetvRS.Animations[a].Frames[i].PivotX;

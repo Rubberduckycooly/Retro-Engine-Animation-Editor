@@ -23,7 +23,7 @@ namespace AnimationEditor
         public FileHandler Handler;
         public Brush DefaultBorderBrush;
         public Brush DefaultTextBrush;
-        public EngineType AnimationType = EngineType.RSDKv5;
+        public EngineType AnimationType { get => ViewModel.AnimationType; set => ViewModel.AnimationType = value; }
         public static int AnimationIndex { get; set; }
 
         private PlaybackService PlaybackService;

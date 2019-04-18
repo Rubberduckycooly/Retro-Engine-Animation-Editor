@@ -41,6 +41,7 @@ namespace AnimationEditor
                 UpdateViewerLayout();
                 UpdateInvalidState();
                 UpdatePaths();
+                UpdateTransparencyColors();
             }
             if (!Instance.isPlaybackEnabled) UpdateNormalElements();
             PreventIndexUpdate = false;
@@ -52,6 +53,25 @@ namespace AnimationEditor
         {
             Instance.SpriteDirectoryLabel.Text = string.Format("Sprite Directory: {0}", (Instance.ViewModel.SpriteDirectory != "" && Instance.ViewModel.SpriteDirectory != null ? Instance.ViewModel.SpriteDirectory : "N/A"));
             Instance.AnimationPathLabel.Text = string.Format("Animation Path: {0}", (Instance.ViewModel.AnimationFilepath != "" && Instance.ViewModel.AnimationFilepath != null ? Instance.ViewModel.AnimationFilepath : "N/A"));
+        }
+
+        public void UpdateTransparencyColors()
+        {
+            if (Instance.MenuViewSetBackgroundToTransparentColor.IsChecked && Instance.ViewModel.SpriteSheets != null)
+            {
+                if (Instance.ViewModel.SpriteSheets.Count > 0)
+                {
+                    Instance.CanvasView.Background = new SolidColorBrush(Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value].TransparentColor);
+                }
+            }
+            else
+            {
+                if (Instance.BGColorPicker.SelectedColor != null)
+                {
+                    Instance.CanvasView.Background = new SolidColorBrush(Instance.BGColorPicker.SelectedColor.Value);
+                }
+
+            }
         }
 
         public void UpdateAnimationTypeLimitations()
@@ -114,8 +134,6 @@ namespace AnimationEditor
 
             }
         }
-
-
 
         public void UpdateInvalidState()
         {
@@ -275,20 +293,6 @@ namespace AnimationEditor
                 Instance.AxisX.Visibility = Visibility.Hidden;
                 Instance.AxisY.Visibility = Visibility.Hidden;
             }
-
-            if (Instance.MenuViewSetBackgroundToTransparentColor.IsChecked)
-            {
-                Instance.CanvasView.Background = new SolidColorBrush(Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value].TransparentColor);                
-            }
-            else
-            {
-                if (Instance.BGColorPicker.SelectedColor != null)
-                {
-                    Instance.CanvasView.Background = new SolidColorBrush(Instance.BGColorPicker.SelectedColor.Value);
-                }
-
-            }
-
 
             SetHitboxDimensions();
             SetBorderMarkerDimensions();

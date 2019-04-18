@@ -196,8 +196,11 @@ namespace AnimationEditor
 
                 string modifiedPath = selectedImage.Replace(parentDirectory, "").Replace("\\", "/");
                 if (modifiedPath[0] == '/') modifiedPath = modifiedPath.Remove(0, 1);
+
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Add(modifiedPath);
-                ParentInstance.ViewModel.SpriteSheets.Add(new MainViewModel.Spritesheet(image.Item1, transparentimage.Item1, transparentimage.Item2));
+                var sheet = new MainViewModel.Spritesheet(image.Item1, transparentimage.Item1, transparentimage.Item2);
+                sheet.isReady = true;
+                ParentInstance.ViewModel.SpriteSheets.Add(sheet);
             }
 
             InitializeVarriables();
