@@ -294,6 +294,7 @@ namespace AnimationEditor
                 Instance.AxisY.Visibility = Visibility.Hidden;
             }
 
+            UpdateTransparencyColors();
             SetHitboxDimensions();
             SetBorderMarkerDimensions();
         }

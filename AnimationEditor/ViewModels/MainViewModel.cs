@@ -41,6 +41,7 @@ namespace AnimationEditor.ViewModels
             {
                 Image = _Image;
                 TransparentImage = _TransparentImage;
+                TransparentColor = _TransparentColor;
             }
 
             public Spritesheet(System.Windows.Media.Imaging.BitmapImage _Image, System.Windows.Media.Imaging.BitmapImage _TransparentImage, bool _isInvalid)
