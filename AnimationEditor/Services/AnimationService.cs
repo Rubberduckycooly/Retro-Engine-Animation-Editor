@@ -890,6 +890,7 @@ namespace AnimationEditor
                         for (int i = 0; i < Animations[a].Frames.Count; i++)
                         {
                             RSDKvB.Animation.AnimationEntry.Frame frame = new RSDKvB.Animation.AnimationEntry.Frame();
+                            frame.SpriteSheet = Animations[a].Frames[i].SpriteSheet;
                             frame.CollisionBox = Animations[a].Frames[i].CollisionBox;
                             frame.Height = (byte)Animations[a].Frames[i].Height;
                             frame.PivotX = (sbyte)Animations[a].Frames[i].PivotX;
@@ -927,6 +928,7 @@ namespace AnimationEditor
                         for (int i = 0; i < Animations[a].Frames.Count; i++)
                         {
                             RSDKv2.Animation.AnimationEntry.Frame frame = new RSDKv2.Animation.AnimationEntry.Frame();
+                            frame.SpriteSheet = Animations[a].Frames[i].SpriteSheet;
                             frame.CollisionBox = Animations[a].Frames[i].CollisionBox;
                             frame.Height = (byte)Animations[a].Frames[i].Height;
                             frame.PivotX = (sbyte)Animations[a].Frames[i].PivotX;

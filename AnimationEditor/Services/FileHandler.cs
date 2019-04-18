@@ -89,7 +89,9 @@ namespace AnimationEditor
                     Instance.AnimationType = EngineType.RSDKv5;
                     break;
                 case 1:
-                    Instance.AnimationType = EngineType.RSDKv2;
+                    MessageBoxResult result = RSDKrU.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
+                    if (result == MessageBoxResult.Yes) Instance.AnimationType = EngineType.RSDKv2;
+                    else Instance.AnimationType = EngineType.RSDKvB;
                     break;
                 case 2:
                     Instance.AnimationType = EngineType.RSDKv1;
@@ -125,7 +127,9 @@ namespace AnimationEditor
                         Instance.AnimationType = EngineType.RSDKv5;
                         break;
                     case 1:
-                        Instance.AnimationType = EngineType.RSDKv2;
+                        MessageBoxResult result = RSDKrU.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
+                        if (result == MessageBoxResult.Yes) Instance.AnimationType = EngineType.RSDKv2;
+                        else Instance.AnimationType = EngineType.RSDKvB;
                         break;
                     case 2:
                         Instance.AnimationType = EngineType.RSDKv1;
@@ -439,7 +443,7 @@ namespace AnimationEditor
 
             EngineType DetermineVersionManually()
             {
-                MessageBoxResult result = RSDKrU.MessageBox.ShowYesNoCancel("Which version is this animation file for?", "Help Me!", "RSDKv2", "RSDKvB", "RSDKvRS");
+                MessageBoxResult result = RSDKrU.MessageBox.ShowYesNoCancel("Which version is this animation file for?", "Help Me!", "RSDKv2 (CD)", "RSDKvB (Sonic 1/2)", "RSDKvRS (Retro Sonic)");
                 switch (result)
                 {
                     case MessageBoxResult.Yes:
