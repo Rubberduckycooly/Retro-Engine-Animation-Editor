@@ -34,6 +34,22 @@ namespace AnimationEditor
         public static int ForcePlaybackDuration = 256;
         public static int ForcePlaybackSpeed = 128;
 
+        public string WindowName
+        {
+            set
+            {
+                this.Title = value;
+            }
+        }
+
+        public string DefaultWindowName
+        {
+            get
+            {
+                return $"RSDK Animation Editor v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
+            }
+        }
+
         public MainWindow()
         {
             DefaultBorderBrush = (Brush)FindResource("ComboBoxBorder");
@@ -48,6 +64,7 @@ namespace AnimationEditor
             HitboxColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
             AxisColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
             BGColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
+            WindowName = DefaultWindowName;
         }
 
         private void PlaybackService_OnFrameChanged(PlaybackService obj)

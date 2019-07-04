@@ -54,12 +54,25 @@ namespace AnimationEditor
         #endregion
 
         #region Load File Methods
+
+        private static string GetFilenameAndFolder(string path)
+        {
+            string dir = "";
+            string pth = Path.GetFileName(path);
+            string tmp = path.Replace(pth, "");
+            DirectoryInfo di = new DirectoryInfo(tmp);
+            dir = di.Name;
+            string displayPath = dir + "/" + pth;
+            return displayPath;
+        }
+
         public void LoadFile(string filepath, EngineType type = EngineType.Invalid)
         {
             try
             {
                 Instance.ViewModel.LoadedAnimationFile = new Animation(Instance.AnimationType);
                 Instance.ViewModel.AnimationFilepath = filepath;
+                Instance.WindowName = Instance.DefaultWindowName + " - " + GetFilenameAndFolder(filepath);
                 Instance.ViewModel.LoadedAnimationFile.ImportFrom((type != EngineType.Invalid ? type : Instance.AnimationType), filepath);
                 LoadAnimationTextures(filepath);
             }
@@ -89,9 +102,11 @@ namespace AnimationEditor
                     Instance.AnimationType = EngineType.RSDKv5;
                     break;
                 case 1:
-                    MessageBoxResult result = RSDKrU.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
-                    if (result == MessageBoxResult.Yes) Instance.AnimationType = EngineType.RSDKv2;
-                    else Instance.AnimationType = EngineType.RSDKvB;
+                    //vB and v2 are identical, no need to check, just pretend we know
+                    //MessageBoxResult result = RSDKrU.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
+                    //if (result == MessageBoxResult.Yes)
+                        Instance.AnimationType = EngineType.RSDKv2;
+                    //else Instance.AnimationType = EngineType.RSDKvB;
                     break;
                 case 2:
                     Instance.AnimationType = EngineType.RSDKv1;
@@ -127,9 +142,11 @@ namespace AnimationEditor
                         Instance.AnimationType = EngineType.RSDKv5;
                         break;
                     case 1:
-                        MessageBoxResult result = RSDKrU.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
-                        if (result == MessageBoxResult.Yes) Instance.AnimationType = EngineType.RSDKv2;
-                        else Instance.AnimationType = EngineType.RSDKvB;
+                        //v2 and vB are identical
+                        //MessageBoxResult result = RSDKrU.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
+                        //if (result == MessageBoxResult.Yes)
+                            Instance.AnimationType = EngineType.RSDKv2;
+                        //else Instance.AnimationType = EngineType.RSDKvB;
                         break;
                     case 2:
                         Instance.AnimationType = EngineType.RSDKv1;
@@ -154,6 +171,7 @@ namespace AnimationEditor
             InitlizeSpriteSheets();
             Instance.ViewModel.NullSpriteSheetList.Clear();
             Instance.IntilizePlayback(true);
+            Instance.WindowName = Instance.DefaultWindowName;
         }
 
         public string GetImagePath(string path, string parentDirectory)
@@ -443,13 +461,13 @@ namespace AnimationEditor
 
             EngineType DetermineVersionManually()
             {
-                MessageBoxResult result = RSDKrU.MessageBox.ShowYesNoCancel("Which version is this animation file for?", "Help Me!", "RSDKv2 (CD)", "RSDKvB (Sonic 1/2)", "RSDKvRS (Retro Sonic)");
+                MessageBoxResult result = RSDKrU.MessageBox.ShowYesNoCancel("Which version is this animation file for?", "Help Me!", "RSDKv2/RSDKvB (CD/1/1)", "RSDKv1 (Sonic Nexus)", "RSDKvRS (Retro Sonic)");
                 switch (result)
                 {
                     case MessageBoxResult.Yes:
                         return EngineType.RSDKv2;
                     case MessageBoxResult.No:
-                        return EngineType.RSDKvB;
+                        return EngineType.RSDKv1;
                     case MessageBoxResult.Cancel:
                         return EngineType.RSDKvRS;
                     default:
