@@ -1,4 +1,4 @@
-﻿using AnimationEditor.ViewModels;
+﻿using AnimationEditor.Animation;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -8,15 +8,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Xceed.Wpf.Toolkit;
 using AnimationEditor.Services;
+using AnimationEditor.Animation.Classes;
+using AnimationEditor.Animation.Methods;
+using AnimationEditor.Pages;
 
-namespace AnimationEditor
+namespace AnimationEditor.Pages
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainViewModel ViewModel => (MainViewModel)DataContext;
+        public CurrentAnimation ViewModel => (CurrentAnimation)DataContext;
 
         public UserInterfacer Interfacer;
         public InputController InputControl;
@@ -56,7 +59,7 @@ namespace AnimationEditor
             DefaultTextBrush = (Brush)FindResource("NormalText");
             InitializeComponent();
             InputControl = new InputController(this);
-            DataContext = new MainViewModel();
+            DataContext = new CurrentAnimation();
             List.AllowDrop = true;
             Interfacer = new UserInterfacer(this);
             Handler = new FileHandler(this);

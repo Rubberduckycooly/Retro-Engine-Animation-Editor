@@ -1,4 +1,4 @@
-﻿using AnimationEditor.ViewModels;
+﻿using AnimationEditor.Animation;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -12,8 +12,12 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Collections.Specialized;
+using GenerationsLib.Core;
+using AnimationEditor.Animation.Classes;
+using AnimationEditor.Animation.Methods;
+using AnimationEditor.Pages;
 
-namespace AnimationEditor
+namespace AnimationEditor.Animation.Methods
 {
     public class FileHandler
     {
@@ -70,7 +74,7 @@ namespace AnimationEditor
         {
             try
             {
-                Instance.ViewModel.LoadedAnimationFile = new Animation(Instance.AnimationType);
+                Instance.ViewModel.LoadedAnimationFile = new BridgedAnimation(Instance.AnimationType);
                 Instance.ViewModel.AnimationFilepath = filepath;
                 Instance.WindowName = Instance.DefaultWindowName + " - " + GetFilenameAndFolder(filepath);
                 Instance.ViewModel.LoadedAnimationFile.ImportFrom((type != EngineType.Invalid ? type : Instance.AnimationType), filepath);
@@ -167,7 +171,7 @@ namespace AnimationEditor
             Instance.List.SelectedIndex = -1;
             Instance.FramesList.SelectedIndex = -1;
             InitlizeSpriteSheets(true);
-            Instance.DataContext = new MainViewModel();
+            Instance.DataContext = new CurrentAnimation();
             InitlizeSpriteSheets();
             Instance.ViewModel.NullSpriteSheetList.Clear();
             Instance.IntilizePlayback(true);
@@ -178,7 +182,7 @@ namespace AnimationEditor
         {
             try
             {
-                string result = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.pathmod, path.Replace("/", "\\"));
+                string result = Path.Combine(parentDirectory, Instance.ViewModel.LoadedAnimationFile.PathMod, path.Replace("/", "\\"));
                 if (Instance.AnimationType == EngineType.RSDKvRS) result = result.Replace("Characters\\Characters", "Characters"); //Fix for RSDKvRS
                 return result;
             }
@@ -246,11 +250,11 @@ namespace AnimationEditor
                 {
                     var normalImage = LoadAnimationTexture(imagePath);
                     var transparentImage = LoadAnimationTexture(imagePath, true);
-                    Instance.ViewModel.SpriteSheets.Add(new MainViewModel.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
+                    Instance.ViewModel.SpriteSheets.Add(new CurrentAnimation.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
                 }
                 else
                 {
-                    Instance.ViewModel.SpriteSheets.Add(new MainViewModel.Spritesheet(new BitmapImage(), new BitmapImage(), true));
+                    Instance.ViewModel.SpriteSheets.Add(new CurrentAnimation.Spritesheet(new BitmapImage(), new BitmapImage(), true));
                     Instance.ViewModel.NullSpriteSheetList.Add(path);
                 }
 
@@ -268,7 +272,7 @@ namespace AnimationEditor
         {
             var normalImage = LoadAnimationTexture(imagePath);
             var transparentImage = LoadAnimationTexture(imagePath, true);
-            Instance.ViewModel.SpriteSheets.Add(new MainViewModel.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
+            Instance.ViewModel.SpriteSheets.Add(new CurrentAnimation.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
         }
 
         public void InitlizeSpriteSheets(bool clearMode = false)
@@ -279,7 +283,7 @@ namespace AnimationEditor
             }
             else
             {
-                Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<MainViewModel.Spritesheet>();
+                Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<CurrentAnimation.Spritesheet>();
 
             }
         }
@@ -318,7 +322,7 @@ namespace AnimationEditor
             fd.Filter = "RSDK Animation Files|*.anim";
             if (fd.ShowDialog() == true)
             {
-                var importAnim = new Animation.AnimationEntry(EngineType.RSDKv5);
+                var importAnim = new BridgedAnimation.AnimationEntry(EngineType.RSDKv5);
                 importAnim.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations.Add(importAnim);
             }
@@ -345,7 +349,7 @@ namespace AnimationEditor
             fd.Filter = "RSDK Frame Files|*.frame";
             if (fd.ShowDialog() == true)
             {
-                var importFrame = new Animation.Frame(EngineType.RSDKv5);
+                var importFrame = new BridgedAnimation.Frame(EngineType.RSDKv5);
                 importFrame.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Add(importFrame); 
             }

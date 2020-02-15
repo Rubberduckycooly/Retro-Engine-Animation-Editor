@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 using System.Windows.Media;
+using AnimationEditor.Pages;
 
 namespace AnimationEditor.Services
 {

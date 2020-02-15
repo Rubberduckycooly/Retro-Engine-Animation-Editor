@@ -30,24 +30,28 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Timers;
+using AnimationEditor.Animation;
+using AnimationEditor.Animation.Classes;
+using AnimationEditor.Animation.Methods;
+using AnimationEditor.Pages;
 
-namespace AnimationEditor.Services
+namespace AnimationEditor.Animation.Methods
 {
     public class PlaybackService
     {
         private MainWindow ParentInstance;
         private string _animationName;
         public int _frameIndex;
-        private Animation.AnimationEntry _currentAnimation;
-        private Animation.Frame _currentFrame;
-        private Dictionary<string, Animation.AnimationEntry> _dicAnimations;
+        private BridgedAnimation.AnimationEntry _currentAnimation;
+        private BridgedAnimation.Frame _currentFrame;
+        private Dictionary<string, BridgedAnimation.AnimationEntry> _dicAnimations;
         private long _previousTime;
         private long _discardedTime;
         private object _lockTime = new object();
 
         public event Action<PlaybackService> OnFrameChanged;
 
-        public Animation AnimationData { get; set; }
+        public BridgedAnimation AnimationData { get; set; }
 
         public Timer Timer { get; private set; }
         public Stopwatch Stopwatch { get; private set; }
@@ -144,15 +148,15 @@ namespace AnimationEditor.Services
         /// <summary>
         /// Get the current animation object loaded
         /// </summary>
-        public Animation.AnimationEntry CurrentAnimation => _currentAnimation;
+        public BridgedAnimation.AnimationEntry CurrentAnimation => _currentAnimation;
 
-        public Animation.Frame CurrentFrame => _currentFrame;
+        public BridgedAnimation.Frame CurrentFrame => _currentFrame;
 
         /// <summary>
         /// Initialize a new instance of an animation service
         /// </summary>
         /// <param name="animData">Animation data where information are loaded</param>
-        public PlaybackService(Animation animData, MainWindow instance)
+        public PlaybackService(BridgedAnimation animData, MainWindow instance)
         {
             ParentInstance = instance;
             AnimationData = animData;

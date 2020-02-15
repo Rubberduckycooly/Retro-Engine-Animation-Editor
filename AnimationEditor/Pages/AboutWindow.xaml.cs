@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace AnimationEditor
+namespace AnimationEditor.Pages
 {
     /// <summary>
     /// Interaction logic for AboutWindow.xaml

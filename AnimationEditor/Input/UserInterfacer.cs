@@ -1,4 +1,4 @@
-﻿using AnimationEditor.ViewModels;
+﻿using AnimationEditor.Animation;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -7,6 +7,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using AnimationEditor.Services;
 using System.Windows.Media.Imaging;
+using AnimationEditor.Pages;
+using AnimationEditor.Animation.Classes;
 
 namespace AnimationEditor
 {

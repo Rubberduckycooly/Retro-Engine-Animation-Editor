@@ -1,11 +1,10 @@
-﻿<Window
-        xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
+﻿<Window xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"       
-        xmlns:local="clr-namespace:AnimationEditor"
-        xmlns:Themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit" x:Class="AnimationEditor.MainWindow"
+        xmlns:local="clr-namespace:AnimationEditor.Pages"
+        xmlns:Themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit" x:Class="AnimationEditor.Pages.MainWindow"
         mc:Ignorable="d"
         Title="RSDK Animation Editor v2" MinHeight="540" Height="540" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="772" Width="772" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
     <DockPanel x:Name="MainPanel">

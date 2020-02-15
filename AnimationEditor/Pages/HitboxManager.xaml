@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="AnimationEditor.HitboxManager"
+﻿<UserControl x:Class="AnimationEditor.Pages.HitboxManager"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AnimationEditor"
+        xmlns:local="clr-namespace:AnimationEditor.Pages"
         mc:Ignorable="d"
         Height="300" Width="200" Background="{DynamicResource NormalBackground2}" Margin="0">
     <Border x:Name="Border" BorderThickness="2">

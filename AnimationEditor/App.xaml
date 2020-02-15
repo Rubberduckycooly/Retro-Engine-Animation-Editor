@@ -2,13 +2,14 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:AnimationEditor"
-             StartupUri="MainWindow.xaml">
+             xmlns:styles="clr-namespace:AnimationEditor.Styles"
+             StartupUri="Pages/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <local:SkinResourceDictionary DarkSource="/GenerationsLib.WPF;component/Styles/ColorLibraryDark.xaml" 
+                <styles:SkinResourceDictionary DarkSource="/GenerationsLib.WPF;component/Styles/ColorLibraryDark.xaml" 
                                               LightSource="/GenerationsLib.WPF;component/Styles/ColorLibraryLight.xaml" />
-                <ResourceDictionary Source="RSDK.AnimationEditor.Icons.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="Pages/Resources/RSDK.AnimationEditor.Icons.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/IconLibrary.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/ButtonStyle.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/ItemContainerStyle.xaml"></ResourceDictionary>

@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>MainIcon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\MainIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -87,35 +87,33 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AboutWindow.xaml.cs">
+    <Compile Include="Pages\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Services\AnimationService.cs" />
-    <Compile Include="HitboxManager.xaml.cs">
+    <Compile Include="Animation\Classes\BridgedAnimation.cs" />
+    <Compile Include="Pages\HitboxManager.xaml.cs">
       <DependentUpon>HitboxManager.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Services\BitmapConversion.cs" />
+    <Compile Include="Graphics\BitmapConversion.cs" />
     <Compile Include="Services\Extensions.cs" />
-    <Compile Include="Services\FileHandler.cs" />
-    <Compile Include="Services\FolderSelectDialog.cs" />
-    <Compile Include="Services\InputController.cs" />
-    <Compile Include="Services\PlaybackService.cs" />
-    <Compile Include="Services\Reflector.cs" />
-    <Compile Include="Services\SkinResourceDictionary.cs" />
-    <Compile Include="TextureManager.xaml.cs">
+    <Compile Include="Animation\Methods\FileHandler.cs" />
+    <Compile Include="Input\InputController.cs" />
+    <Compile Include="Animation\Methods\PlaybackService.cs" />
+    <Compile Include="Styles\SkinResourceDictionary.cs" />
+    <Compile Include="Pages\TextureManager.xaml.cs">
       <DependentUpon>TextureManager.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Services\UserInterfacer.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
-    <Page Include="AboutWindow.xaml">
+    <Compile Include="Input\UserInterfacer.cs" />
+    <Compile Include="Animation\CurrentAnimation.cs" />
+    <Page Include="Pages\AboutWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="HitboxManager.xaml">
+    <Page Include="Pages\HitboxManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Pages\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -123,15 +121,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Pages\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="RSDK.AnimationEditor.Icons.xaml">
+    <Page Include="Pages\Resources\RSDK.AnimationEditor.Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="TextureManager.xaml">
+    <Page Include="Pages\TextureManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -166,7 +164,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="MainIcon.ico" />
+    <Resource Include="Resources\MainIcon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GenerationsLib\GenerationsLib.Core\GenerationsLib.Core.csproj">

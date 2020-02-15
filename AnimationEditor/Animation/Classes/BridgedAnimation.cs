@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AnimationEditor
+namespace AnimationEditor.Animation.Classes
 {
 
     public enum EngineType
@@ -18,7 +18,7 @@ namespace AnimationEditor
     }
 
     [Serializable]
-    public class Animation
+    public class BridgedAnimation
     {
         [Serializable]
         public class AnimationEntry : ICloneable
@@ -632,7 +632,7 @@ namespace AnimationEditor
 
         public int TotalFrameCount = 0;
 
-        public string pathmod
+        public string PathMod
         {
             get
             {
@@ -677,7 +677,7 @@ namespace AnimationEditor
         /// </summary>
         public byte PlayerType = 0;
 
-        public Animation(EngineType type)
+        public BridgedAnimation(EngineType type)
         {
             Animations.Add(new AnimationEntry(type));
         }
@@ -786,6 +786,8 @@ namespace AnimationEditor
                     Animations[a].Frames[i].Y = animsetvB.Animations[a].Frames[i].Y;
                     Animations[a].Frames[i].SpriteSheet = animsetvB.Animations[a].Frames[i].SpriteSheet;
                 }
+
+                //TODO: Add Hitbox Import to RSDKvB Format
             }
         }
         private void RSDKv2_Import(string filepath)
@@ -815,6 +817,8 @@ namespace AnimationEditor
                     Animations[a].Frames[i].SpriteSheet = animsetv2.Animations[a].Frames[i].SpriteSheet;
 
                 }
+
+                //TODO: Add Hitbox Import to RSDKv2 Format
             }
         }
         private void RSDKv1_Import(string filepath)
@@ -847,6 +851,8 @@ namespace AnimationEditor
                     Animations[a].Frames[i].SpriteSheet = animsetv1.Animations[a].Frames[i].SpriteSheet;
 
                 }
+
+                //TODO: Add Hitbox Import to RSDKv1 Format
             }
         }
         private void RSDKvRS_Import(string filepath)
@@ -888,6 +894,8 @@ namespace AnimationEditor
                     Animations[a].Frames[i].HitBoxes[0].Left = animsetvRS.Animations[a].Frames[i].CollisionBox.Left;
                     Animations[a].Frames[i].HitBoxes[0].Top = animsetvRS.Animations[a].Frames[i].CollisionBox.Top;
                 }
+
+                //TODO: Add Hitbox Import to RSDKvRS Format (I Think?)
             }
         }
         #endregion

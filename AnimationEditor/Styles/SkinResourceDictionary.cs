@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AnimationEditor.ViewModels;
+using AnimationEditor.Animation;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
-namespace AnimationEditor
+namespace AnimationEditor.Styles
 {
     public class SkinResourceDictionary : ResourceDictionary
     {

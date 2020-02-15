@@ -1,4 +1,4 @@
-﻿using AnimationEditor.ViewModels;
+﻿using AnimationEditor.Animation;
 using System;
 using Microsoft.Win32;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Collections.Generic;
 
-namespace AnimationEditor
+namespace AnimationEditor.Pages
 {
     /// <summary>
     /// Interaction logic for TextureWindow.xaml
@@ -153,7 +153,7 @@ namespace AnimationEditor
 
 
                 ParentInstance.ViewModel.SpriteSheets.RemoveAt(index);
-                ParentInstance.ViewModel.SpriteSheets.Insert(index, new MainViewModel.Spritesheet(normalTexture.Item1, transparentTexture.Item1, transparentTexture.Item2));
+                ParentInstance.ViewModel.SpriteSheets.Insert(index, new CurrentAnimation.Spritesheet(normalTexture.Item1, transparentTexture.Item1, transparentTexture.Item2));
             }
 
             InitializeVarriables();
@@ -198,7 +198,7 @@ namespace AnimationEditor
                 if (modifiedPath[0] == '/') modifiedPath = modifiedPath.Remove(0, 1);
 
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Add(modifiedPath);
-                var sheet = new MainViewModel.Spritesheet(image.Item1, transparentimage.Item1, transparentimage.Item2);
+                var sheet = new CurrentAnimation.Spritesheet(image.Item1, transparentimage.Item1, transparentimage.Item2);
                 sheet.isReady = true;
                 ParentInstance.ViewModel.SpriteSheets.Add(sheet);
             }

@@ -12,13 +12,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AnimationEditor.Services;
+using AnimationEditor.Animation;
+using AnimationEditor.Animation.Classes;
+using AnimationEditor.Animation.Methods;
 
-namespace AnimationEditor.ViewModels
+namespace AnimationEditor.Animation
 {
-    public class MainViewModel
+    public class CurrentAnimation
     {
         #region Animations and Frames
-        public Animation LoadedAnimationFile;
+        public BridgedAnimation LoadedAnimationFile;
 
         public EngineType AnimationType = EngineType.RSDKv5;
 
@@ -55,13 +58,13 @@ namespace AnimationEditor.ViewModels
 
         private List<string> SpriteSheetNullList = new List<string>();
 
-        public Animation.AnimationEntry _SelectedAnimation;
-        public List<Animation.AnimationEntry> Animations { get => GetAnimations(); set => SetAnimations(value); }
+        public BridgedAnimation.AnimationEntry _SelectedAnimation;
+        public List<BridgedAnimation.AnimationEntry> Animations { get => GetAnimations(); set => SetAnimations(value); }
         public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
         public List<string> Hitboxes { get => GetHitboxesList(); set => SetHitboxesList(value); }
         public List<string> CollisionBoxesNames { get => GetCollisionBoxes(); }
-        public List<Animation.HitBox> CollisionBoxes { get => GetHitBoxes(); }
-        public Animation.AnimationEntry SelectedAnimation { get => _SelectedAnimation; set { _SelectedAnimation = value; } }
+        public List<BridgedAnimation.HitBox> CollisionBoxes { get => GetHitBoxes(); }
+        public BridgedAnimation.AnimationEntry SelectedAnimation { get => _SelectedAnimation; set { _SelectedAnimation = value; } }
         public int SelectedAnimationIndex { get; set; }
 
         public int FramesCount { get => GetCurrentFrameCount(); }
@@ -70,7 +73,7 @@ namespace AnimationEditor.ViewModels
         public double ViewWidth { get; set; }
         public double ViewHeight { get; set; }
 
-        public List<Animation.Frame> AnimationFrames { get => GetAnimationsFrames(); }
+        public List<BridgedAnimation.Frame> AnimationFrames { get => GetAnimationsFrames(); }
         public int SelectedFrameIndex { get; set; }
         public byte? Loop { get => GetLoopIndex(); set => SetLoopIndex(value); }
         public short? Speed { get => GetSpeedMultiplyer(); set => SetSpeedMultiplyer(value); }
@@ -79,7 +82,7 @@ namespace AnimationEditor.ViewModels
         private Dictionary<string, BitmapSource> _textures = new Dictionary<string, BitmapSource>(24);
         private Dictionary<Tuple<string, int>, BitmapSource> _frames = new Dictionary<Tuple<string, int>, BitmapSource>(1024);
 
-        public BitmapSource GetCroppedFrame(int texture, Animation.Frame frame)
+        public BitmapSource GetCroppedFrame(int texture, BridgedAnimation.Frame frame)
         {
             if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count || frame == null) return null;
             var name = LoadedAnimationFile.SpriteSheets[texture];
@@ -118,7 +121,7 @@ namespace AnimationEditor.ViewModels
             return _frames[tuple] = bitmap;
         }
 
-        public void InvalidateFrame(int texture, Animation.Frame frame)
+        public void InvalidateFrame(int texture, BridgedAnimation.Frame frame)
         {
             if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count)
                 return;
@@ -138,12 +141,12 @@ namespace AnimationEditor.ViewModels
             InvalidateFrame(GetAnimationFrame(index).SpriteSheet, GetAnimationFrame(index));
         }
 
-        public List<Animation.AnimationEntry> GetAnimations()
+        public List<BridgedAnimation.AnimationEntry> GetAnimations()
         {
             if (LoadedAnimationFile != null) return LoadedAnimationFile.Animations;
             else return null;
         }
-        public void SetAnimations(List<Animation.AnimationEntry> value)
+        public void SetAnimations(List<BridgedAnimation.AnimationEntry> value)
         {
             if (LoadedAnimationFile != null) LoadedAnimationFile.Animations = value;
             else return;
@@ -317,7 +320,7 @@ namespace AnimationEditor.ViewModels
 
         }
 
-        public Animation.Frame GetAnimationFrame(int index)
+        public BridgedAnimation.Frame GetAnimationFrame(int index)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[index];
             else return null;
@@ -335,7 +338,7 @@ namespace AnimationEditor.ViewModels
             else return null;
         }
 
-        public List<Animation.Frame> GetAnimationsFrames()
+        public List<BridgedAnimation.Frame> GetAnimationsFrames()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames;
             else return null;
@@ -388,7 +391,7 @@ namespace AnimationEditor.ViewModels
 
         }
 
-        public List<Animation.HitBox> GetHitBoxes()
+        public List<BridgedAnimation.HitBox> GetHitBoxes()
         {
             return null;
         }
@@ -535,7 +538,7 @@ namespace AnimationEditor.ViewModels
 
         public int SelectedFrameHitboxIndex { get; set; }
 
-        public Animation.HitBox SelectedHitbox { get => GetSelectedHitbox(); set => SetSelectedHitbox(value); }
+        public BridgedAnimation.HitBox SelectedHitbox { get => GetSelectedHitbox(); set => SetSelectedHitbox(value); }
 
         public short SelectedHitbox_X { get => GetCurrentHitboxX(); set => SetCurrentHitboxX(value); }
 
@@ -547,7 +550,7 @@ namespace AnimationEditor.ViewModels
 
         #region Get Methods
 
-        public Animation.HitBox GetSelectedHitbox()
+        public BridgedAnimation.HitBox GetSelectedHitbox()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex];
             else return null;
@@ -586,7 +589,7 @@ namespace AnimationEditor.ViewModels
 
         #region Set Methods
 
-        public void SetSelectedHitbox(Animation.HitBox value)
+        public void SetSelectedHitbox(BridgedAnimation.HitBox value)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = value;
             else return;
@@ -601,7 +604,7 @@ namespace AnimationEditor.ViewModels
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                Animation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                BridgedAnimation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Left = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
@@ -612,7 +615,7 @@ namespace AnimationEditor.ViewModels
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                Animation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                BridgedAnimation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Top = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
@@ -623,7 +626,7 @@ namespace AnimationEditor.ViewModels
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                Animation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                BridgedAnimation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Right = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
@@ -634,7 +637,7 @@ namespace AnimationEditor.ViewModels
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                Animation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                BridgedAnimation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Bottom = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
@@ -650,7 +653,6 @@ namespace AnimationEditor.ViewModels
         #endregion
 
         #endregion
-
 
         #region Animation and Frame Management
 
@@ -719,13 +721,13 @@ namespace AnimationEditor.ViewModels
 
         public void AddFrame(int frameID)
         {
-            var frame = new Animation.Frame(AnimationType);
+            var frame = new BridgedAnimation.Frame(AnimationType);
             LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
         }
 
         public void DuplicateFrame(int frameID)
         { 
-            var frame = (Animation.Frame)LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID].Clone();
+            var frame = (BridgedAnimation.Frame)LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID].Clone();
             LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
         }
 
@@ -736,9 +738,9 @@ namespace AnimationEditor.ViewModels
 
         public void AddAnimation(int animID)
         {
-            var animation = new Animation.AnimationEntry(AnimationType);
+            var animation = new BridgedAnimation.AnimationEntry(AnimationType);
             animation.AnimName = "New Entry";
-            animation.Frames = new List<Animation.Frame>();
+            animation.Frames = new List<BridgedAnimation.Frame>();
             LoadedAnimationFile.Animations.Insert(animID, animation);
         }
 
@@ -747,7 +749,6 @@ namespace AnimationEditor.ViewModels
             var animation = LoadedAnimationFile.Animations[animID];
             LoadedAnimationFile.Animations.Insert(animID, animation);
         }
-
 
 
         #endregion
