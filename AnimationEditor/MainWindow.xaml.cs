@@ -565,7 +565,7 @@ namespace AnimationEditor
             if (ViewModel.SelectedAnimation != null)
             {
                 int tempIndex = ViewModel.SelectedAnimationIndex;
-                ViewModel.Animations[ViewModel.SelectedAnimationIndex].AnimName = RSDKrU.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Annimation:", ViewModel.SelectedAnimation.AnimName);
+                ViewModel.Animations[ViewModel.SelectedAnimationIndex].AnimName = RSDKrU.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Animation:", ViewModel.SelectedAnimation.AnimName);
                 List.ItemsSource = null;
                 Interfacer.UpdateUI();
                 List.SelectedIndex = tempIndex;

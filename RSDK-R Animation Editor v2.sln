@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimationEditor", "AnimationEditor\AnimationEditor.csproj", "{36174CF4-C09E-4E5F-9445-4DFE1072667B}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSDKvRS", "RSDK-Reverse\RSDKvRS\RSDKvRS.csproj", "{AAE1BACD-FE6B-4CC6-AD2D-073315F45EAF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSDKrU", "RSDK-Reverse\RSDKrU\RSDKrU.csproj", "{2BA290F0-4E82-4B58-AAB4-3C431EE4DE62}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RSDK-Reverse", "RSDK-Reverse", "{941563F9-46E3-405A-923B-266B18B0E381}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -339,6 +341,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E089DB56-F8D4-434E-A9A8-C7EFCC3278D8} = {941563F9-46E3-405A-923B-266B18B0E381}
+		{B41A3858-7E66-4755-9F50-94EA021155B6} = {941563F9-46E3-405A-923B-266B18B0E381}
+		{CF5496F8-002B-408F-9B3D-67C88F610283} = {941563F9-46E3-405A-923B-266B18B0E381}
+		{1A58BA31-C9E1-4D18-876E-EC73799E7A9F} = {941563F9-46E3-405A-923B-266B18B0E381}
+		{AAE1BACD-FE6B-4CC6-AD2D-073315F45EAF} = {941563F9-46E3-405A-923B-266B18B0E381}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6FB28093-25D3-4512-B0E8-8B2D0A810411}
