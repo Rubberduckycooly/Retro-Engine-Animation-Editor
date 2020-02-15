@@ -446,8 +446,23 @@ namespace AnimationEditor.ViewModels
         }
         public ushort GetID()
         {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID;
-            else return 0;
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1)
+            {
+                if (LoadedAnimationFile.engineType != EngineType.RSDKvRS)
+                {
+                    return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID;
+
+                }
+                else
+                {
+                    return LoadedAnimationFile.PlayerType;
+                }
+
+            }
+            else
+            {
+                return 0;
+            }
         }
         public short GetDelay()
         {
@@ -493,8 +508,21 @@ namespace AnimationEditor.ViewModels
         }
         public void SetID(ushort? value)
         {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID = value.Value;
-            else return;
+            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue)
+            {
+                if (LoadedAnimationFile.engineType == EngineType.RSDKvRS)
+                {
+                    LoadedAnimationFile.PlayerType = (byte)value.Value;
+                }
+                else
+                {
+                    LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID = value.Value;
+                }
+            }
+            else
+            {
+                return;
+            }
         }
         public void SetDelay(short? value)
         {

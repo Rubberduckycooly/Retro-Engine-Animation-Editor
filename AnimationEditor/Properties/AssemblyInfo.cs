@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("RSDK Animation Editor")]
 [assembly: AssemblyDescription("An animation editor for the animation files supported by the RSDK")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Xeeynamo/Rubberduckycooly/SuperSonic16")]
+[assembly: AssemblyCompany("Xeeynamo/Rubberduckycooly/SuperSonic16/Carjem")]
 [assembly: AssemblyProduct("RSDK Animation Editor")]
-[assembly: AssemblyCopyright("Copyright ©  2017-2019")]
+[assembly: AssemblyCopyright("Copyright © 2017-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
