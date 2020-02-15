@@ -15,20 +15,30 @@ namespace AnimationEditor
     public class UserInterfacer
     {
         private MainWindow Instance;
-        private Brush DefaultBorderBrush;
-        private Brush DefaultTextBrush;
-        private Brush HideTextBrush;
 
-
-        public bool PreventIndexUpdate = false;
 
         public UserInterfacer(MainWindow window)
         {
             Instance = window;
+            SetOldInitilizationValues();
+        }
+
+        #region Old Rendering (Legacy Code in the Process of Phasing Out)
+        private Brush DefaultBorderBrush;
+        private Brush DefaultTextBrush;
+        private Brush HideTextBrush;
+
+        private void SetOldInitilizationValues()
+        {
             DefaultBorderBrush = Instance.DefaultBorderBrush;
             DefaultTextBrush = Instance.DefaultTextBrush;
             HideTextBrush = Brushes.Transparent;
         }
+
+
+        public bool PreventIndexUpdate = false;
+
+
 
         #region UI Updating
 
@@ -40,7 +50,7 @@ namespace AnimationEditor
                 UpdateList();
                 if (frameInfoUpdate) UpdateCurrentFrameInList();
                 UpdateInfo();
-                UpdateViewerLayout();
+                Render();
                 UpdateInvalidState();
                 UpdatePaths();
                 UpdateTransparencyColors();
@@ -48,7 +58,7 @@ namespace AnimationEditor
             if (!Instance.isPlaybackEnabled) UpdateNormalElements();
             PreventIndexUpdate = false;
             UpdateAnimationTypeLimitations();
-
+            Instance.CanvasView.InvalidateVisual();
         }
 
         public void UpdatePaths()
@@ -63,14 +73,14 @@ namespace AnimationEditor
             {
                 if (Instance.ViewModel.SpriteSheets.Count > 0)
                 {
-                    Instance.CanvasView.Background = new SolidColorBrush(Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value].TransparentColor);
+                    Instance.CanvasBackground.Background = new SolidColorBrush(Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value].TransparentColor);
                 }
             }
             else
             {
                 if (Instance.BGColorPicker.SelectedColor != null)
                 {
-                    Instance.CanvasView.Background = new SolidColorBrush(Instance.BGColorPicker.SelectedColor.Value);
+                    Instance.CanvasBackground.Background = new SolidColorBrush(Instance.BGColorPicker.SelectedColor.Value);
                 }
 
             }
@@ -167,7 +177,7 @@ namespace AnimationEditor
                 Instance.HitBoxComboBox.IsHitTestVisible = (invalid && !indexNegative ? false : true);
 
             }
- 
+
             void UpdateFrameInfoInvalidState(bool invalid = true)
             {
                 Instance.FrameWidthNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
@@ -211,7 +221,8 @@ namespace AnimationEditor
         }
 
         #region Image/Hitbox Update Methods
-        public void UpdateViewerLayout()
+
+        public void UpdateControls()
         {
             if (Instance.MenuViewFullSpriteSheets.IsChecked) Instance.ViewModel.FullFrameMode = true;
             else if (!Instance.MenuViewFullSpriteSheets.IsChecked) Instance.ViewModel.FullFrameMode = false;
@@ -219,109 +230,6 @@ namespace AnimationEditor
             {
                 if (Instance.ViewModel.CurrentSpriteSheet.Value - 1 > Instance.ViewModel.SpriteSheets.Count) Instance.ViewModel.CurrentSpriteSheet = 0;
             }
-
-            if (Instance.ViewModel.LoadedAnimationFile != null && Instance.HitBoxComboBox.SelectedItem != null && Instance.ButtonShowFieldHitbox.IsChecked.Value)
-            {
-                Instance.HitBoxViewer.Visibility = Visibility.Visible;
-                Instance.HitBoxBackground.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                Instance.HitBoxViewer.Visibility = Visibility.Hidden;
-                Instance.HitBoxBackground.Visibility = Visibility.Hidden;
-            }
-
-
-            Instance.Geomotry.Rect = Instance.ViewModel.SpriteFrame;
-
-            Instance.ViewModel.ViewWidth = Instance.CanvasView.ActualWidth;
-            Instance.ViewModel.ViewHeight = Instance.CanvasView.ActualHeight;
-
-            if (Instance.CanvasImage != null)
-            {
-                System.Windows.Controls.Canvas.SetLeft(Instance.CanvasImage, Instance.ViewModel.SpriteLeft);
-                System.Windows.Controls.Canvas.SetTop(Instance.CanvasImage, Instance.ViewModel.SpriteTop);
-                System.Windows.Controls.Canvas.SetRight(Instance.CanvasImage, Instance.ViewModel.SpriteRight);
-                System.Windows.Controls.Canvas.SetBottom(Instance.CanvasImage, Instance.ViewModel.SpriteBottom);
-            }
-
-
-            if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SpriteSheetPaths != null && Instance.ViewModel.SpriteSheets != null)
-            {
-                if (!Instance.ViewModel.NullSpriteSheetList.Contains(Instance.ViewModel.SpriteSheetPaths[Instance.ViewModel.CurrentSpriteSheet.Value]))
-                {
-                    Instance.CanvasImage.Source = GetSpriteSheet();
-                }
-                else
-                {
-                    Instance.CanvasImage.Source = null;
-                }
-
-            }
-            else
-            {
-                Instance.CanvasImage.Source = null;
-            }
-
-            Instance.ImageScale.ScaleX = Instance.ViewModel.Zoom;
-            Instance.ImageScale.ScaleY = Instance.ViewModel.Zoom;
-            Instance.CanvasImage.RenderTransformOrigin = Instance.ViewModel.SpriteCenter;
-
-            System.Windows.Controls.Canvas.SetLeft(Instance.HitBoxViewer, Instance.ViewModel.HitboxLeft);
-            System.Windows.Controls.Canvas.SetTop(Instance.HitBoxViewer, Instance.ViewModel.HitboxTop);
-            Instance.HitBoxViewer.RenderTransformOrigin = Instance.ViewModel.SpriteCenter;
-
-
-            if (Instance.MenuViewFrameBorder.IsChecked)
-            {
-                Instance.BorderMarker.BorderBrush = new SolidColorBrush(Colors.Black);
-            }
-            else
-            {
-                Instance.BorderMarker.BorderBrush = new SolidColorBrush(Colors.Transparent);
-            }
-            System.Windows.Controls.Canvas.SetLeft(Instance.BorderMarker, Instance.ViewModel.BorderLeft);
-            System.Windows.Controls.Canvas.SetTop(Instance.BorderMarker, Instance.ViewModel.BorderTop);
-
-            Instance.BorderMarker.RenderTransformOrigin = Instance.ViewModel.SpriteCenter;
-
-            if (Instance.ButtonShowCenter.IsChecked.Value)
-            {
-                Instance.AxisX.Visibility = Visibility.Visible;
-                Instance.AxisY.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                Instance.AxisX.Visibility = Visibility.Hidden;
-                Instance.AxisY.Visibility = Visibility.Hidden;
-            }
-
-            UpdateTransparencyColors();
-            SetHitboxDimensions();
-            SetBorderMarkerDimensions();
-        }
-
-        public void SetBorderMarkerDimensions()
-        {
-            double width = Instance.ViewModel.SelectedFrameWidth ?? 0;
-            double height = Instance.ViewModel.SelectedFrameHeight ?? 0;
-
-            Instance.BorderMarker.Width = width * Instance.ViewModel.Zoom;
-            Instance.BorderMarker.Height = height * Instance.ViewModel.Zoom;
-        }
-
-        public void SetHitboxDimensions()
-        {
-            double FrameX = Instance.ViewModel.SelectedFramePivotX ?? 0 * Instance.ViewModel.Zoom;
-            double FrameY = Instance.ViewModel.SelectedFramePivotY ?? 0 * Instance.ViewModel.Zoom;
-
-            double x = (Instance.ViewModel.SelectedHitbox_X < 0 ? -Instance.ViewModel.SelectedHitbox_X : Instance.ViewModel.SelectedHitbox_X) * Instance.ViewModel.Zoom;
-            double y = (Instance.ViewModel.SelectedHitbox_Y < 0 ? -Instance.ViewModel.SelectedHitbox_Y : Instance.ViewModel.SelectedHitbox_Y) * Instance.ViewModel.Zoom;
-            double width = (Instance.ViewModel.SelectedHitbox_Width < 0 ? -Instance.ViewModel.SelectedHitbox_Width : Instance.ViewModel.SelectedHitbox_Width) * Instance.ViewModel.Zoom;
-            double height = (Instance.ViewModel.SelectedHitbox_Height < 0 ? -Instance.ViewModel.SelectedHitbox_Height : Instance.ViewModel.SelectedHitbox_Height) * Instance.ViewModel.Zoom;
-
-            Instance.HitBoxViewer.Width = x + y;
-            Instance.HitBoxViewer.Height = width + height;
         }
         #endregion
 
@@ -344,7 +252,8 @@ namespace AnimationEditor
             Instance.AnimationsCountLabel.Text = Instance.ViewModel.AnimationsCount.ToString();
             Instance.AllFramesCountLabel.Text = Instance.ViewModel.GetCurrentFrameIndexForAllAnimations().ToString();
 
-            if (Instance.ViewModel.SelectedAnimationIndex == -1) {
+            if (Instance.ViewModel.SelectedAnimationIndex == -1)
+            {
                 Instance.FramesList.Height = 21;
                 Instance.FramesList.Visibility = Visibility.Hidden;
                 Instance.FakeScrollbar.Visibility = Visibility.Visible;
@@ -427,7 +336,7 @@ namespace AnimationEditor
 
                 if (Instance.ViewModel.AnimationFrames != null && Instance.ViewModel.SelectedFrameIndex != -1) Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet = Instance.ViewModel.CurrentSpriteSheet.Value;
 
-                
+
                 if (Instance.ViewModel.SpriteSheetPaths != null && Instance.ViewModel.SpriteSheetPaths.Count > 0) Instance.SpriteSheetList.SelectedValue = Instance.ViewModel.SpriteSheetPaths[Instance.SpriteSheetList.SelectedIndex];
 
                 if (Instance.ViewModel.SelectedFrameIndex != -1 && Instance.ViewModel.SelectedFrameIndex != null && Instance.ViewModel.AnimationFrames != null)
@@ -448,10 +357,10 @@ namespace AnimationEditor
                 Instance.HitBoxComboBox.ItemsSource = Instance.ViewModel.CollisionBoxesNames;
                 Instance.HitBoxComboBox.SelectedIndex = Instance.ViewModel.SelectedFrameHitboxIndex;
 
-                Instance.HitboxLeftNUD.Value = Instance.ViewModel.SelectedHitbox_X;
-                Instance.HitboxRightNUD.Value = Instance.ViewModel.SelectedHitbox_Y;
-                Instance.HitboxTopNUD.Value = Instance.ViewModel.SelectedHitbox_Width;
-                Instance.HitboxBottomNUD.Value = Instance.ViewModel.SelectedHitbox_Height;
+                Instance.HitboxLeftNUD.Value = Instance.ViewModel.SelectedHitboxLeft;
+                Instance.HitboxRightNUD.Value = Instance.ViewModel.SelectedHitboxTop;
+                Instance.HitboxTopNUD.Value = Instance.ViewModel.SelectedHitboxRight;
+                Instance.HitboxBottomNUD.Value = Instance.ViewModel.SelectedHitboxBottom;
 
             }
             void UpdateAnimatonInfo()
@@ -603,25 +512,309 @@ namespace AnimationEditor
                 Instance.MenuFileUnloadAnimation.IsEnabled = enabled;
             }
         }
+        #endregion
 
-        private BitmapImage GetSpriteSheet()
+        #endregion
+
+        #region New Rendering
+
+        #region Modes
+        public bool ShowFrameBorder
         {
+            get => Instance.MenuViewFrameBorder.IsChecked;
+        }
+
+        public bool ShowSolidImageBackground
+        {
+            get => !Instance.MenuViewTransparentSpriteSheets.IsChecked;
+        }
+
+        public bool ForceCenterFrame = false;
+
+        private bool ShowHitBox
+        {
+            get => Instance.ButtonShowFieldHitbox.IsChecked.Value;
+        }
+
+        private bool RenderRefrenceFrameFirst { get; set; } = false;
+        private bool ShowAlignmentLines
+        {
+            get => Instance.ButtonShowCenter.IsChecked.Value;
+        }
+
+        private bool ShowFullFrame
+        {
+            get => Instance.ViewModel.FullFrameMode;
+        }
+        #endregion
+
+        #region Bitmaps
+        public SkiaSharp.SKBitmap CurrentSpriteSheet;
+        public SkiaSharp.SKBitmap CurrentSpriteSheetFrame;
+        public string CurrentSpriteSheetName;
+
+        #endregion
+
+        #region Colors
+        public Color AlignmentLinesColor = Colors.Red;
+        public Color ImgBG = Colors.White;
+        public Color RefImgBG = Colors.White;
+        public Color FrameBorder = Colors.Black;
+        public Color RefFrameBorder = Colors.Black;
+        public Color FrameBG = Colors.Transparent;
+        public Color RefFrameBG = Colors.Transparent;
+        #endregion
+
+        #region Opacity
+        private double _RefrenceOpacity = 100;
+        public double RefrenceOpacity { get => _RefrenceOpacity; set => _RefrenceOpacity = value * 0.01; }
+        #endregion
+
+
+        #region Get/Set Bitmaps
+
+        public void UpdateSheetImage()
+        {
+            if (Instance.ViewModel.SpriteSheets == null) return;
 
 
             if (Instance.MenuViewTransparentSpriteSheets.IsChecked)
             {
                 var image = Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value];
-                if (image.isReady) return image.TransparentImage;
-                else return null;
+                if (image.isReady) CurrentSpriteSheet = SkiaSharp.Views.WPF.WPFExtensions.ToSKBitmap(image.TransparentImage);
+                else CurrentSpriteSheet = null;
             }
             else
             {
                 var image = Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value];
-                if (image.isReady) return image.Image;
-                else return null;
+                if (image.isReady) CurrentSpriteSheet = SkiaSharp.Views.WPF.WPFExtensions.ToSKBitmap(image.Image);
+                else CurrentSpriteSheet = null;
+            }
+        }
+
+        public void UpdateFrameImage()
+        {
+            if (Instance.ViewModel.SpriteSheets == null) return;
+            if (CurrentSpriteSheet == null) return;
+
+            double val_x = Instance.ViewModel.SelectedFrameLeft.Value;
+            double val_y = Instance.ViewModel.SelectedFrameTop.Value;
+            double val_width = Instance.ViewModel.SelectedFrameWidth.Value;
+            double val_height = Instance.ViewModel.SelectedFrameHeight.Value;
+
+            if (val_width != 0 && val_height != 0)
+            {
+                try
+                {
+                    System.Drawing.Bitmap sourceImage = SkiaSharp.Views.Desktop.Extensions.ToBitmap(CurrentSpriteSheet);
+                    System.Drawing.Bitmap croppedImg = (System.Drawing.Bitmap)BitmapExtensions.CropImage(sourceImage, new System.Drawing.Rectangle((int)val_x, (int)val_y, (int)val_width, (int)val_height));
+                    BitmapImage croppedBitmapImage = (BitmapImage)BitmapExtensions.ToWpfBitmap(croppedImg);
+                    CurrentSpriteSheetFrame = SkiaSharp.Views.WPF.WPFExtensions.ToSKBitmap(croppedBitmapImage);
+
+                    sourceImage.Dispose();
+                    sourceImage = null;
+
+                    croppedImg.Dispose();
+                    croppedImg = null;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            }
+        }
+
+        #endregion
+
+        #region Drawing/Rendering
+
+        public void Render()
+        {
+            UpdateControls();
+
+            UpdateSheetImage();
+            UpdateFrameImage();
+
+            Instance.CanvasView.InvalidateVisual();
+            UpdateTransparencyColors();
+        }
+
+        public void PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs e)
+        {
+            var info = e.Info;
+            var canvas = e.Surface.Canvas;
+            float Zoom = (float)Instance.ViewModel.Zoom;
+
+            canvas.Scale(Zoom);
+
+            float width = info.Width / Zoom;
+            float height = info.Height / Zoom;
+
+            float width_half = width / 2;
+            float height_half = height / 2;
+
+            canvas.Clear(SkiaSharp.SKColors.Transparent);
+
+            if (CurrentSpriteSheet != null || CurrentSpriteSheetFrame != null)
+            {
+
+                if (RenderRefrenceFrameFirst)
+                {
+                    Draw(true);
+                    Draw();
+                }
+                else
+                {
+                    Draw();
+                    Draw(true);
+                }
+
+
+                if (ShowAlignmentLines)
+                {
+                    SkiaSharp.SKPoint x1 = new SkiaSharp.SKPoint(0, height_half);
+                    SkiaSharp.SKPoint y1 = new SkiaSharp.SKPoint(width, height_half);
+                    SkiaSharp.SKPoint x2 = new SkiaSharp.SKPoint(width_half, 0);
+                    SkiaSharp.SKPoint y2 = new SkiaSharp.SKPoint(width_half, height);
+
+
+
+                    canvas.DrawLine(x1, y1, new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(AlignmentLinesColor) });
+                    canvas.DrawLine(x2, y2, new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(AlignmentLinesColor) });
+                }
+
+
+                if (ShowHitBox)
+                {
+                    float bx = width_half + Instance.ViewModel.SelectedHitboxLeft;
+                    float by = height_half + Instance.ViewModel.SelectedHitboxBottom;
+                    float h = Instance.ViewModel.SelectedHitboxTop;
+                    float w = Instance.ViewModel.SelectedHitboxRight;
+
+
+                    SkiaSharp.SKPoint x1 = new SkiaSharp.SKPoint(bx, by);
+                    SkiaSharp.SKPoint x2 = new SkiaSharp.SKPoint(bx + w, by);
+                    SkiaSharp.SKPoint y1 = new SkiaSharp.SKPoint(bx, by + h);
+                    SkiaSharp.SKPoint y2 = new SkiaSharp.SKPoint(bx + w, by + h);
+
+                    canvas.DrawLine(x1, x2, new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(AlignmentLinesColor) });
+                    canvas.DrawLine(y1, y2, new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(AlignmentLinesColor) });
+                    canvas.DrawLine(x1, y1, new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(AlignmentLinesColor) });
+                    canvas.DrawLine(x2, y2, new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(AlignmentLinesColor) });
+
+                    var paint = new SkiaSharp.SKPaint();
+                    var transparency = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(AlignmentLinesColor);
+                    paint.Color = transparency;
+
+                    canvas.DrawRect(new SkiaSharp.SKRect() { Top = by, Left = bx, Size = new SkiaSharp.SKSize(w, h) }, paint);
+                }
             }
 
+            void Draw(bool isRefrence = false)
+            {
+                DrawSprite(canvas, width_half, height_half, width, height);
+            }
         }
+
+        private void DrawSprite(SkiaSharp.SKCanvas canvas, float width_half, float height_half, float width, float height)
+        {
+            if (CurrentSpriteSheetFrame == null || CurrentSpriteSheet == null) return;
+            int frame_x = (int)Instance.ViewModel.SelectedFrameLeft;
+            int frame_y = (int)Instance.ViewModel.SelectedFrameTop;
+
+            int frame_width = (int)Instance.ViewModel.SelectedFrameWidth;
+            int frame_height = (int)Instance.ViewModel.SelectedFrameHeight;
+
+            int frame_center_x = (ForceCenterFrame ? frame_width / 2 : -(int)Instance.ViewModel.SelectedFramePivotX.Value);
+            int frame_center_y = (ForceCenterFrame ? frame_height / 2 : -(int)Instance.ViewModel.SelectedFramePivotY.Value);
+
+            float img_center_x = width_half - frame_center_x;
+            float img_center_y = height_half - frame_center_y;
+
+            float img_full_center_x = width_half - frame_x - frame_center_x;
+            float img_full_center_y = height_half - frame_y - frame_center_y;
+
+            float img_full_border_center_x = width_half - frame_center_x;
+            float img_full_border_center_y = height_half - frame_center_y;
+
+            float x;
+            float y;
+            float w;
+            float h;
+
+
+            float bx;
+            float by;
+
+
+
+            if (ShowFullFrame)
+            {
+                x = img_full_center_x;
+                y = img_full_center_y;
+                w = frame_width;
+                h = frame_height;
+
+                bx = img_center_x;
+                by = img_center_y;
+            }
+            else
+            {
+                x = img_center_x;
+                y = img_center_y;
+                w = frame_width;
+                h = frame_height;
+
+                bx = x;
+                by = y;
+            }
+
+            if (ShowSolidImageBackground)
+            {
+                var paint = new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(ImgBG) };
+                SkiaSharp.SKRect rect;
+                if (ShowFullFrame && CurrentSpriteSheet != null) rect = new SkiaSharp.SKRect() { Top = y, Left = x, Size = new SkiaSharp.SKSize(CurrentSpriteSheet.Width, CurrentSpriteSheet.Height) };
+                else rect = new SkiaSharp.SKRect() { Top = y, Left = x, Size = new SkiaSharp.SKSize(w, h) };
+
+                canvas.DrawRect(rect, paint);
+            }
+
+            if (ShowSolidImageBackground)
+            {
+                var paint = new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(ImgBG) };
+                SkiaSharp.SKRect rect;
+                if (ShowFullFrame && CurrentSpriteSheet != null) rect = new SkiaSharp.SKRect() { Top = y, Left = x, Size = new SkiaSharp.SKSize(CurrentSpriteSheet.Width, CurrentSpriteSheet.Height) };
+                else rect = new SkiaSharp.SKRect() { Top = y, Left = x, Size = new SkiaSharp.SKSize(w, h) };
+
+                canvas.DrawRect(rect, paint);
+            }
+
+            canvas.DrawBitmap((ShowFullFrame ? CurrentSpriteSheet : CurrentSpriteSheetFrame), new SkiaSharp.SKPoint(x, y));
+
+            if (ShowFrameBorder)
+            {
+                SkiaSharp.SKPoint x1 = new SkiaSharp.SKPoint(bx, by);
+                SkiaSharp.SKPoint x2 = new SkiaSharp.SKPoint(bx + w, by);
+                SkiaSharp.SKPoint y1 = new SkiaSharp.SKPoint(bx, by + h);
+                SkiaSharp.SKPoint y2 = new SkiaSharp.SKPoint(bx + w, by + h);
+
+                canvas.DrawLine(x1, x2, new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(FrameBorder) });
+                canvas.DrawLine(y1, y2, new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(FrameBorder) });
+                canvas.DrawLine(x1, y1, new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(FrameBorder) });
+                canvas.DrawLine(x2, y2, new SkiaSharp.SKPaint() { Color = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(FrameBorder) });
+
+                var paint = new SkiaSharp.SKPaint();
+                var transparency = SkiaSharp.Views.WPF.WPFExtensions.ToSKColor(FrameBG);
+                paint.Color = transparency;
+
+                canvas.DrawRect(new SkiaSharp.SKRect() { Top = by, Left = bx, Size = new SkiaSharp.SKSize(w, h) }, paint);
+            }
+
+
+        }
+
+        #endregion
 
         #endregion
     }

@@ -42,9 +42,9 @@ namespace AnimationEditor.Animation.Methods
         private MainWindow ParentInstance;
         private string _animationName;
         public int _frameIndex;
-        private BridgedAnimation.AnimationEntry _currentAnimation;
-        private BridgedAnimation.Frame _currentFrame;
-        private Dictionary<string, BridgedAnimation.AnimationEntry> _dicAnimations;
+        private BridgedAnimation.BridgedAnimationEntry _currentAnimation;
+        private BridgedAnimation.BridgedFrame _currentFrame;
+        private Dictionary<string, BridgedAnimation.BridgedAnimationEntry> _dicAnimations;
         private long _previousTime;
         private long _discardedTime;
         private object _lockTime = new object();
@@ -148,9 +148,9 @@ namespace AnimationEditor.Animation.Methods
         /// <summary>
         /// Get the current animation object loaded
         /// </summary>
-        public BridgedAnimation.AnimationEntry CurrentAnimation => _currentAnimation;
+        public BridgedAnimation.BridgedAnimationEntry CurrentAnimation => _currentAnimation;
 
-        public BridgedAnimation.Frame CurrentFrame => _currentFrame;
+        public BridgedAnimation.BridgedFrame CurrentFrame => _currentFrame;
 
         /// <summary>
         /// Initialize a new instance of an animation service

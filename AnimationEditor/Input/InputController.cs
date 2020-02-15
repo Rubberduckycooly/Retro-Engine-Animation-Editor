@@ -78,10 +78,11 @@ namespace AnimationEditor.Services
 
         public void MouseDown(object sender, MouseEventArgs e)
         {
+            /*
             if (Instance.HitboxSection1.IsMouseOver) HitboxTopLeft = true;
             else if (Instance.HitboxSection2.IsMouseOver) HitboxTopRight = true;
             else if (Instance.HitboxSection3.IsMouseOver) HitboxBottomLeft = true;
-            else if (Instance.HitboxSection4.IsMouseOver) HitboxBottomRight = true;
+            else if (Instance.HitboxSection4.IsMouseOver) HitboxBottomRight = true;*/
 
             if (Instance.ImageSection1.IsMouseOver) FrameTopLeft = true;
             else if (Instance.ImageSection2.IsMouseOver) FrameTopRight = true;
@@ -246,10 +247,10 @@ namespace AnimationEditor.Services
 
         private void UpdateRegions()
         {
-            UpdateGrid(Instance.HitboxSection1);
-            UpdateGrid(Instance.HitboxSection2);
-            UpdateGrid(Instance.HitboxSection3);
-            UpdateGrid(Instance.HitboxSection4);
+            //UpdateGrid(Instance.HitboxSection1);
+            //UpdateGrid(Instance.HitboxSection2);
+            //UpdateGrid(Instance.HitboxSection3);
+            //UpdateGrid(Instance.HitboxSection4);
 
             void UpdateGrid(System.Windows.Controls.Grid g, bool CtrlOnly = false)
             {

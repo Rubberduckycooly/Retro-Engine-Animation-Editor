@@ -58,13 +58,13 @@ namespace AnimationEditor.Animation
 
         private List<string> SpriteSheetNullList = new List<string>();
 
-        public BridgedAnimation.AnimationEntry _SelectedAnimation;
-        public List<BridgedAnimation.AnimationEntry> Animations { get => GetAnimations(); set => SetAnimations(value); }
+        public BridgedAnimation.BridgedAnimationEntry _SelectedAnimation;
+        public List<BridgedAnimation.BridgedAnimationEntry> Animations { get => GetAnimations(); set => SetAnimations(value); }
         public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
         public List<string> Hitboxes { get => GetHitboxesList(); set => SetHitboxesList(value); }
         public List<string> CollisionBoxesNames { get => GetCollisionBoxes(); }
-        public List<BridgedAnimation.HitBox> CollisionBoxes { get => GetHitBoxes(); }
-        public BridgedAnimation.AnimationEntry SelectedAnimation { get => _SelectedAnimation; set { _SelectedAnimation = value; } }
+        public List<BridgedAnimation.BridgedHitBox> CollisionBoxes { get => GetHitBoxes(); }
+        public BridgedAnimation.BridgedAnimationEntry SelectedAnimation { get => _SelectedAnimation; set { _SelectedAnimation = value; } }
         public int SelectedAnimationIndex { get; set; }
 
         public int FramesCount { get => GetCurrentFrameCount(); }
@@ -73,7 +73,7 @@ namespace AnimationEditor.Animation
         public double ViewWidth { get; set; }
         public double ViewHeight { get; set; }
 
-        public List<BridgedAnimation.Frame> AnimationFrames { get => GetAnimationsFrames(); }
+        public List<BridgedAnimation.BridgedFrame> AnimationFrames { get => GetAnimationsFrames(); }
         public int SelectedFrameIndex { get; set; }
         public byte? Loop { get => GetLoopIndex(); set => SetLoopIndex(value); }
         public short? Speed { get => GetSpeedMultiplyer(); set => SetSpeedMultiplyer(value); }
@@ -82,7 +82,7 @@ namespace AnimationEditor.Animation
         private Dictionary<string, BitmapSource> _textures = new Dictionary<string, BitmapSource>(24);
         private Dictionary<Tuple<string, int>, BitmapSource> _frames = new Dictionary<Tuple<string, int>, BitmapSource>(1024);
 
-        public BitmapSource GetCroppedFrame(int texture, BridgedAnimation.Frame frame)
+        public BitmapSource GetCroppedFrame(int texture, BridgedAnimation.BridgedFrame frame)
         {
             if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count || frame == null) return null;
             var name = LoadedAnimationFile.SpriteSheets[texture];
@@ -121,7 +121,7 @@ namespace AnimationEditor.Animation
             return _frames[tuple] = bitmap;
         }
 
-        public void InvalidateFrame(int texture, BridgedAnimation.Frame frame)
+        public void InvalidateFrame(int texture, BridgedAnimation.BridgedFrame frame)
         {
             if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count)
                 return;
@@ -141,12 +141,12 @@ namespace AnimationEditor.Animation
             InvalidateFrame(GetAnimationFrame(index).SpriteSheet, GetAnimationFrame(index));
         }
 
-        public List<BridgedAnimation.AnimationEntry> GetAnimations()
+        public List<BridgedAnimation.BridgedAnimationEntry> GetAnimations()
         {
             if (LoadedAnimationFile != null) return LoadedAnimationFile.Animations;
             else return null;
         }
-        public void SetAnimations(List<BridgedAnimation.AnimationEntry> value)
+        public void SetAnimations(List<BridgedAnimation.BridgedAnimationEntry> value)
         {
             if (LoadedAnimationFile != null) LoadedAnimationFile.Animations = value;
             else return;
@@ -265,14 +265,14 @@ namespace AnimationEditor.Animation
         {
             double FrameCenterY = SelectedFramePivotY ?? 0;
             double Center = ViewHeight / 2.0;
-            double HitboxOffset = SelectedHitbox_Width * Zoom;
+            double HitboxOffset = SelectedHitboxRight * Zoom;
             return Center + HitboxOffset;
         }
 
         public double GetHitboxLeft()
         {
             double Center = ViewWidth / 2.0;
-            double HitboxOffset = SelectedHitbox_X * Zoom;
+            double HitboxOffset = SelectedHitboxLeft * Zoom;
             return Center + HitboxOffset;
         }
 
@@ -320,7 +320,7 @@ namespace AnimationEditor.Animation
 
         }
 
-        public BridgedAnimation.Frame GetAnimationFrame(int index)
+        public BridgedAnimation.BridgedFrame GetAnimationFrame(int index)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[index];
             else return null;
@@ -338,7 +338,7 @@ namespace AnimationEditor.Animation
             else return null;
         }
 
-        public List<BridgedAnimation.Frame> GetAnimationsFrames()
+        public List<BridgedAnimation.BridgedFrame> GetAnimationsFrames()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames;
             else return null;
@@ -391,7 +391,7 @@ namespace AnimationEditor.Animation
 
         }
 
-        public List<BridgedAnimation.HitBox> GetHitBoxes()
+        public List<BridgedAnimation.BridgedHitBox> GetHitBoxes()
         {
             return null;
         }
@@ -538,19 +538,19 @@ namespace AnimationEditor.Animation
 
         public int SelectedFrameHitboxIndex { get; set; }
 
-        public BridgedAnimation.HitBox SelectedHitbox { get => GetSelectedHitbox(); set => SetSelectedHitbox(value); }
+        public BridgedAnimation.BridgedHitBox SelectedHitbox { get => GetSelectedHitbox(); set => SetSelectedHitbox(value); }
 
-        public short SelectedHitbox_X { get => GetCurrentHitboxX(); set => SetCurrentHitboxX(value); }
+        public short SelectedHitboxLeft { get => GetCurrentHitboxLeft(); set => SetCurrentHitboxLeft(value); }
 
-        public short SelectedHitbox_Y { get => GetCurrentHitboxY(); set => SetCurrentHitboxY(value); }
+        public short SelectedHitboxTop { get => GetCurrentHitboxTop(); set => SetCurrentHitboxTop(value); }
 
-        public short SelectedHitbox_Width { get => GetCurrentHitboxWidth(); set => SetCurrentHitboxWidth(value); }
+        public short SelectedHitboxRight { get => GetCurrentHitboxRight(); set => SetCurrentHitboxRight(value); }
 
-        public short SelectedHitbox_Height { get => GetCurrentHitboxHeight(); set => SetCurrentHitboxHeight(value); }
+        public short SelectedHitboxBottom { get => GetCurrentHitboxBottom(); set => SetCurrentHitboxBottom(value); }
 
         #region Get Methods
 
-        public BridgedAnimation.HitBox GetSelectedHitbox()
+        public BridgedAnimation.BridgedHitBox GetSelectedHitbox()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex];
             else return null;
@@ -561,25 +561,25 @@ namespace AnimationEditor.Animation
             else return -1;
         }
 
-        public short GetCurrentHitboxX()
+        public short GetCurrentHitboxLeft()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Left;
             else return 0;
         }
 
-        public short GetCurrentHitboxY()
+        public short GetCurrentHitboxTop()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Top;
             else return 0;
         }
 
-        public short GetCurrentHitboxWidth()
+        public short GetCurrentHitboxRight()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Right;
             else return 0;
         }
 
-        public short GetCurrentHitboxHeight()
+        public short GetCurrentHitboxBottom()
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Bottom;
             else return 0;
@@ -589,7 +589,7 @@ namespace AnimationEditor.Animation
 
         #region Set Methods
 
-        public void SetSelectedHitbox(BridgedAnimation.HitBox value)
+        public void SetSelectedHitbox(BridgedAnimation.BridgedHitBox value)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = value;
             else return;
@@ -600,44 +600,44 @@ namespace AnimationEditor.Animation
             else return;
         }
 
-        public void SetCurrentHitboxX(short? value)
+        public void SetCurrentHitboxLeft(short? value)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                BridgedAnimation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                BridgedAnimation.BridgedHitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Left = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
             else return;
         }
 
-        public void SetCurrentHitboxY(short? value)
+        public void SetCurrentHitboxTop(short? value)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                BridgedAnimation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                BridgedAnimation.BridgedHitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Top = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
             else return;
         }
 
-        public void SetCurrentHitboxWidth(short? value)
+        public void SetCurrentHitboxRight(short? value)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                BridgedAnimation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                BridgedAnimation.BridgedHitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Right = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
             else return;
         }
 
-        public void SetCurrentHitboxHeight(short? value)
+        public void SetCurrentHitboxBottom(short? value)
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
             {
-                BridgedAnimation.HitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                BridgedAnimation.BridgedHitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                 box.Bottom = value.Value;
                 LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
             }
@@ -721,13 +721,13 @@ namespace AnimationEditor.Animation
 
         public void AddFrame(int frameID)
         {
-            var frame = new BridgedAnimation.Frame(AnimationType);
+            var frame = new BridgedAnimation.BridgedFrame(AnimationType);
             LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
         }
 
         public void DuplicateFrame(int frameID)
         { 
-            var frame = (BridgedAnimation.Frame)LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID].Clone();
+            var frame = (BridgedAnimation.BridgedFrame)LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID].Clone();
             LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
         }
 
@@ -738,9 +738,9 @@ namespace AnimationEditor.Animation
 
         public void AddAnimation(int animID)
         {
-            var animation = new BridgedAnimation.AnimationEntry(AnimationType);
+            var animation = new BridgedAnimation.BridgedAnimationEntry(AnimationType);
             animation.AnimName = "New Entry";
-            animation.Frames = new List<BridgedAnimation.Frame>();
+            animation.Frames = new List<BridgedAnimation.BridgedFrame>();
             LoadedAnimationFile.Animations.Insert(animID, animation);
         }
 

@@ -79,7 +79,7 @@ namespace AnimationEditor.Pages
         private void UpdatePlaybackIndex(int frameIndex)
         {
             FramesList.SelectedIndex = frameIndex;
-            Interfacer.UpdateViewerLayout();
+            Interfacer.Render();
         }
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
@@ -382,19 +382,19 @@ namespace AnimationEditor.Pages
         {
             if (HitboxColorPicker.SelectedColor != null)
             {
-                HitBoxViewer.BorderBrush = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
-                HitBoxBackground.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
+                //HitBoxViewer.BorderBrush = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
+                //HitBoxBackground.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
                 HitboxColorBox.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
             }
             if (AxisColorPicker.SelectedColor != null)
             {
-                AxisX.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
-                AxisY.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
+                //AxisX.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
+                //AxisY.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
                 AxisColorBox.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
             }
             if (BGColorPicker.SelectedColor != null && !MenuViewSetBackgroundToTransparentColor.IsChecked)
             {
-                CanvasView.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
+                CanvasBackground.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
                 BGColorBox.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
             }
         }
@@ -460,7 +460,7 @@ namespace AnimationEditor.Pages
 
         private void MenuViewTransparentSpriteSheets_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateViewerLayout();
+            Interfacer.Render();
         }
 
         private void MenuFileUnloadAnimation_Click(object sender, RoutedEventArgs e)
@@ -542,12 +542,12 @@ namespace AnimationEditor.Pages
 
         private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
         {            
-            Interfacer.UpdateViewerLayout();
+            Interfacer.Render();
         }
 
         private void MenuViewFrameBorder_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateViewerLayout();
+            Interfacer.Render();
         }
 
         private void CanvasView_KeyDown(object sender, KeyEventArgs e)
@@ -601,13 +601,13 @@ namespace AnimationEditor.Pages
 
         private void BGColorHyperlink_Click(object sender, RoutedEventArgs e)
         {
-            CanvasView.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
+            //CanvasView.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
             BGColorBox.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
         }
 
         private void MenuViewSetBackgroundToTransparentColor_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateViewerLayout();
+            Interfacer.Render();
         }
 
         private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
@@ -633,6 +633,15 @@ namespace AnimationEditor.Pages
             App.ChangeSkin(Skin.Light);
             this.Refresh();
         }
+
+        #region Rendering
+        private void CanvasView_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs e)
+        {
+            if (Interfacer != null) Interfacer.PaintSurface(sender, e);
+            
+        }
+
+        #endregion
     }
 
 

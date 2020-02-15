@@ -53,7 +53,7 @@ namespace AnimationEditor.Animation.Methods
             UpdateRecentsDropDown();
             Instance.Interfacer.PreventIndexUpdate = false;
             Instance.Interfacer.UpdateUI();
-            Instance.Interfacer.UpdateViewerLayout();
+            Instance.Interfacer.Render();
         }
         #endregion
 
@@ -77,7 +77,7 @@ namespace AnimationEditor.Animation.Methods
                 Instance.ViewModel.LoadedAnimationFile = new BridgedAnimation(Instance.AnimationType);
                 Instance.ViewModel.AnimationFilepath = filepath;
                 Instance.WindowName = Instance.DefaultWindowName + " - " + GetFilenameAndFolder(filepath);
-                Instance.ViewModel.LoadedAnimationFile.ImportFrom((type != EngineType.Invalid ? type : Instance.AnimationType), filepath);
+                Instance.ViewModel.LoadedAnimationFile.LoadFrom((type != EngineType.Invalid ? type : Instance.AnimationType), filepath);
                 LoadAnimationTextures(filepath);
             }
             catch (Exception ex)
@@ -127,7 +127,7 @@ namespace AnimationEditor.Animation.Methods
         #region Save File Methods
         public void SaveFile()
         {
-            if (Instance.ViewModel.AnimationFilepath != null) Instance.ViewModel.LoadedAnimationFile.ExportTo(Instance.AnimationType, Instance.ViewModel.AnimationFilepath);
+            if (Instance.ViewModel.AnimationFilepath != null) Instance.ViewModel.LoadedAnimationFile.SaveTo(Instance.AnimationType, Instance.ViewModel.AnimationFilepath);
             else SaveFileAs();
         }
 
@@ -159,7 +159,7 @@ namespace AnimationEditor.Animation.Methods
                         Instance.AnimationType = EngineType.RSDKvRS;
                         break;
                 }
-                Instance.ViewModel.LoadedAnimationFile.ExportTo(Instance.AnimationType, fd.FileName);
+                Instance.ViewModel.LoadedAnimationFile.SaveTo(Instance.AnimationType, fd.FileName);
             }
         }
         #endregion
@@ -322,7 +322,7 @@ namespace AnimationEditor.Animation.Methods
             fd.Filter = "RSDK Animation Files|*.anim";
             if (fd.ShowDialog() == true)
             {
-                var importAnim = new BridgedAnimation.AnimationEntry(EngineType.RSDKv5);
+                var importAnim = new BridgedAnimation.BridgedAnimationEntry(EngineType.RSDKv5);
                 importAnim.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations.Add(importAnim);
             }
@@ -349,7 +349,7 @@ namespace AnimationEditor.Animation.Methods
             fd.Filter = "RSDK Frame Files|*.frame";
             if (fd.ShowDialog() == true)
             {
-                var importFrame = new BridgedAnimation.Frame(EngineType.RSDKv5);
+                var importFrame = new BridgedAnimation.BridgedFrame(EngineType.RSDKv5);
                 importFrame.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Add(importFrame); 
             }

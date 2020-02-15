@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"       
         xmlns:local="clr-namespace:AnimationEditor.Pages"
-        xmlns:Themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit" x:Class="AnimationEditor.Pages.MainWindow"
+        xmlns:Themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit"
+        xmlns:render="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
+        x:Class="AnimationEditor.Pages.MainWindow"
         mc:Ignorable="d"
         Title="RSDK Animation Editor v2" MinHeight="540" Height="540" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="772" Width="772" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
     <DockPanel x:Name="MainPanel">
@@ -422,77 +424,24 @@
 
                 <Border KeyboardNavigation.DirectionalNavigation="Contained" 
     KeyboardNavigation.TabNavigation="Contained">
-                    <Grid>
-                        <Canvas PreviewKeyDown="CanvasView_PreviewKeyDown" MouseMove="CanvasView_MouseMove" KeyUp="CanvasView_KeyUp" KeyDown="CanvasView_KeyDown" Focusable="True" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" x:Name="CanvasView" Margin="0 0 0 0" SizeChanged="Canvas_SizeChanged"
-                        RenderOptions.BitmapScalingMode="NearestNeighbor"
-                        ClipToBounds="True" MouseWheel="Canvas_MouseWheel"
-                        Background="#303030">
-                            <Image x:Name="CanvasImage"
-                           Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
-                           Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
-                           Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
-                           Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
-                           RenderTransformOrigin="{Binding SpriteCenter, Mode=OneWay}">
-                                <Image.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform x:Name="ImageScale" ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"/>
-                                        <SkewTransform/>
-                                        <RotateTransform/>
-                                        <TranslateTransform/>
-                                    </TransformGroup>
-                                </Image.RenderTransform>
-                                <Image.Clip>
-                                    <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"/>
-                                </Image.Clip>
-                            </Image>
-
-                            <Border Visibility="Visible" BorderBrush="Black" x:Name="BorderMarker" BorderThickness="1"                            
-                           Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
-                           Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
-                           Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
-                           Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
-                            RenderTransformOrigin="0.5,0.5">
-                                <Grid Visibility="Visible" x:Name="BorderMarkerBackground" Opacity="0.5" Background="Transparent" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" MouseMove="CanvasView_MouseMove">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" x:Name="ImageSection1"/>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" x:Name="ImageSection2"/>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" x:Name="ImageSection3"/>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" x:Name="ImageSection4"/>
-                                </Grid>
-                            </Border>
-                            <Border Visibility="Hidden" BorderBrush="#FFE700FF" x:Name="HitBoxViewer" BorderThickness="1"                            
-                           Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
-                           Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
-                           Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
-                           Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
-                            RenderTransformOrigin="0.5,0.5">
-                                <Grid Visibility="Hidden" x:Name="HitBoxBackground" Opacity="0.5" Background="#FFE700FF" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" MouseMove="CanvasView_MouseMove">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" x:Name="HitboxSection1"/>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" x:Name="HitboxSection2"/>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" x:Name="HitboxSection3"/>
-                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" x:Name="HitboxSection4"/>
-                                </Grid>
-                            </Border>
-                        </Canvas>
-                        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="CenterAxis">
-                            <Grid Visibility="Hidden" Height="1" x:Name="AxisX" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Red"/>
-                            <Grid Visibility="Hidden" Width="1" x:Name="AxisY" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="Red"/>
+                    <Grid x:Name="CanvasBackground" Background="#303030">
+                        <Grid Visibility="Visible" x:Name="BorderMarkerBackground" Opacity="0.5" Background="Transparent" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" MouseMove="CanvasView_MouseMove">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" x:Name="ImageSection1"/>
+                            <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" x:Name="ImageSection2"/>
+                            <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" x:Name="ImageSection3"/>
+                            <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" x:Name="ImageSection4"/>
                         </Grid>
+                        <render:SKElement PaintSurface="CanvasView_PaintSurface" PreviewKeyDown="CanvasView_PreviewKeyDown" MouseMove="CanvasView_MouseMove" KeyUp="CanvasView_KeyUp" KeyDown="CanvasView_KeyDown" Focusable="True" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" x:Name="CanvasView" Margin="0 0 0 0" SizeChanged="Canvas_SizeChanged"
+                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                        ClipToBounds="True" MouseWheel="Canvas_MouseWheel"></render:SKElement>
                     </Grid>
                 </Border>
             </DockPanel>
