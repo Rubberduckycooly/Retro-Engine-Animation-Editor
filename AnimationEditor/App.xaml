@@ -6,12 +6,29 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <local:SkinResourceDictionary DarkSource="pack://application:,,,/RSDKrU;component/WPF/DarkTheme.xaml" 
-                                              LightSource="pack://application:,,,/RSDKrU;component/WPF/LightTheme.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/RSDKrU;component/WPF/RSDK.AnimationEditor.Icons.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/RSDKrU;component/WPF/RSDK.Skining.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/RSDKrU;component/WPF/RSDK.ContextMenu.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/RSDKrU;component/WPF/RSDK.Toolbar.xaml"></ResourceDictionary>
+                <local:SkinResourceDictionary DarkSource="/GenerationsLib.WPF;component/Styles/ColorLibraryDark.xaml" 
+                                              LightSource="/GenerationsLib.WPF;component/Styles/ColorLibraryLight.xaml" />
+                <ResourceDictionary Source="RSDK.AnimationEditor.Icons.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/IconLibrary.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/ButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/ItemContainerStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/FlatButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/ExpanderStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/TextBoxStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/TabItemStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/ScrollBarStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/ScrollViewerStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/ListViewStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/RepeatButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/ToolbarStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/SliderStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/MenuItemContextStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/GroupBoxStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/SliderStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/XceedStyles.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/LabelStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/GenerationsLib.WPF;Component/Styles/CheckboxStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <Style x:Key="{x:Type StackPanel}" TargetType="{x:Type StackPanel}">
                 <Setter Property="Background" Value="{DynamicResource NormalBackground}"></Setter>

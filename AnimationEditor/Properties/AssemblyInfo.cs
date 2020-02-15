@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Xeeynamo/Rubberduckycooly/SuperSonic16/Carjem")]
 [assembly: AssemblyProduct("RSDK Animation Editor")]
-[assembly: AssemblyCopyright("Copyright © 2017-2019")]
+[assembly: AssemblyCopyright("Copyright © 2017-2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

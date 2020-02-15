@@ -420,10 +420,10 @@ namespace AnimationEditor
                         for (int i = 0; i < HitBoxes.Count; i++)
                         {
                             HitBox hb = new HitBox();
-                            hb.Height = framev5.HitBoxes[i].Height;
-                            hb.Width = framev5.HitBoxes[i].Width;
-                            hb.Y = framev5.HitBoxes[i].Y;
-                            hb.X = framev5.HitBoxes[i].X;
+                            hb.Bottom = framev5.HitBoxes[i].Bottom;
+                            hb.Right = framev5.HitBoxes[i].Right;
+                            hb.Top = framev5.HitBoxes[i].Top;
+                            hb.Left = framev5.HitBoxes[i].Left;
                             HitBoxes.Add(hb);
                         }
                         break;
@@ -501,10 +501,10 @@ namespace AnimationEditor
                         for (int i = 0; i < HitBoxes.Count; i++)
                         {
                             RSDKv5.Animation.AnimationEntry.Frame.HitBox hb = new RSDKv5.Animation.AnimationEntry.Frame.HitBox();
-                            hb.Height = HitBoxes[i].Height;
-                            hb.Width = HitBoxes[i].Width;
-                            hb.Y = HitBoxes[i].Y;
-                            hb.X = HitBoxes[i].X;
+                            hb.Bottom = HitBoxes[i].Bottom;
+                            hb.Right = HitBoxes[i].Right;
+                            hb.Top = HitBoxes[i].Top;
+                            hb.Left = HitBoxes[i].Left;
                             framev5.HitBoxes.Add(hb);
                         }
                         RSDKv5.Writer writerv5 = new RSDKv5.Writer(filepath);
@@ -578,19 +578,19 @@ namespace AnimationEditor
             /// <summary>
             /// the Xpos of the hitbox
             /// </summary>
-            public short X;
+            public short Left;
             /// <summary>
             /// the Width of the hitbox
             /// </summary>
-            public short Width;
+            public short Right;
             /// <summary>
             /// the Ypos of the hitbox
             /// </summary>
-            public short Y;
+            public short Top;
             /// <summary>
             /// the height of the hitbox
             /// </summary>
-            public short Height;
+            public short Bottom;
 
             public void ImportFrom(EngineType type, string filepath)
             {
@@ -751,10 +751,10 @@ namespace AnimationEditor
                     for (int h = 0; h < animsetv5.CollisionBoxes.Count; h++)
                     {
                         Animations[a].Frames[i].HitBoxes.Add(new HitBox());
-                        Animations[a].Frames[i].HitBoxes[h].Height = animsetv5.Animations[a].Frames[i].HitBoxes[h].Height;
-                        Animations[a].Frames[i].HitBoxes[h].Width = animsetv5.Animations[a].Frames[i].HitBoxes[h].Width;
-                        Animations[a].Frames[i].HitBoxes[h].X = animsetv5.Animations[a].Frames[i].HitBoxes[h].X;
-                        Animations[a].Frames[i].HitBoxes[h].Y = animsetv5.Animations[a].Frames[i].HitBoxes[h].Y;
+                        Animations[a].Frames[i].HitBoxes[h].Bottom = animsetv5.Animations[a].Frames[i].HitBoxes[h].Bottom;
+                        Animations[a].Frames[i].HitBoxes[h].Right = animsetv5.Animations[a].Frames[i].HitBoxes[h].Right;
+                        Animations[a].Frames[i].HitBoxes[h].Left = animsetv5.Animations[a].Frames[i].HitBoxes[h].Left;
+                        Animations[a].Frames[i].HitBoxes[h].Top = animsetv5.Animations[a].Frames[i].HitBoxes[h].Top;
                     }
                 }
             }
@@ -883,10 +883,10 @@ namespace AnimationEditor
                     Animations[a].Frames[i].SpriteSheet = animsetvRS.Animations[a].Frames[i].SpriteSheet;
 
                     Animations[a].Frames[i].HitBoxes.Add(new HitBox());
-                    Animations[a].Frames[i].HitBoxes[0].Height = animsetvRS.Animations[a].Frames[i].CollisionBox.Height;
-                    Animations[a].Frames[i].HitBoxes[0].Width = animsetvRS.Animations[a].Frames[i].CollisionBox.Width;
-                    Animations[a].Frames[i].HitBoxes[0].X = animsetvRS.Animations[a].Frames[i].CollisionBox.X;
-                    Animations[a].Frames[i].HitBoxes[0].Y = animsetvRS.Animations[a].Frames[i].CollisionBox.Y;
+                    Animations[a].Frames[i].HitBoxes[0].Bottom = animsetvRS.Animations[a].Frames[i].CollisionBox.Bottom;
+                    Animations[a].Frames[i].HitBoxes[0].Right = animsetvRS.Animations[a].Frames[i].CollisionBox.Right;
+                    Animations[a].Frames[i].HitBoxes[0].Left = animsetvRS.Animations[a].Frames[i].CollisionBox.Left;
+                    Animations[a].Frames[i].HitBoxes[0].Top = animsetvRS.Animations[a].Frames[i].CollisionBox.Top;
                 }
             }
         }
@@ -918,7 +918,6 @@ namespace AnimationEditor
         private void RSDKv5_Export(string filepath)
         {
             RSDKv5.Animation animsetv5 = new RSDKv5.Animation();
-            animsetv5.TotalFrameCount = TotalFrameCount;
             animsetv5.SpriteSheets = SpriteSheets;
             animsetv5.CollisionBoxes = CollisionBoxes;
 
@@ -947,10 +946,10 @@ namespace AnimationEditor
                     for (int h = 0; h < Animations[a].Frames[i].HitBoxes.Count; h++)
                     {
                         var HitBoxes = new RSDKv5.Animation.AnimationEntry.Frame.HitBox();
-                        HitBoxes.Height = Animations[a].Frames[i].HitBoxes[h].Height;
-                        HitBoxes.Width = Animations[a].Frames[i].HitBoxes[h].Width;
-                        HitBoxes.X = Animations[a].Frames[i].HitBoxes[h].X;
-                        HitBoxes.Y = Animations[a].Frames[i].HitBoxes[h].Y;
+                        HitBoxes.Bottom = Animations[a].Frames[i].HitBoxes[h].Bottom;
+                        HitBoxes.Right = Animations[a].Frames[i].HitBoxes[h].Right;
+                        HitBoxes.Left = Animations[a].Frames[i].HitBoxes[h].Left;
+                        HitBoxes.Top = Animations[a].Frames[i].HitBoxes[h].Top;
                         frame.HitBoxes.Add(HitBoxes);
                     }
 
@@ -965,14 +964,15 @@ namespace AnimationEditor
             RSDKvB.Animation animsetvB = new RSDKvB.Animation();
             animsetvB.SpriteSheets = SpriteSheets;
 
+            /* TODO - Fix Hitbox Export for RSDKvB
             for (int i = 0; i < RetroCollisionBoxes.Count; i++)
             {
                 animsetvB.CollisionBoxes.Add(new RSDKvB.Animation.sprHitbox());
-                animsetvB.CollisionBoxes[i].Bottom = (sbyte)RetroCollisionBoxes[i].Height;
-                animsetvB.CollisionBoxes[i].Right = (sbyte)RetroCollisionBoxes[i].Width;
-                animsetvB.CollisionBoxes[i].Top = (sbyte)RetroCollisionBoxes[i].Y;
-                animsetvB.CollisionBoxes[i].Left = (sbyte)RetroCollisionBoxes[i].X;
-            }
+                animsetvB.CollisionBoxes[i].Bottom = (sbyte)RetroCollisionBoxes[i].Bottom;
+                animsetvB.CollisionBoxes[i].Right = (sbyte)RetroCollisionBoxes[i].Right;
+                animsetvB.CollisionBoxes[i].Top = (sbyte)RetroCollisionBoxes[i].Top;
+                animsetvB.CollisionBoxes[i].Left = (sbyte)RetroCollisionBoxes[i].Left;
+            }*/
             for (int a = 0; a < Animations.Count; a++)
             {
 
@@ -1004,14 +1004,15 @@ namespace AnimationEditor
             RSDKv2.Animation animsetv2 = new RSDKv2.Animation();
             animsetv2.SpriteSheets = SpriteSheets;
 
+            /* TODO - Fix Hitbox Export for RSDKv2
             for (int i = 0; i < RetroCollisionBoxes.Count; i++)
             {
                 animsetv2.CollisionBoxes.Add(new RSDKv2.Animation.sprHitbox());
-                animsetv2.CollisionBoxes[i].Bottom = (sbyte)RetroCollisionBoxes[i].Height;
-                animsetv2.CollisionBoxes[i].Right = (sbyte)RetroCollisionBoxes[i].Width;
-                animsetv2.CollisionBoxes[i].Top = (sbyte)RetroCollisionBoxes[i].Y;
-                animsetv2.CollisionBoxes[i].Left = (sbyte)RetroCollisionBoxes[i].X;
-            }
+                animsetv2.CollisionBoxes[i].Bottom = (sbyte)RetroCollisionBoxes[i].Bottom;
+                animsetv2.CollisionBoxes[i].Right = (sbyte)RetroCollisionBoxes[i].Right;
+                animsetv2.CollisionBoxes[i].Top = (sbyte)RetroCollisionBoxes[i].Top;
+                animsetv2.CollisionBoxes[i].Left = (sbyte)RetroCollisionBoxes[i].Left;
+            }*/
             for (int a = 0; a < Animations.Count; a++)
             {
                 RSDKv2.Animation.AnimationEntry animv2 = new RSDKv2.Animation.AnimationEntry();
@@ -1046,15 +1047,15 @@ namespace AnimationEditor
                 if (i >= 3) break;
                 animsetv1.SpriteSheets[i] = SpriteSheets[i];
             }
-
+            /* TODO - Fix Hitbox Export for RSDKv1
             for (int i = 0; i < RetroCollisionBoxes.Count; i++)
             {
                 animsetv1.CollisionBoxes.Add(new RSDKv1.Animation.sprHitbox());
-                animsetv1.CollisionBoxes[i].Bottom = (sbyte)RetroCollisionBoxes[i].Height;
-                animsetv1.CollisionBoxes[i].Right = (sbyte)RetroCollisionBoxes[i].Width;
-                animsetv1.CollisionBoxes[i].Top = (sbyte)RetroCollisionBoxes[i].Y;
-                animsetv1.CollisionBoxes[i].Left = (sbyte)RetroCollisionBoxes[i].X;
-            }
+                animsetv1.CollisionBoxes[i].Bottom = (sbyte)RetroCollisionBoxes[i].Bottom;
+                animsetv1.CollisionBoxes[i].Right = (sbyte)RetroCollisionBoxes[i].Right;
+                animsetv1.CollisionBoxes[i].Top = (sbyte)RetroCollisionBoxes[i].Top;
+                animsetv1.CollisionBoxes[i].Left = (sbyte)RetroCollisionBoxes[i].Left;
+            }*/
             for (int a = 0; a < Animations.Count; a++)
             {
 
