@@ -108,56 +108,56 @@ namespace AnimationEditor.Pages
         private void ButtonAnimationAdd_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.AddAnimation(ViewModel.SelectedAnimationIndex);
-            Interfacer.FullUpdateList();
+            Interfacer.RefreshAnimationsListFully();
             Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationUp_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftAnimationUp(ViewModel.SelectedAnimationIndex);
-            Interfacer.FullUpdateList();
+            Interfacer.RefreshAnimationsListFully();
             Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationDown_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftAnimationDown(ViewModel.SelectedAnimationIndex);
-            Interfacer.FullUpdateList();
+            Interfacer.RefreshAnimationsListFully();
             Interfacer.UpdateUI();
         }
 
         private void ButtonFrameLeft_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftFrameLeft(ViewModel.SelectedFrameIndex);
-            Interfacer.UpdateFramesList();
+            Interfacer.RefreshFramesList();
             Interfacer.UpdateUI(true);
         }
 
         private void ButtonFrameRight_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftFrameRight(ViewModel.SelectedFrameIndex);
-            Interfacer.UpdateFramesList();
+            Interfacer.RefreshFramesList();
             Interfacer.UpdateUI(true);
         }
 
         private void ButtonAnimationDuplicate_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.DuplicateAnimation(ViewModel.SelectedAnimationIndex);
-            Interfacer.FullUpdateList();
+            Interfacer.RefreshAnimationsListFully();
             Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationRemove_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.RemoveAnimation(ViewModel.SelectedAnimationIndex);
-            Interfacer.FullUpdateList();
+            Interfacer.RefreshAnimationsListFully();
             Interfacer.UpdateUI();
         }
 
         private void ButtonAnimationImport_Click(object sender, RoutedEventArgs e)
         {
             Handler.ImportAnimation();
-            Interfacer.FullUpdateList();
+            Interfacer.RefreshAnimationsListFully();
             Interfacer.UpdateUI();
         }
 
@@ -180,21 +180,21 @@ namespace AnimationEditor.Pages
         private void ButtonFrameAdd_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.AddFrame((ViewModel.SelectedFrameIndex != -1 ? ViewModel.SelectedFrameIndex : 0));
-            Interfacer.UpdateFramesList();
+            Interfacer.RefreshFramesList();
             Interfacer.UpdateUI(true);
         }
 
         private void ButtonFrameDupe_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.DuplicateFrame(ViewModel.SelectedFrameIndex);
-            Interfacer.UpdateFramesList();
+            Interfacer.RefreshFramesList();
             Interfacer.UpdateUI(true);
         }
 
         private void ButtonFrameRemove_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.RemoveFrame(ViewModel.SelectedFrameIndex);
-            Interfacer.UpdateFramesList();
+            Interfacer.RefreshFramesList();
             Interfacer.UpdateUI(true);
         }
 
@@ -211,7 +211,7 @@ namespace AnimationEditor.Pages
         private void ButtonFrameImport_Click(object sender, RoutedEventArgs e)
         {
             Handler.ImportFrame();
-            Interfacer.UpdateFramesList();
+            Interfacer.RefreshFramesList();
             Interfacer.UpdateUI(true);
         }
 
@@ -294,12 +294,12 @@ namespace AnimationEditor.Pages
         private void NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             Interfacer.UpdateUI(true);
-            Interfacer.UpdateFrameNUDMaxMin();
+            Interfacer.UpdateNUD_Cap_Values();
         }
 
         private void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Interfacer.UpdateFramesList();
+            Interfacer.RefreshFramesList();
             Interfacer.UpdateUI();
         }
 
@@ -363,8 +363,8 @@ namespace AnimationEditor.Pages
             if (!PreventScrollChange)
             {
                 PreventScrollChange = true;
-                if (AnimationScroller.Value == 3) Interfacer.UpdateFrameIndex(false);
-                if (AnimationScroller.Value == 1) Interfacer.UpdateFrameIndex(true);
+                if (AnimationScroller.Value == 3) Interfacer.ScrollFrameIndex(false);
+                if (AnimationScroller.Value == 1) Interfacer.ScrollFrameIndex(true);
                 AnimationScroller.Value = 2;
                 PreventScrollChange = false;
             }
@@ -453,7 +453,7 @@ namespace AnimationEditor.Pages
             if (ViewModel.LoadedAnimationFile != null && ViewModel.SelectedAnimation != null)
             {
                 bool enabled = ButtonPlay.IsChecked.Value && List.SelectedItem != null;
-                Interfacer.DisablePlaybackModeElements(!enabled);
+                Interfacer.UpdatePlaybackModeElementsEnabledState(!enabled);
                 TogglePlayback(enabled);
             }
         }

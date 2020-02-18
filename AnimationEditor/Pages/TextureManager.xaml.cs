@@ -109,7 +109,7 @@ namespace AnimationEditor.Pages
 
             InitializeVarriables();
             UpdateUI();
-            ParentInstance.Interfacer.InvalidateTextureList();
+            ParentInstance.Interfacer.UpdateTextureList();
             ListTextures.ItemsSource = null;
             ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];

@@ -407,7 +407,7 @@ namespace AnimationEditor.Animation
         public short? SelectedFrameWidth { get => GetWidth(); set => SetWidth(value); }
         public short? SelectedFrameLeft { get => GetX(); set => SetX(value); }
         public short? SelectedFrameTop { get => GetY(); set => SetY(value); }
-        public ushort? SelectedFrameId { get => GetID(); set => SetID(value); }
+        public ushort? SelectedFrameID { get => GetID(); set => SetID(value); }
         public short? SelectedFrameDuration { get { return GetDelay(); } set { SetDelay(value); } }
         public byte? CurrentSpriteSheet { get => GetSpriteSheet(); set => SetSpriteSheet(value); }
 
@@ -451,10 +451,14 @@ namespace AnimationEditor.Animation
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1)
             {
-                if (LoadedAnimationFile.engineType != EngineType.RSDKvRS)
+                if (LoadedAnimationFile.EngineType == EngineType.RSDKv5)
                 {
                     return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID;
 
+                }
+                else if (LoadedAnimationFile.EngineType != EngineType.RSDKvRS)
+                {
+                    return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].CollisionBox;
                 }
                 else
                 {
@@ -513,13 +517,17 @@ namespace AnimationEditor.Animation
         {
             if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue)
             {
-                if (LoadedAnimationFile.engineType == EngineType.RSDKvRS)
+                if (LoadedAnimationFile.EngineType == EngineType.RSDKvRS)
                 {
                     LoadedAnimationFile.PlayerType = (byte)value.Value;
                 }
-                else
+                else if (LoadedAnimationFile.EngineType == EngineType.RSDKv5)
                 {
                     LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID = value.Value;
+                }
+                else
+                {
+                    LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].CollisionBox = (byte)value.Value;
                 }
             }
             else
@@ -721,7 +729,7 @@ namespace AnimationEditor.Animation
 
         public void AddFrame(int frameID)
         {
-            var frame = new BridgedAnimation.BridgedFrame(AnimationType);
+            var frame = new BridgedAnimation.BridgedFrame(AnimationType, LoadedAnimationFile.Animations[SelectedAnimationIndex]);
             LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
         }
 
@@ -738,7 +746,7 @@ namespace AnimationEditor.Animation
 
         public void AddAnimation(int animID)
         {
-            var animation = new BridgedAnimation.BridgedAnimationEntry(AnimationType);
+            var animation = new BridgedAnimation.BridgedAnimationEntry(AnimationType, LoadedAnimationFile);
             animation.AnimName = "New Entry";
             animation.Frames = new List<BridgedAnimation.BridgedFrame>();
             LoadedAnimationFile.Animations.Insert(animID, animation);

@@ -20,6 +20,7 @@ namespace AnimationEditor.Animation.Classes
     [Serializable]
     public class BridgedAnimation
     {
+        #region Classes
         [Serializable]
         public class BridgedAnimationEntry : ICloneable
         {
@@ -29,6 +30,7 @@ namespace AnimationEditor.Animation.Classes
             }
 
             public EngineType engineType = EngineType.RSDKv5;
+            public BridgedAnimation Parent { get; private set; }
 
             /// <summary>
             /// the name of the animtion
@@ -55,56 +57,23 @@ namespace AnimationEditor.Animation.Classes
             /// </summary>
             public byte RotationFlags;
 
-            public BridgedAnimationEntry(EngineType type)
+            public BridgedAnimationEntry(EngineType type, BridgedAnimation parent)
             {
                 engineType = type;
                 Frames = new List<BridgedFrame>();
+                Parent = parent;
             }
 
             public void ImportFrom(EngineType type, string filepath)
             {
                 engineType = type;
                 Frames.Clear();
-                switch (engineType)
-                {
-                    case EngineType.RSDKv5:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv5_Import_AnimEntry(this, filepath);
-                        break;
-                    case EngineType.RSDKvB:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvB_Import_AnimEntry(this, filepath);
-                        break;
-                    case EngineType.RSDKv2:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv2_Import_AnimEntry(this, filepath);
-                        break;
-                    case EngineType.RSDKv1:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv1_Import_AnimEntry(this, filepath);
-                        break;
-                    case EngineType.RSDKvRS:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvRS_Import_AnimEntry(this, filepath);
-                        break;
-                }
+                AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvU_Import_AnimEntry(this, filepath);
             }
 
             public void ExportTo(EngineType type, string filepath)
             {
-                switch (engineType)
-                {
-                    case EngineType.RSDKv5:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv5_Export_AnimEntry(this, filepath);
-                        break;
-                    case EngineType.RSDKvB:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvB_Export_AnimEntry(this, filepath);
-                        break;
-                    case EngineType.RSDKv2:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv2_Export_AnimEntry(this, filepath);
-                        break;
-                    case EngineType.RSDKv1:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv1_Export_AnimEntry(this, filepath);
-                        break;
-                    case EngineType.RSDKvRS:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvRS_Export_AnimEntry(this, filepath);
-                        break;
-                }
+                AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvU_Export_AnimEntry(this, filepath);
             }
 
             public void SaveTo(EngineType type, object animSet)
@@ -163,11 +132,8 @@ namespace AnimationEditor.Animation.Classes
             }
 
             public EngineType engineType = EngineType.RSDKv5;
+            public BridgedAnimationEntry Parent { get; private set; }
 
-            /// <summary>
-            /// the hitbox data for the frame
-            /// </summary>
-            public List<BridgedHitBox> HitBoxes = new List<BridgedHitBox>();
             /// <summary>
             /// the spritesheet ID
             /// </summary>
@@ -209,97 +175,77 @@ namespace AnimationEditor.Animation.Classes
             /// </summary>
             public short PivotY = 0;
 
-            public BridgedFrame(EngineType type)
+            #region Hitboxes
+            /// <summary>
+            /// the hitbox data for the frame
+            /// </summary>
+            public List<BridgedHitBox> HitBoxes { get => GetHitBoxes(); set => SetHitboxes(value); }
+
+            public List<BridgedHitBox> GetHitBoxes()
+            {
+                if (engineType == EngineType.RSDKv5) return RSDKv5_HitBoxes;
+                else return GetRetroCollisionBoxes();
+            }
+
+            public List<BridgedHitBox> GetRetroCollisionBoxes()
+            {
+                if (Parent != null)
+                {
+                    if (Parent.Parent != null)
+                    {
+                        if (Parent.Parent.RetroCollisionBoxes != null)
+                        {
+                            if (Parent.Parent.RetroCollisionBoxes.ElementAtOrDefault(CollisionBox) != null)
+                            {
+                                return Parent.Parent.RetroCollisionBoxes[CollisionBox].ToBridgedHitBox();
+                            }
+                        }
+                    }
+                }
+                return new List<BridgedHitBox>();
+            }
+
+            public void SetRetroCollisionBoxes(List<BridgedHitBox> value)
+            {
+                if (Parent != null)
+                {
+                    if (Parent.Parent != null)
+                    {
+                        if (Parent.Parent.RetroCollisionBoxes != null)
+                        {
+                            if (Parent.Parent.RetroCollisionBoxes.ElementAtOrDefault(CollisionBox) != null)
+                            {
+                                Parent.Parent.RetroCollisionBoxes[CollisionBox].FromBridgedHitBox(value);
+                            }
+                        }
+                    }
+                }
+            }
+
+            public void SetHitboxes(List<BridgedHitBox> value)
+            {
+                if (engineType == EngineType.RSDKv5) RSDKv5_HitBoxes = value;
+                else SetRetroCollisionBoxes(value);
+            }
+
+            private List<BridgedHitBox> RSDKv5_HitBoxes = new List<BridgedHitBox>();
+
+            #endregion
+
+            public BridgedFrame(EngineType type, BridgedAnimationEntry parent)
             {
                 engineType = type;
+                Parent = parent;
             }
 
             public void ImportFrom(EngineType type, string filepath)
             {
                 engineType = type;
-                switch (type)
-                {
-                    case EngineType.RSDKv5:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv5_Import_Frame(this, filepath);
-                        break;
-                    case EngineType.RSDKvB:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvB_Import_Frame(this, filepath);
-                        break;
-                    case EngineType.RSDKv2:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv2_Import_Frame(this, filepath);
-                        break;
-                    case EngineType.RSDKv1:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv1_Import_Frame(this, filepath);
-                        break;
-                    case EngineType.RSDKvRS:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvRS_Import_Frame(this, filepath);
-                        break;
-                }
+                AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvU_Import_Frame(this, filepath);
             }
             public void ExportTo(EngineType type, string filepath)
             {
-                switch (type)
-                {
-                    case EngineType.RSDKv5:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv5_Export_Frame(this, filepath);
-                        break;
-                    case EngineType.RSDKvB:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvB_Export_Frame(this, filepath);
-                        break;
-                    case EngineType.RSDKv2:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv2_Export_Frame(this, filepath);
-                        break;
-                    case EngineType.RSDKv1:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv1_Export_Frame(this, filepath);
-                        break;
-                    case EngineType.RSDKvRS:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvRS_Export_Frame(this, filepath);
-                        break;
-                }
-            }
-
-            public void SaveTo(EngineType type, object frame)
-            {
-                switch (type)
-                {
-                    case EngineType.RSDKv5:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv5_Save_Frame(this, (frame as RSDKv5.Animation.AnimationEntry.Frame));
-                        break;
-                    case EngineType.RSDKvB:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvB_Save_Frame(this, (frame as RSDKvB.Animation.AnimationEntry.Frame));
-                        break;
-                    case EngineType.RSDKv2:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv2_Save_Frame(this, (frame as RSDKv2.Animation.AnimationEntry.Frame));
-                        break;
-                    case EngineType.RSDKv1:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv1_Save_Frame(this, (frame as RSDKv1.Animation.AnimationEntry.Frame));
-                        break;
-                    case EngineType.RSDKvRS:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvRS_Save_Frame(this, (frame as RSDKvRS.Animation.AnimationEntry.Frame));
-                        break;
-                }
-            }
-            public void LoadFrom(EngineType type, object frame)
-            {
-                engineType = type;
-                switch (engineType)
-                {
-                    case EngineType.RSDKv5:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv5_Load_Frame(this, (frame as RSDKv5.Animation.AnimationEntry.Frame));
-                        break;
-                    case EngineType.RSDKvB:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvB_Load_Frame(this, (frame as RSDKvB.Animation.AnimationEntry.Frame));
-                        break;
-                    case EngineType.RSDKv2:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv2_Load_Frame(this, (frame as RSDKv2.Animation.AnimationEntry.Frame));
-                        break;
-                    case EngineType.RSDKv1:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv1_Load_Frame(this, (frame as RSDKv1.Animation.AnimationEntry.Frame));
-                        break;
-                    case EngineType.RSDKvRS:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvRS_Load_Frame(this, (frame as RSDKvRS.Animation.AnimationEntry.Frame));
-                        break;
-                }
+                AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvU_Export_Frame(this, filepath);
             }
 
         }
@@ -327,57 +273,66 @@ namespace AnimationEditor.Animation.Classes
             public void ImportFrom(EngineType type, string filepath)
             {
                 engineType = type;
-                switch (type)
-                {
-                    case EngineType.RSDKv5:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv5_Import_Hitbox(this, filepath);
-                        break;
-                    case EngineType.RSDKvB:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvB_Import_Hitbox(this, filepath);
-                        break;
-                    case EngineType.RSDKv2:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv2_Import_Hitbox(this, filepath);
-                        break;
-                    case EngineType.RSDKv1:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv1_Import_Hitbox(this, filepath);
-                        break;
-                    case EngineType.RSDKvRS:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvRS_Import_Hitbox(this, filepath);
-                        break;
-                }
+                AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvU_Import_Hitbox(this, filepath);
             }
             public void ExportTo(EngineType type, string filepath)
             {
-                switch (type)
-                {
-                    case EngineType.RSDKv5:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv5_Export_Hitbox(this, filepath);
-                        break;
-                    case EngineType.RSDKvB:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvB_Export_Hitbox(this, filepath);
-                        break;
-                    case EngineType.RSDKv2:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv2_Export_Hitbox(this, filepath);
-                        break;
-                    case EngineType.RSDKv1:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv1_Export_Hitbox(this, filepath);
-                        break;
-                    case EngineType.RSDKvRS:
-                        AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvRS_Export_Hitbox(this, filepath);
-                        break;
-                }
+                AnimationEditor.Animation.Methods.ImportExportHandler.RSDKvU_Export_Hitbox(this, filepath);
             }
         }
+        [Serializable]
+        public class BridgedRetroHitBox
+        {
+            public struct HitboxInfo
+            {
+                public sbyte Left;
+                public sbyte Top;
+                public sbyte Right;
+                public sbyte Bottom;
+            }
 
-        public EngineType engineType = EngineType.RSDKv5;
+            public HitboxInfo[] Hitboxes = new HitboxInfo[8];
 
+            public BridgedRetroHitBox()
+            {
+
+            }
+
+            public void FromBridgedHitBox(List<BridgedHitBox> value)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    Hitboxes[i].Bottom = (sbyte)value[i].Bottom;
+                    Hitboxes[i].Top = (sbyte)value[i].Top;
+                    Hitboxes[i].Left = (sbyte)value[i].Left;
+                    Hitboxes[i].Right = (sbyte)value[i].Right;
+                }
+            }
+
+            public List<BridgedHitBox> ToBridgedHitBox()
+            {
+                List<BridgedHitBox> bridgedHitBoxes = new List<BridgedHitBox>();
+                for (int i = 0; i < 8; i++)
+                {
+                    var box = new BridgedHitBox();
+                    box.Bottom = Hitboxes[i].Bottom;
+                    box.Top = Hitboxes[i].Top;
+                    box.Left = Hitboxes[i].Left;
+                    box.Right = Hitboxes[i].Right;
+                    bridgedHitBoxes.Add(box);
+                }
+                return bridgedHitBoxes;
+            }
+        }
+        #endregion
+        public List<BridgedRetroHitBox> RetroCollisionBoxes { get; set; } = new List<BridgedRetroHitBox>();
+        public EngineType EngineType { get; set; } = EngineType.RSDKv5;
         public int TotalFrameCount { get; set; } = 0;
-
         public string PathMod
         {
             get
             {
-                switch (engineType)
+                switch (EngineType)
                 {
                     case EngineType.RSDKv5:
                         return "";
@@ -394,33 +349,27 @@ namespace AnimationEditor.Animation.Classes
                 }
             }
         }
-
         public List<string> SpriteSheets { get => SpriteSheetsPaths; set => SpriteSheetsPaths = value; }
-        public List<string> SpriteSheetsPaths = new List<string>();
+        public List<string> SpriteSheetsPaths { get; set; } = new List<string>();
         public List<string> CollisionBoxes { get => CollisionBoxesList; set => CollisionBoxesList = value; }
-        public List<string> CollisionBoxesList = new List<string>();
-        /// <summary>
-        /// a list of the hitboxes that the animations can use (For Pre-v5 Formats)
-        /// </summary>
-        public List<BridgedHitBox> RetroCollisionBoxes = new List<BridgedHitBox>();
+        private List<string> CollisionBoxesList { get; set; } = new List<string>();
+        public List<BridgedAnimationEntry> Animations { get; set; } = new List<BridgedAnimationEntry>();
 
-        public List<BridgedAnimationEntry> Animations = new List<BridgedAnimationEntry>();
-
-        //Stuff for RSDKvRS
-        public bool DreamcastVer = false;
-
+        #region Stuff for RSDKvRS
+        public bool DreamcastVer { get; set; } = false;
         /// <summary>
         /// Unknown Value (RSDKvRS Only)
         /// </summary>
-        public byte Unknown = 0;
+        public byte Unknown { get; set; } = 0;
         /// <summary>
         /// What Moves to give the player (RSDKvRS Only)
         /// </summary>
-        public byte PlayerType = 0;
+        public byte PlayerType { get; set; } = 0;
+        #endregion
 
         public BridgedAnimation(EngineType type)
         {
-            Animations.Add(new BridgedAnimationEntry(type));
+            Animations.Add(new BridgedAnimationEntry(type, this));
         }
 
         public EngineType GetFormat(string filepath)
@@ -430,12 +379,11 @@ namespace AnimationEditor.Animation.Classes
 
         public void LoadFrom(EngineType type, string filepath)
         {
-            engineType = type;
+            EngineType = type;
             Animations.Clear();
             SpriteSheets.Clear();
             CollisionBoxes.Clear();
-            RetroCollisionBoxes.Clear();
-            switch (engineType)
+            switch (EngineType)
             {
                 case EngineType.RSDKv5:
                     AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv5_Load_Animation(this, filepath);
@@ -457,7 +405,7 @@ namespace AnimationEditor.Animation.Classes
 
         public void SaveTo(EngineType type, string filepath)
         {
-            switch (engineType)
+            switch (EngineType)
             {
                 case EngineType.RSDKv5:
                     AnimationEditor.Animation.Methods.ImportExportHandler.RSDKv5_Save_Animation(this, filepath);

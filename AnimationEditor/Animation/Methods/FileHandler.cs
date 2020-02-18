@@ -23,6 +23,17 @@ namespace AnimationEditor.Animation.Methods
     {
         private MainWindow Instance;
         public System.Collections.Generic.IList<MenuItem> RecentItems;
+
+
+        private String[] FilterOpen = new string[] 
+        { 
+            "RSDKv5 (Sonic Mania) Animation Files|*.bin|", 
+            "RSDKvB (Sonic 1 & 2) Animation Files |*.ani|", 
+            "RSDKv2 (Sonic CD) Animation Files|*.ani|", 
+            "RSDKv1 (Sonic Nexus) Animation Files|*.ani|", 
+            "RSDKvRS (Retro-Sonic) Animation Files|*.ani" 
+        };
+
         public FileHandler(MainWindow window)
         {
             Instance = window;
@@ -36,10 +47,10 @@ namespace AnimationEditor.Animation.Methods
             UnloadAnimationData();
             var fd = new OpenFileDialog();
             fd.DefaultExt = "*.bin";
-            fd.Filter = "RSDKv5 (Sonic Mania) Animation Files|*.bin|RSDKv2 (Sonic CD) and RSDKvB (Sonic 1 & 2) Animation Files|*.ani|RSDKv1 (Sonic Nexus) Animation Files|*.ani|RSDKvRS (Retro-Sonic) Animation Files|*.ani";
+            fd.Filter = string.Join("", FilterOpen);
             if (fd.ShowDialog() == true)
             {
-                AddRecentDataFolder(fd.FileName);
+                AddRecentDataFolder(fd.FileName + "," + GetTypeStringFromFilterIndex(fd.FilterIndex));
                 LoadFile(fd);
             }
             Instance.Interfacer.PreventIndexUpdate = false;
@@ -90,39 +101,77 @@ namespace AnimationEditor.Animation.Methods
 
         public void LoadFile(OpenFileDialog fd)
         {
+
+            EngineType engineType = GetTypeFromFilterIndex(fd.FilterIndex);
+
             //RSDKvRS and RSDKv1 don't have rotation flags
-            if (fd.FilterIndex - 1 > 1) { Instance.FlagsSelector.IsEnabled = false; }
-            if (fd.FilterIndex - 1 < 2) { Instance.FlagsSelector.IsEnabled = true; }
+            if (engineType == EngineType.RSDKvRS || engineType == EngineType.RSDKv1) { Instance.FlagsSelector.IsEnabled = false; }
+            else { Instance.FlagsSelector.IsEnabled = true; }
 
             //For RSDKvRS, RSDKv1 and RSDKv2 & RSDKvB there is no ID and the Delay is always 256, so there is no point to let users change their values
-            if (fd.FilterIndex - 1 >= 1) { Instance.DelayNUD.IsEnabled = false; Instance.IdentificationNUD.IsEnabled = false; }
-            if (fd.FilterIndex - 1 == 3) { Instance.IdentificationNUD.IsEnabled = true; Instance.IDLabel.Text = "PlayerID"; }
-            else { Instance.IDLabel.Text = "ID"; }
-            if (fd.FilterIndex - 1 == 0) { Instance.DelayNUD.IsEnabled = true; Instance.IdentificationNUD.IsEnabled = true; }
+            if (engineType != EngineType.RSDKv5) { Instance.DelayNUD.IsEnabled = false; Instance.IdentificationNUD.IsEnabled = false; }
 
-            switch (fd.FilterIndex - 1)
-            {
-                case 0:
-                    Instance.AnimationType = EngineType.RSDKv5;
-                    break;
-                case 1:
-                    //vB and v2 are identical, no need to check, just pretend we know
-                    //MessageBoxResult result = RSDKrU.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
-                    //if (result == MessageBoxResult.Yes)
-                        Instance.AnimationType = EngineType.RSDKv2;
-                    //else Instance.AnimationType = EngineType.RSDKvB;
-                    break;
-                case 2:
-                    Instance.AnimationType = EngineType.RSDKv1;
-                    break;
-                case 3:
-                    Instance.AnimationType = EngineType.RSDKvRS;
-                    break;
-            }
+            if (engineType == EngineType.RSDKv1) { Instance.IdentificationNUD.IsEnabled = true; Instance.IDLabel.Text = "PlayerID"; }
+            else { Instance.IDLabel.Text = "ID"; }
+
+            if (engineType == EngineType.RSDKv5) { Instance.DelayNUD.IsEnabled = true; Instance.IdentificationNUD.IsEnabled = true; }
+
+            Instance.AnimationType = engineType;
 
             LoadFile(fd.FileName);
+
+
+
         }
         #endregion
+
+        EngineType GetTypeFromFilterIndex(int index)
+        {
+            EngineType type = EngineType.Invalid;
+            switch (index - 1)
+            {
+                case 0:
+                    type = EngineType.RSDKv5;
+                    break;
+                case 1:
+                    type = EngineType.RSDKvB;
+                    break;
+                case 2:
+                    type = EngineType.RSDKv2;
+                    break;
+                case 3:
+                    type = EngineType.RSDKv1;
+                    break;
+                case 4:
+                    type = EngineType.RSDKvRS;
+                    break;
+            }
+            return type;
+        }
+
+        string GetTypeStringFromFilterIndex(int index)
+        {
+            string type = "?";
+            switch (index - 1)
+            {
+                case 0:
+                    type = "RSDKv5";
+                    break;
+                case 1:
+                    type = "RSDKvB";
+                    break;
+                case 2:
+                    type = "RSDKv2";
+                    break;
+                case 3:
+                    type = "RSDKv1";
+                    break;
+                case 4:
+                    type = "RSDKvRS";
+                    break;
+            }
+            return type;
+        }
 
         #region Save File Methods
         public void SaveFile()
@@ -135,30 +184,12 @@ namespace AnimationEditor.Animation.Methods
         {
             var fd = new SaveFileDialog();
             fd.DefaultExt = "*.bin";
-            fd.Filter = "RSDKv5 Animation Files|*.bin|RSDKv2 and RSDKvB Animation Files|*.ani|RSDKv1 Animation Files|*.ani|RSDKvRS Animation Files|*.ani";
+            fd.Filter = string.Join("", FilterOpen);
             if (fd.ShowDialog() == true)
             {
-                UpdateRecentsDropDown(fd.FileName);
+                UpdateRecentsDropDown(fd.FileName+","+GetTypeStringFromFilterIndex(fd.FilterIndex));
 
-                switch (fd.FilterIndex - 1)
-                {
-                    case 0:
-                        Instance.AnimationType = EngineType.RSDKv5;
-                        break;
-                    case 1:
-                        //v2 and vB are identical
-                        //MessageBoxResult result = RSDKrU.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
-                        //if (result == MessageBoxResult.Yes)
-                            Instance.AnimationType = EngineType.RSDKv2;
-                        //else Instance.AnimationType = EngineType.RSDKvB;
-                        break;
-                    case 2:
-                        Instance.AnimationType = EngineType.RSDKv1;
-                        break;
-                    case 3:
-                        Instance.AnimationType = EngineType.RSDKvRS;
-                        break;
-                }
+                Instance.AnimationType = GetTypeFromFilterIndex(fd.FilterIndex);
                 Instance.ViewModel.LoadedAnimationFile.SaveTo(Instance.AnimationType, fd.FileName);
             }
         }
@@ -322,7 +353,7 @@ namespace AnimationEditor.Animation.Methods
             fd.Filter = "RSDK Animation Files|*.anim";
             if (fd.ShowDialog() == true)
             {
-                var importAnim = new BridgedAnimation.BridgedAnimationEntry(EngineType.RSDKv5);
+                var importAnim = new BridgedAnimation.BridgedAnimationEntry(EngineType.RSDKv5, Instance.ViewModel.LoadedAnimationFile);
                 importAnim.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations.Add(importAnim);
             }
@@ -349,7 +380,7 @@ namespace AnimationEditor.Animation.Methods
             fd.Filter = "RSDK Frame Files|*.frame";
             if (fd.ShowDialog() == true)
             {
-                var importFrame = new BridgedAnimation.BridgedFrame(EngineType.RSDKv5);
+                var importFrame = new BridgedAnimation.BridgedFrame(EngineType.RSDKv5, Instance.ViewModel.SelectedAnimation);
                 importFrame.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Add(importFrame); 
             }
@@ -387,7 +418,7 @@ namespace AnimationEditor.Animation.Methods
             if (File.Exists(dataDirectory))
             {
                 EngineType type = GetInputGestureTextEngineType(menuItem.InputGestureText);
-                AddRecentDataFolder(dataDirectory);
+                AddRecentDataFolder(dataDirectory + "," + menuItem.InputGestureText);
                 OpenFile(dataDirectory, type);
             }
             else
@@ -414,7 +445,11 @@ namespace AnimationEditor.Animation.Methods
 
                 foreach (var dataDirectory in recentDataDirectories)
                 {
-                    RecentItems.Add(CreateDataDirectoryMenuLink(dataDirectory));
+                    string[] split = dataDirectory.Split(',');
+                    string target = split[0];
+                    string path = "?";
+                    if (split.ElementAtOrDefault(1) != null) path = split[1];
+                    RecentItems.Add(CreateDataDirectoryMenuLink(target, path));
                 }
 
 
@@ -433,11 +468,11 @@ namespace AnimationEditor.Animation.Methods
 
         }
 
-        private MenuItem CreateDataDirectoryMenuLink(string target)
+        private MenuItem CreateDataDirectoryMenuLink(string target, string ext = "?")
         {
             MenuItem newItem = new MenuItem();
             newItem.Header = target;
-            newItem.InputGestureText = GetRecentItemFileVersion(target);
+            newItem.InputGestureText = ext;
             newItem.Tag = target;
             newItem.Click += RecentDataDirectoryClicked;
             return newItem;
@@ -469,7 +504,10 @@ namespace AnimationEditor.Animation.Methods
                 switch (result)
                 {
                     case MessageBoxResult.Yes:
-                        return EngineType.RSDKv2;
+                        MessageBoxResult result2 = RSDKrU.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
+                        if (result2 == MessageBoxResult.Yes)
+                            return EngineType.RSDKv2;
+                        else return EngineType.RSDKvB;
                     case MessageBoxResult.No:
                         return EngineType.RSDKv1;
                     case MessageBoxResult.Cancel:
@@ -565,33 +603,30 @@ namespace AnimationEditor.Animation.Methods
         {
             try
             {
-                var mySettings = Properties.Settings.Default;
-                var dataDirectories = mySettings.RecentFiles;
 
-                if (dataDirectories == null)
+                if (Properties.Settings.Default.RecentFiles == null)
                 {
-                    dataDirectories = new System.Collections.Specialized.StringCollection();
-                    mySettings.RecentFiles = dataDirectories;
+                    Properties.Settings.Default.RecentFiles = new System.Collections.Specialized.StringCollection();
                 }
 
-                if (dataDirectories.Contains(dataDirectory))
+                if (Properties.Settings.Default.RecentFiles.Contains(dataDirectory))
                 {
-                    dataDirectories.Remove(dataDirectory);
+                    Properties.Settings.Default.RecentFiles.Remove(dataDirectory);
                 }
 
-                if (dataDirectories.Count >= 10)
+                if (Properties.Settings.Default.RecentFiles.Count >= 10)
                 {
-                    for (int i = 9; i < dataDirectories.Count; i++)
+                    for (int i = 9; i < Properties.Settings.Default.RecentFiles.Count; i++)
                     {
-                        dataDirectories.RemoveAt(i);
+                        Properties.Settings.Default.RecentFiles.RemoveAt(i);
                     }
                 }
 
-                dataDirectories.Insert(0, dataDirectory);
+                Properties.Settings.Default.RecentFiles.Insert(0, dataDirectory);
 
-                mySettings.Save();
+                Properties.Settings.Default.Save();
 
-                RefreshDataDirectories(dataDirectories);
+                RefreshDataDirectories(Properties.Settings.Default.RecentFiles);
 
 
             }

@@ -41,10 +41,20 @@ namespace AnimationEditor.Pages
                 InitializeVarriables();
                 UpdateUI();
 
-                ButtonRemove.IsEnabled = true;
-                ButtonAdd.IsEnabled = true;
-                SelectedHitboxTextbox.IsEnabled = true;
-                List.IsEnabled = true;
+                if (ParentInstance.ViewModel.LoadedAnimationFile.EngineType == Animation.Classes.EngineType.RSDKv5)
+                {
+                    ButtonRemove.IsEnabled = true;
+                    ButtonAdd.IsEnabled = true;
+                    SelectedHitboxTextbox.IsEnabled = true;
+                    List.IsEnabled = true;
+                }
+                else
+                {
+                    ButtonRemove.IsEnabled = false;
+                    ButtonAdd.IsEnabled = false;
+                    SelectedHitboxTextbox.IsEnabled = false;
+                    List.IsEnabled = false;
+                }
             }
             else
             {

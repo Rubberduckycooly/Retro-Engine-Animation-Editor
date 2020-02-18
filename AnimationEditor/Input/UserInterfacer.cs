@@ -1,14 +1,10 @@
-﻿using AnimationEditor.Animation;
-using Microsoft.Win32;
-using System;
-using System.IO;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
-using AnimationEditor.Services;
-using System.Windows.Media.Imaging;
+﻿using AnimationEditor.Animation.Classes;
 using AnimationEditor.Pages;
-using AnimationEditor.Animation.Classes;
+using AnimationEditor.Services;
+using System;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace AnimationEditor
 {
@@ -37,6 +33,10 @@ namespace AnimationEditor
         {
             get => !Instance.MenuViewTransparentSpriteSheets.IsChecked;
         }
+        public bool SetBackgroundColorToMatchSpriteSheet
+        {
+            get => Instance.MenuViewSetBackgroundToTransparentColor.IsChecked;
+        }
         public bool ForceCenterFrame { get; set; } = false;
         private bool ShowHitBox
         {
@@ -49,6 +49,10 @@ namespace AnimationEditor
         private bool ShowFullFrame
         {
             get => Instance.ViewModel.FullFrameMode;
+        }
+        private bool isPlaybackInProgress
+        {
+            get => Instance.isPlaybackEnabled;
         }
         #endregion
 
@@ -89,6 +93,45 @@ namespace AnimationEditor
         private Brush HideTextBrush;
         #endregion
 
+        #region Status
+
+        bool isEntrySelected 
+        {
+           get => Instance.List.SelectedItem != null;
+        }
+        bool isEntryIndexValid
+        {
+            get => Instance.ViewModel.SelectedAnimationIndex != -1;
+        }
+        bool isFrameSelected
+        {
+            get => Instance.FramesList.SelectedItem != null;
+        }
+        bool isFrameIndexValid
+        {
+            get => Instance.ViewModel.SelectedFrameIndex != -1;
+        }
+        bool AnimationFramesValid
+        {
+            get => Instance.ViewModel.AnimationFrames != null;
+        }
+        bool isAnimationLoaded
+        {
+            get => Instance.ViewModel != null && isAnimationLoaded;
+        }
+
+        bool isHitboxesValid
+        {
+            get => Instance.ViewModel.Hitboxes != null && Instance.ViewModel.Hitboxes.Count != 0;
+        }
+
+        bool isSpriteSheetsValid
+        {
+            get => Instance.ViewModel.SpriteSheetPaths != null && Instance.ViewModel.SpriteSheetPaths.Count > 0;
+        }
+
+        #endregion
+
         #endregion
 
         #region Init
@@ -105,57 +148,7 @@ namespace AnimationEditor
         }
         #endregion
 
-        #region UI Updating
-        public void UpdateControls()
-        {
-            if (Instance.MenuViewFullSpriteSheets.IsChecked) Instance.ViewModel.FullFrameMode = true;
-            else if (!Instance.MenuViewFullSpriteSheets.IsChecked) Instance.ViewModel.FullFrameMode = false;
-            if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.SpriteSheets != null)
-            {
-                if (Instance.ViewModel.CurrentSpriteSheet.Value - 1 > Instance.ViewModel.SpriteSheets.Count) Instance.ViewModel.CurrentSpriteSheet = 0;
-            }
-        }
-        public void UpdateUI(bool frameInfoUpdate = false)
-        {
-            if (PreventIndexUpdate) return;
-            if (Instance.ViewModel != null)
-            {
-                UpdateList();
-                if (frameInfoUpdate) UpdateCurrentFrameInList();
-                UpdateInfo();
-                Render();
-                UpdateInvalidState();
-                UpdatePaths();
-                UpdateTransparencyColors();
-            }
-            if (!Instance.isPlaybackEnabled) UpdateNormalElements();
-            PreventIndexUpdate = false;
-            UpdateAnimationTypeLimitations();
-            Instance.CanvasView.InvalidateVisual();
-        }
-        public void UpdatePaths()
-        {
-            Instance.SpriteDirectoryLabel.Text = string.Format("Sprite Directory: {0}", (Instance.ViewModel.SpriteDirectory != "" && Instance.ViewModel.SpriteDirectory != null ? Instance.ViewModel.SpriteDirectory : "N/A"));
-            Instance.AnimationPathLabel.Text = string.Format("Animation Path: {0}", (Instance.ViewModel.AnimationFilepath != "" && Instance.ViewModel.AnimationFilepath != null ? Instance.ViewModel.AnimationFilepath : "N/A"));
-        }
-        public void UpdateTransparencyColors()
-        {
-            if (Instance.MenuViewSetBackgroundToTransparentColor.IsChecked && Instance.ViewModel.SpriteSheets != null)
-            {
-                if (Instance.ViewModel.SpriteSheets.Count > 0)
-                {
-                    Instance.CanvasBackground.Background = new SolidColorBrush(Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value].TransparentColor);
-                }
-            }
-            else
-            {
-                if (Instance.BGColorPicker.SelectedColor != null)
-                {
-                    Instance.CanvasBackground.Background = new SolidColorBrush(Instance.BGColorPicker.SelectedColor.Value);
-                }
-
-            }
-        }
+        #region Update UI Type Limitations
         public void UpdateAnimationTypeLimitations()
         {
             /*
@@ -188,106 +181,440 @@ namespace AnimationEditor
 
             void UpdateRSDKvRSLimits()
             {
-                Instance.IdentificationNUD.IsEnabled = false;
-                Instance.DelayNUD.IsEnabled = false;
-                Instance.ButtonAnimationRename.IsEnabled = false;
+                SetAnimationRenameVisibilityState(false);
+                SetDelayNUDVisibilityState(false);
+                SetFrameIDVisibilityState(false);
             }
             void UpdateRSDKv1Limits()
             {
-                Instance.IdentificationNUD.IsEnabled = false;
-                Instance.DelayNUD.IsEnabled = false;
-                Instance.ButtonAnimationRename.IsEnabled = false;
+                SetAnimationRenameVisibilityState(false);
+                SetDelayNUDVisibilityState(false);
+                SetFrameIDVisibilityState(true);
             }
 
             void UpdateRSDKv2Limits()
             {
-                Instance.IdentificationNUD.IsEnabled = false;
-                Instance.DelayNUD.IsEnabled = false;
+                SetAnimationRenameVisibilityState(true);
+                SetDelayNUDVisibilityState(false);
+                SetFrameIDVisibilityState(true);
             }
 
             void UpdateRSDKvBLimits()
             {
-                Instance.IdentificationNUD.IsEnabled = false;
-                Instance.DelayNUD.IsEnabled = false;
+                SetAnimationRenameVisibilityState(true);
+                SetDelayNUDVisibilityState(false);
+                SetFrameIDVisibilityState(true);
             }
 
             void UpdateRSDKv5Limits()
             {
-
+                SetAnimationRenameVisibilityState(true);
+                SetDelayNUDVisibilityState(true);
+                SetFrameIDVisibilityState(true);
             }
         }
-        public void UpdateInvalidState()
+        private void SetDelayNUDVisibilityState(bool isEnabled)
         {
-            if (Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SelectedAnimationIndex != -1)
+            if (isEnabled)
             {
-                if (Instance.ViewModel.SelectedFrameIndex != -1)
-                {
-                    UpdateAnimationInfoInvalidState(false);
-                }
-                else
-                {
-                    UpdateFrameInfoInvalidState();
-                }
+                Instance.DelayNUD.IsEnabled = true;
             }
             else
             {
-                UpdateAnimationInfoInvalidState();
-            }
-
-            void UpdateHitboxInvalidState(bool invalid = true, bool indexNegative = false)
-            {
-                Instance.HitboxLeftNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.HitboxTopNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.HitboxRightNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.HitboxBottomNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-
-                Instance.HitBoxComboBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.HitBoxComboBox.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
-                Instance.HitBoxComboBox.IsHitTestVisible = (invalid && !indexNegative ? false : true);
-
-            }
-
-            void UpdateFrameInfoInvalidState(bool invalid = true)
-            {
-                Instance.FrameWidthNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.FrameHeightNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.FrameLeftNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.FrameTopNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.PivotX_NUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.PivotY_NUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.IdentificationNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.DelayNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-
-                Instance.SpriteSheetList.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.SpriteSheetList.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
-                Instance.SpriteSheetList.IsHitTestVisible = (invalid ? false : true);
-
-                if (Instance.HitBoxComboBox.SelectedIndex == -1) UpdateHitboxInvalidState(true, true);
-                else UpdateHitboxInvalidState(invalid);
-
-            }
-
-            void UpdateAnimationInfoInvalidState(bool invalid = true)
-            {
-                Instance.SpeedNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.LoopIndexNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-
-                Instance.FlagsSelector.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-                Instance.FlagsSelector.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
-                Instance.FlagsSelector.IsHitTestVisible = (invalid ? false : true);
-
-                UpdateFrameInfoInvalidState(invalid);
+                Instance.DelayNUD.IsEnabled = false;
             }
         }
-        public void InvalidateTextureList()
+        private void SetAnimationRenameVisibilityState(bool isEnabled)
         {
-            if (Instance.ViewModel.LoadedAnimationFile != null)
+            if (isEnabled)
+            {
+                Instance.ButtonAnimationRename.IsEnabled = true;
+            }
+            else
+            {
+                Instance.ButtonAnimationRename.IsEnabled = false;
+            }
+        }
+        private void SetFrameIDVisibilityState(bool isEnabled)
+        {
+            if (isEnabled)
+            {
+                Instance.IdentificationNUD.IsEnabled = true;
+            }
+            else
+            {
+                Instance.IdentificationNUD.IsEnabled = false;
+            }
+        }
+        #endregion
+
+        #region Index Scrolling
+        public void ScrollFrameIndex(bool subtract = false, bool updateUI = true)
+        {
+            if (Instance.FramesList.Items != null && Instance.FramesList.Items.Count > 0)
+            {
+                if (subtract)
+                {
+                    if (Instance.FramesList.SelectedIndex - 1 > -1) Instance.FramesList.SelectedIndex--;
+                }
+                else
+                {
+                    if (Instance.FramesList.SelectedIndex + 1 < Instance.FramesList.Items.Count) Instance.FramesList.SelectedIndex++;
+                    else Instance.FramesList.SelectedIndex = (Instance.LoopIndexNUD.Value != null ? Instance.LoopIndexNUD.Value.Value : 0);
+                }
+                Instance.FramesList.ScrollIntoView(Instance.FramesList.SelectedItem);
+                if (updateUI) UpdateUI();
+            }
+        }
+        #endregion
+
+        #region Specific Updating
+
+        public void UpdateIOPaths()
+        {
+            Instance.SpriteDirectoryLabel.Text = string.Format("Sprite Directory: {0}", (Instance.ViewModel.SpriteDirectory != "" && Instance.ViewModel.SpriteDirectory != null ? Instance.ViewModel.SpriteDirectory : "N/A"));
+            Instance.AnimationPathLabel.Text = string.Format("Animation Path: {0}", (Instance.ViewModel.AnimationFilepath != "" && Instance.ViewModel.AnimationFilepath != null ? Instance.ViewModel.AnimationFilepath : "N/A"));
+        }
+        public void UpdateCanvasBackgroundColor()
+        {
+            if (SetBackgroundColorToMatchSpriteSheet && Instance.ViewModel.SpriteSheets != null)
+            {
+                if (Instance.ViewModel.SpriteSheets.Count > 0) Instance.CanvasBackground.Background = new SolidColorBrush(Instance.ViewModel.SpriteSheets[Instance.ViewModel.CurrentSpriteSheet.Value].TransparentColor);
+            }
+            else
+            {
+                if (Instance.BGColorPicker.SelectedColor != null) Instance.CanvasBackground.Background = new SolidColorBrush(Instance.BGColorPicker.SelectedColor.Value);
+            }
+        }
+        public void UpdateTextureList()
+        {
+            if (isAnimationLoaded)
             {
                 Instance.SpriteSheetList.ItemsSource = null;
                 Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
             }
         }
-        public void UpdateFrameNUDMaxMin()
+
+        #endregion
+
+        #region Update Invalid Elements
+
+        public void UpdateHitboxInvalidState(bool invalid = true, bool indexNegative = false)
+        {
+            Instance.HitboxLeftNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.HitboxTopNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.HitboxRightNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.HitboxBottomNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+
+            Instance.HitBoxComboBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.HitBoxComboBox.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
+            Instance.HitBoxComboBox.IsHitTestVisible = (invalid && !indexNegative ? false : true);
+
+        }
+        public void UpdateFrameInfoInvalidState(bool invalid = true)
+        {
+            Instance.FrameWidthNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.FrameHeightNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.FrameLeftNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.FrameTopNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.PivotX_NUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.PivotY_NUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.IdentificationNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.DelayNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+
+            Instance.SpriteSheetList.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.SpriteSheetList.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
+            Instance.SpriteSheetList.IsHitTestVisible = (invalid ? false : true);
+
+            if (Instance.HitBoxComboBox.SelectedIndex == -1) UpdateHitboxInvalidState(true, true);
+            else UpdateHitboxInvalidState(invalid);
+
+        }
+        public void UpdateAnimationInfoInvalidState(bool invalid = true)
+        {
+            Instance.SpeedNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.LoopIndexNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+
+            Instance.FlagsSelector.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.FlagsSelector.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
+            Instance.FlagsSelector.IsHitTestVisible = (invalid ? false : true);
+
+            UpdateFrameInfoInvalidState(invalid);
+        }
+        public void UpdateInvalidState()
+        {
+            if (isAnimationLoaded && isEntryIndexValid)
+            {
+                if (isFrameIndexValid) UpdateAnimationInfoInvalidState(false);
+                else UpdateFrameInfoInvalidState();
+            }
+            else UpdateAnimationInfoInvalidState();
+        }
+
+
+        #endregion
+
+        #region Control Updates
+
+        public void UpdateControls()
+        {
+            if (Instance.MenuViewFullSpriteSheets.IsChecked) Instance.ViewModel.FullFrameMode = true;
+            else if (!Instance.MenuViewFullSpriteSheets.IsChecked) Instance.ViewModel.FullFrameMode = false;
+            if (Instance.ViewModel.CurrentSpriteSheet != null && Instance.ViewModel.SpriteSheets != null)
+            {
+                if (Instance.ViewModel.CurrentSpriteSheet.Value - 1 > Instance.ViewModel.SpriteSheets.Count) Instance.ViewModel.CurrentSpriteSheet = 0;
+            }
+        }
+
+        #endregion
+
+        #region Enabled State Updates
+        public void UpdatePlaybackModeElementsEnabledState(bool enabled)
+        {
+            Instance.ButtonFrameAdd.IsEnabled = enabled;
+            Instance.ButtonFrameDupe.IsEnabled = enabled;
+            Instance.ButtonFrameExport.IsEnabled = enabled;
+            Instance.ButtonFrameImport.IsEnabled = enabled;
+            Instance.ButtonFrameRemove.IsEnabled = enabled;
+            Instance.ButtonFrameLeft.IsEnabled = enabled;
+            Instance.ButtonFrameRight.IsEnabled = enabled;
+
+            Instance.ButtonAnimationAdd.IsEnabled = enabled;
+            Instance.ButtonAnimationRemove.IsEnabled = enabled;
+            Instance.ButtonAnimationExport.IsEnabled = enabled;
+            Instance.ButtonAnimationImport.IsEnabled = enabled;
+            Instance.ButtonAnimationDuplicate.IsEnabled = enabled;
+            Instance.ButtonAnimationUp.IsEnabled = enabled;
+            Instance.ButtonAnimationDown.IsEnabled = enabled;
+
+            Instance.ControlPanel.IsEnabled = enabled;
+            Instance.List.IsEnabled = enabled;
+            Instance.FramesList.IsEnabled = enabled;
+
+            Instance.AnimationScroller.IsEnabled = enabled;
+            Instance.MenuStrip.IsEnabled = enabled;
+        }
+        public void UpdateEnabledState()
+        {
+            if (Instance.ViewModel != null)
+            {
+                UpdateListEnabledState(isEntrySelected && isAnimationLoaded);
+                UpdateFrameListEnabledState(isFrameSelected);
+                UpdateMenuStripEnabledState(isAnimationLoaded);
+            }
+            else
+            {
+                UpdateListEnabledState(false);
+                UpdateFrameListEnabledState(false);
+                UpdateListEnabledState(false);
+                UpdateMenuStripEnabledState(false);
+            }
+        }
+        private void UpdateFrameListEnabledState(bool enabled)
+        {
+            bool isEntrySelected = Instance.List.SelectedItem != null;
+            Instance.ButtonFrameAdd.IsEnabled = isEntrySelected;
+            Instance.ButtonFrameDupe.IsEnabled = enabled;
+            Instance.ButtonFrameExport.IsEnabled = enabled;
+            Instance.ButtonFrameImport.IsEnabled = enabled;
+            Instance.ButtonFrameRemove.IsEnabled = enabled;
+            Instance.ButtonFrameLeft.IsEnabled = enabled;
+            Instance.ButtonFrameRight.IsEnabled = enabled;
+            UpdateZoomInOutEnabledState(enabled);
+            Instance.ButtonShowFieldHitbox.IsEnabled = enabled;
+            Instance.ButtonShowCenter.IsEnabled = enabled;
+        }
+        private void UpdateZoomInOutEnabledState(bool enabled)
+        {
+            if (Instance.ViewModel.SpriteScaleX < 7) Instance.ButtonZoomIn.IsEnabled = enabled;
+            else Instance.ButtonZoomIn.IsEnabled = false;
+            if (Instance.ViewModel.SpriteScaleX > 1) Instance.ButtonZoomOut.IsEnabled = enabled;
+            else Instance.ButtonZoomOut.IsEnabled = false;
+
+        }
+        private void UpdateMenuStripEnabledState(bool enabled)
+        {
+            Instance.MenuFileSave.IsEnabled = enabled;
+            Instance.MenuFileSaveAs.IsEnabled = enabled;
+            Instance.MenuFileUnloadAnimation.IsEnabled = enabled;
+        }
+        private void UpdateListEnabledState(bool enabled)
+        {
+            bool isFrameSelected = Instance.FramesList.SelectedItem != null;
+            Instance.ButtonAnimationAdd.IsEnabled = enabled;
+            Instance.ButtonAnimationRemove.IsEnabled = enabled;
+            Instance.ButtonAnimationExport.IsEnabled = enabled;
+            Instance.ButtonAnimationImport.IsEnabled = enabled;
+            Instance.ButtonAnimationDuplicate.IsEnabled = enabled;
+            Instance.ButtonAnimationUp.IsEnabled = enabled;
+            Instance.ButtonAnimationDown.IsEnabled = enabled;
+            Instance.ButtonPlay.IsEnabled = isFrameSelected;
+            Instance.PlaybackOptionsButton.IsEnabled = isFrameSelected;
+            Instance.AnimationScroller.IsEnabled = enabled;
+            Instance.HitboxButton.IsEnabled = enabled;
+            Instance.ButtonAnimationRename.IsEnabled = enabled;
+            Instance.TextureButton.IsEnabled = enabled;
+        }
+        #endregion
+
+        #region Frame/Animation List Refreshing
+        public void RefreshAnimationList()
+        {
+            Instance.List.ItemsSource = Instance.ViewModel.Animations;
+            Instance.List.UpdateLayout();
+
+            Instance.FramesCountLabel.Text = Instance.ViewModel.FramesCount.ToString();
+            Instance.AnimationsCountLabel.Text = Instance.ViewModel.AnimationsCount.ToString();
+            Instance.AllFramesCountLabel.Text = Instance.ViewModel.GetCurrentFrameIndexForAllAnimations().ToString();
+
+            if (Instance.ViewModel.SelectedAnimationIndex == -1)
+            {
+                Instance.FramesList.Height = 21;
+                Instance.FramesList.Visibility = Visibility.Hidden;
+                Instance.FakeScrollbar.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Instance.FramesList.Height = Double.NaN;
+                Instance.FramesList.Visibility = Visibility.Visible;
+                Instance.FakeScrollbar.Visibility = Visibility.Hidden;
+            }
+        }
+        public void RefreshAnimationsListFully()
+        {
+            var temp = Instance.List.SelectedItem;
+            Instance.List.ItemsSource = null;
+            Instance.List.ItemsSource = Instance.ViewModel.Animations;
+            Instance.List.UpdateLayout();
+            if (Instance.List.Items.Contains(temp)) Instance.List.SelectedItem = temp;
+        }
+        public void RefreshFramesList()
+        {
+            if (isAnimationLoaded && isEntryIndexValid)
+            {
+                var temp = Instance.FramesList.SelectedItem;
+                Instance.FramesList.Items.Clear();
+                if (Instance.ViewModel.SelectedAnimationIndex < 0) Instance.ViewModel.SelectedAnimationIndex = 0;
+                for (int i = 0; i < Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Count; i++)
+                {
+                    System.Windows.Controls.Image frame = new System.Windows.Controls.Image();
+                    frame.Width = 45;
+                    frame.Height = 45;
+                    frame.Source = Instance.ViewModel.GetFrameImage(i);
+                    Instance.FramesList.Items.Add(frame);
+                }
+                Instance.FramesList.UpdateLayout();
+                if (Instance.FramesList.Items.Contains(temp)) Instance.FramesList.SelectedItem = temp;
+            }
+
+        }
+        public void RefreshCurrentFrame()
+        {
+            int selectedIndex = Instance.ViewModel.SelectedFrameIndex;
+            if (selectedIndex != -1 && isAnimationLoaded)
+            {
+                PreventIndexUpdate = true;
+                Instance.ViewModel.InvalidateFrameImage(selectedIndex);
+                System.Windows.Controls.Image frame = new System.Windows.Controls.Image();
+                frame.Width = 45;
+                frame.Height = 45;
+                frame.Source = Instance.ViewModel.GetFrameImage(selectedIndex);
+                Instance.FramesList.Items.RemoveAt(selectedIndex);
+                Instance.FramesList.Items.Insert(selectedIndex, frame);
+                Instance.ViewModel.SelectedFrameIndex = selectedIndex;
+                Instance.FramesList.SelectedIndex = Instance.ViewModel.SelectedFrameIndex;
+                Instance.FramesList.UpdateLayout();
+            }
+        }
+        #endregion
+
+        #region UI Updating
+
+        public void UpdateUI(bool frameInfoUpdate = false)
+        {
+            if (PreventIndexUpdate) return;
+            if (Instance.ViewModel != null)
+            {
+                RefreshAnimationList();
+                if (frameInfoUpdate) RefreshCurrentFrame();
+                UpdateValues();
+                Render();
+                UpdateInvalidState();
+                UpdateIOPaths();
+                UpdateCanvasBackgroundColor();
+                if (!isPlaybackInProgress) UpdateEnabledState();
+                PreventIndexUpdate = false;
+                UpdateAnimationTypeLimitations();
+                Instance.CanvasView.InvalidateVisual();
+            }
+
+        }
+
+
+        #endregion
+
+        #region Values Updating
+        public void UpdateValues()
+        {
+            UpdateAnimatonValues();
+            UpdateFrameValues();
+            if (isHitboxesValid) UpdateHitboxValues();
+        }
+        private void UpdateFrameValues()
+        {
+            if (isHitboxesValid) UpdateHitboxValues();
+
+            Instance.FrameWidthNUD.Value = Instance.ViewModel.SelectedFrameWidth;
+            Instance.FrameHeightNUD.Value = Instance.ViewModel.SelectedFrameHeight;
+            Instance.FrameLeftNUD.Value = Instance.ViewModel.SelectedFrameLeft;
+            Instance.FrameTopNUD.Value = Instance.ViewModel.SelectedFrameTop;
+            Instance.PivotX_NUD.Value = Instance.ViewModel.SelectedFramePivotX;
+            Instance.PivotY_NUD.Value = Instance.ViewModel.SelectedFramePivotY;
+            Instance.IdentificationNUD.Value = Instance.ViewModel.SelectedFrameID;
+            Instance.DelayNUD.Value = Instance.ViewModel.SelectedFrameDuration;
+
+            UpdateNUD_Cap_Values();
+
+
+            Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
+            Instance.SpriteSheetList.SelectedIndex = (Instance.ViewModel.CurrentSpriteSheet.HasValue ? Instance.ViewModel.CurrentSpriteSheet.Value : 0);
+
+            if (AnimationFramesValid && isFrameIndexValid) Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet = Instance.ViewModel.CurrentSpriteSheet.Value;
+
+
+            if (isSpriteSheetsValid) Instance.SpriteSheetList.SelectedValue = Instance.ViewModel.SpriteSheetPaths[Instance.SpriteSheetList.SelectedIndex];
+
+            if (isFrameIndexValid && AnimationFramesValid)
+            {
+                if (Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex] != null)
+                {
+                    if (Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet != Instance.ViewModel.CurrentSpriteSheet && Instance.ViewModel.CurrentSpriteSheet != null)
+                    {
+                        Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet = Instance.ViewModel.CurrentSpriteSheet.Value;
+                    }
+                }
+            }
+
+
+        }
+        private void UpdateHitboxValues()
+        {
+            Instance.HitBoxComboBox.ItemsSource = Instance.ViewModel.CollisionBoxesNames;
+            Instance.HitBoxComboBox.SelectedIndex = Instance.ViewModel.SelectedFrameHitboxIndex;
+
+            Instance.HitboxLeftNUD.Value = Instance.ViewModel.SelectedHitboxLeft;
+            Instance.HitboxRightNUD.Value = Instance.ViewModel.SelectedHitboxTop;
+            Instance.HitboxTopNUD.Value = Instance.ViewModel.SelectedHitboxRight;
+            Instance.HitboxBottomNUD.Value = Instance.ViewModel.SelectedHitboxBottom;
+
+        }
+        private void UpdateAnimatonValues()
+        {
+            Instance.SpeedNUD.Value = Instance.ViewModel.Speed;
+            Instance.LoopIndexNUD.Value = Instance.ViewModel.Loop;
+            Instance.FlagsSelector.SelectedIndex = (Instance.ViewModel.Flags.HasValue ? Instance.ViewModel.Flags.Value : 0);
+        }
+        public void UpdateNUD_Cap_Values()
         {
             Instance.FrameWidthNUD.Minimum = 0;
             Instance.FrameHeightNUD.Minimum = 0;
@@ -316,256 +643,12 @@ namespace AnimationEditor
                 Instance.FrameTopNUD.Maximum = 0;
             }
         }
-        public void UpdateFrameIndex(bool subtract = false, bool updateUI = true)
-        {
-            if (Instance.FramesList.Items != null && Instance.FramesList.Items.Count > 0)
-            {
-                if (subtract)
-                {
-                    if (Instance.FramesList.SelectedIndex - 1 > -1) Instance.FramesList.SelectedIndex--;
-                }
-                else
-                {
-                    if (Instance.FramesList.SelectedIndex + 1 < Instance.FramesList.Items.Count) Instance.FramesList.SelectedIndex++;
-                    else Instance.FramesList.SelectedIndex = (Instance.LoopIndexNUD.Value != null ? Instance.LoopIndexNUD.Value.Value : 0);
-                }
-                Instance.FramesList.ScrollIntoView(Instance.FramesList.SelectedItem);
-                if (updateUI) UpdateUI();
-            }
-
-
-        }
-        public void DisablePlaybackModeElements(bool enabled)
-        {
-            Instance.ButtonFrameAdd.IsEnabled = enabled;
-            Instance.ButtonFrameDupe.IsEnabled = enabled;
-            Instance.ButtonFrameExport.IsEnabled = enabled;
-            Instance.ButtonFrameImport.IsEnabled = enabled;
-            Instance.ButtonFrameRemove.IsEnabled = enabled;
-            Instance.ButtonFrameLeft.IsEnabled = enabled;
-            Instance.ButtonFrameRight.IsEnabled = enabled;
-
-            Instance.ButtonAnimationAdd.IsEnabled = enabled;
-            Instance.ButtonAnimationRemove.IsEnabled = enabled;
-            Instance.ButtonAnimationExport.IsEnabled = enabled;
-            Instance.ButtonAnimationImport.IsEnabled = enabled;
-            Instance.ButtonAnimationDuplicate.IsEnabled = enabled;
-            Instance.ButtonAnimationUp.IsEnabled = enabled;
-            Instance.ButtonAnimationDown.IsEnabled = enabled;
-
-            Instance.ControlPanel.IsEnabled = enabled;
-            Instance.List.IsEnabled = enabled;
-            Instance.FramesList.IsEnabled = enabled;
-
-            Instance.AnimationScroller.IsEnabled = enabled;
-            Instance.MenuStrip.IsEnabled = enabled;
-        }
-        public void UpdateNormalElements()
-        {
-            if (Instance.ViewModel != null)
-            {
-                UpdateListElements(Instance.ViewModel.LoadedAnimationFile != null);
-                UpdateFrameListElements(Instance.FramesList.SelectedItem != null);
-                UpdateListElements(Instance.ViewModel.SelectedAnimation != null);
-                UpdateMenuStripElements(Instance.ViewModel.LoadedAnimationFile != null);
-            }
-            else
-            {
-                UpdateListElements(false);
-                UpdateFrameListElements(false);
-                UpdateListElements(false);
-                UpdateMenuStripElements(false);
-            }
-
-
-            void UpdateListElements(bool enabled)
-            {
-                Instance.ButtonAnimationAdd.IsEnabled = enabled;
-                Instance.ButtonAnimationRemove.IsEnabled = enabled;
-                Instance.ButtonAnimationExport.IsEnabled = enabled;
-                Instance.ButtonAnimationImport.IsEnabled = enabled;
-                Instance.ButtonAnimationDuplicate.IsEnabled = enabled;
-                Instance.ButtonAnimationUp.IsEnabled = enabled;
-                Instance.ButtonAnimationDown.IsEnabled = enabled;
-                Instance.ButtonPlay.IsEnabled = Instance.FramesList.SelectedItem != null;
-                Instance.PlaybackOptionsButton.IsEnabled = Instance.FramesList.SelectedItem != null;
-                Instance.AnimationScroller.IsEnabled = enabled;
-                Instance.HitboxButton.IsEnabled = enabled;
-                Instance.ButtonAnimationRename.IsEnabled = enabled;
-                Instance.TextureButton.IsEnabled = enabled;
-            }
-
-            void UpdateFrameListElements(bool enabled)
-            {
-                Instance.ButtonFrameAdd.IsEnabled = Instance.List.SelectedItem != null;
-                Instance.ButtonFrameDupe.IsEnabled = enabled;
-                Instance.ButtonFrameExport.IsEnabled = enabled;
-                Instance.ButtonFrameImport.IsEnabled = enabled;
-                Instance.ButtonFrameRemove.IsEnabled = enabled;
-                Instance.ButtonFrameLeft.IsEnabled = enabled;
-                Instance.ButtonFrameRight.IsEnabled = enabled;
-                UpdateZoomInOutButtons(enabled);
-                Instance.ButtonShowFieldHitbox.IsEnabled = enabled;
-                Instance.ButtonShowCenter.IsEnabled = enabled;
-            }
-
-            void UpdateZoomInOutButtons(bool enabled)
-            {
-                if (Instance.ViewModel.SpriteScaleX < 7) Instance.ButtonZoomIn.IsEnabled = enabled;
-                else Instance.ButtonZoomIn.IsEnabled = false;
-                if (Instance.ViewModel.SpriteScaleX > 1) Instance.ButtonZoomOut.IsEnabled = enabled;
-                else Instance.ButtonZoomOut.IsEnabled = false;
-
-            }
-
-            void UpdateMenuStripElements(bool enabled)
-            {
-                Instance.MenuFileSave.IsEnabled = enabled;
-                Instance.MenuFileSaveAs.IsEnabled = enabled;
-                Instance.MenuFileUnloadAnimation.IsEnabled = enabled;
-            }
-        }
         #endregion
 
-        #region Frames/List Update Methods
-        public void FullUpdateList()
-        {
-            var temp = Instance.List.SelectedItem;
-            Instance.List.ItemsSource = null;
-            Instance.List.ItemsSource = Instance.ViewModel.Animations;
-            Instance.List.UpdateLayout();
-            if (Instance.List.Items.Contains(temp)) Instance.List.SelectedItem = temp;
-        }
-        public void UpdateList()
-        {
-            Instance.List.ItemsSource = Instance.ViewModel.Animations;
-            Instance.List.UpdateLayout();
-
-            Instance.FramesCountLabel.Text = Instance.ViewModel.FramesCount.ToString();
-            Instance.AnimationsCountLabel.Text = Instance.ViewModel.AnimationsCount.ToString();
-            Instance.AllFramesCountLabel.Text = Instance.ViewModel.GetCurrentFrameIndexForAllAnimations().ToString();
-
-            if (Instance.ViewModel.SelectedAnimationIndex == -1)
-            {
-                Instance.FramesList.Height = 21;
-                Instance.FramesList.Visibility = Visibility.Hidden;
-                Instance.FakeScrollbar.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                Instance.FramesList.Height = Double.NaN;
-                Instance.FramesList.Visibility = Visibility.Visible;
-                Instance.FakeScrollbar.Visibility = Visibility.Hidden;
-            }
-        }
-        public void UpdateFramesList()
-        {
-            if (Instance.ViewModel.LoadedAnimationFile != null && Instance.ViewModel.SelectedAnimationIndex != -1)
-            {
-                var temp = Instance.FramesList.SelectedItem;
-                Instance.FramesList.Items.Clear();
-                if (Instance.ViewModel.SelectedAnimationIndex < 0) Instance.ViewModel.SelectedAnimationIndex = 0;
-                for (int i = 0; i < Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Count; i++)
-                {
-                    System.Windows.Controls.Image frame = new System.Windows.Controls.Image();
-                    frame.Width = 45;
-                    frame.Height = 45;
-                    frame.Source = Instance.ViewModel.GetFrameImage(i);
-                    Instance.FramesList.Items.Add(frame);
-                }
-                Instance.FramesList.UpdateLayout();
-                if (Instance.FramesList.Items.Contains(temp)) Instance.FramesList.SelectedItem = temp;
-            }
-
-        }
-        public void UpdateCurrentFrameInList()
-        {
-            int selectedIndex = Instance.ViewModel.SelectedFrameIndex;
-            if (selectedIndex != -1 && Instance.ViewModel.LoadedAnimationFile != null)
-            {
-                PreventIndexUpdate = true;
-                Instance.ViewModel.InvalidateFrameImage(selectedIndex);
-                System.Windows.Controls.Image frame = new System.Windows.Controls.Image();
-                frame.Width = 45;
-                frame.Height = 45;
-                frame.Source = Instance.ViewModel.GetFrameImage(selectedIndex);
-                Instance.FramesList.Items.RemoveAt(selectedIndex);
-                Instance.FramesList.Items.Insert(selectedIndex, frame);
-                Instance.ViewModel.SelectedFrameIndex = selectedIndex;
-                Instance.FramesList.SelectedIndex = Instance.ViewModel.SelectedFrameIndex;
-                Instance.FramesList.UpdateLayout();
-            }
-
-
-        }
-        public void UpdateInfo()
-        {
-            UpdateAnimatonInfo();
-            UpdateFrameInfo();
-            if (Instance.ViewModel.Hitboxes != null && Instance.ViewModel.Hitboxes.Count != 0) UpdateHitboxInfo();
-
-
-            void UpdateFrameInfo()
-            {
-                if (Instance.ViewModel.Hitboxes != null && Instance.ViewModel.Hitboxes.Count != 0) UpdateHitboxInfo();
-
-                Instance.FrameWidthNUD.Value = Instance.ViewModel.SelectedFrameWidth;
-                Instance.FrameHeightNUD.Value = Instance.ViewModel.SelectedFrameHeight;
-                Instance.FrameLeftNUD.Value = Instance.ViewModel.SelectedFrameLeft;
-                Instance.FrameTopNUD.Value = Instance.ViewModel.SelectedFrameTop;
-                Instance.PivotX_NUD.Value = Instance.ViewModel.SelectedFramePivotX;
-                Instance.PivotY_NUD.Value = Instance.ViewModel.SelectedFramePivotY;
-                Instance.IdentificationNUD.Value = Instance.ViewModel.SelectedFrameId;
-                Instance.DelayNUD.Value = Instance.ViewModel.SelectedFrameDuration;
-
-                UpdateFrameNUDMaxMin();
-
-
-                Instance.SpriteSheetList.ItemsSource = Instance.ViewModel.SpriteSheetPaths;
-                Instance.SpriteSheetList.SelectedIndex = (Instance.ViewModel.CurrentSpriteSheet.HasValue ? Instance.ViewModel.CurrentSpriteSheet.Value : 0);
-
-                if (Instance.ViewModel.AnimationFrames != null && Instance.ViewModel.SelectedFrameIndex != -1) Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet = Instance.ViewModel.CurrentSpriteSheet.Value;
-
-
-                if (Instance.ViewModel.SpriteSheetPaths != null && Instance.ViewModel.SpriteSheetPaths.Count > 0) Instance.SpriteSheetList.SelectedValue = Instance.ViewModel.SpriteSheetPaths[Instance.SpriteSheetList.SelectedIndex];
-
-                if (Instance.ViewModel.SelectedFrameIndex != -1 && Instance.ViewModel.SelectedFrameIndex != null && Instance.ViewModel.AnimationFrames != null)
-                {
-                    if (Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex] != null)
-                    {
-                        if (Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet != Instance.ViewModel.CurrentSpriteSheet && Instance.ViewModel.CurrentSpriteSheet != null)
-                        {
-                            Instance.ViewModel.AnimationFrames[Instance.ViewModel.SelectedFrameIndex].SpriteSheet = Instance.ViewModel.CurrentSpriteSheet.Value;
-                        }
-                    }
-                }
-
-
-            }
-            void UpdateHitboxInfo()
-            {
-                Instance.HitBoxComboBox.ItemsSource = Instance.ViewModel.CollisionBoxesNames;
-                Instance.HitBoxComboBox.SelectedIndex = Instance.ViewModel.SelectedFrameHitboxIndex;
-
-                Instance.HitboxLeftNUD.Value = Instance.ViewModel.SelectedHitboxLeft;
-                Instance.HitboxRightNUD.Value = Instance.ViewModel.SelectedHitboxTop;
-                Instance.HitboxTopNUD.Value = Instance.ViewModel.SelectedHitboxRight;
-                Instance.HitboxBottomNUD.Value = Instance.ViewModel.SelectedHitboxBottom;
-
-            }
-            void UpdateAnimatonInfo()
-            {
-                Instance.SpeedNUD.Value = Instance.ViewModel.Speed;
-                Instance.LoopIndexNUD.Value = Instance.ViewModel.Loop;
-                Instance.FlagsSelector.SelectedIndex = (Instance.ViewModel.Flags.HasValue ? Instance.ViewModel.Flags.Value : 0);
-            }
-        }
-        #endregion
-
-        #region Get/Set Bitmaps
+        #region Update Bitmaps
         public void UpdateSheetImage()
         {
-            if (Instance.ViewModel.SpriteSheets == null) return;
+            if (Instance.ViewModel.SpriteSheets == null || Instance.ViewModel.SpriteSheets.Count == 0) return;
 
 
             if (Instance.MenuViewTransparentSpriteSheets.IsChecked)
@@ -626,7 +709,7 @@ namespace AnimationEditor
             UpdateFrameImage();
 
             Instance.CanvasView.InvalidateVisual();
-            UpdateTransparencyColors();
+            UpdateCanvasBackgroundColor();
         }
         public void PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs e)
         {
