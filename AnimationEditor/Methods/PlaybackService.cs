@@ -30,28 +30,68 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Timers;
-using AnimationEditor.Animation;
-using AnimationEditor.Animation.Classes;
-using AnimationEditor.Animation.Methods;
+using AnimationEditor.ViewModel;
+using AnimationEditor.Classes;
+using AnimationEditor.Methods;
 using AnimationEditor.Pages;
 
-namespace AnimationEditor.Animation.Methods
+namespace AnimationEditor.Methods
 {
     public class PlaybackService
     {
         private MainWindow ParentInstance;
+
+        private bool isForcePlaybackOn
+        {
+            get
+            {
+                if (ParentInstance != null)
+                {
+                    return ParentInstance.Interfacer.isForcePlaybackOn;
+                }
+                else return false;
+            }
+        }
+
+        private int ForcePlaybackSpeed
+        {
+            get
+            {
+                if (ParentInstance != null)
+                {
+                    return ParentInstance.Interfacer.ForcePlaybackSpeed;
+                }
+                else return 128;
+            }
+        }
+
+        private int ForcePlaybackDuration
+        {
+            get
+            {
+                if (ParentInstance != null)
+                {
+                    return ParentInstance.Interfacer.ForcePlaybackDuration;
+                }
+                else return 256;
+            }
+        }
+        
+
+
+
         private string _animationName;
         public int _frameIndex;
-        private BridgedAnimation.BridgedAnimationEntry _currentAnimation;
-        private BridgedAnimation.BridgedFrame _currentFrame;
-        private Dictionary<string, BridgedAnimation.BridgedAnimationEntry> _dicAnimations;
+        private EditorAnimation.EditorAnimationInfo _currentAnimation;
+        private EditorAnimation.EditorFrame _currentFrame;
+        private Dictionary<string, EditorAnimation.EditorAnimationInfo> _dicAnimations;
         private long _previousTime;
         private long _discardedTime;
         private object _lockTime = new object();
 
         public event Action<PlaybackService> OnFrameChanged;
 
-        public BridgedAnimation AnimationData { get; set; }
+        public EditorAnimation AnimationData { get; set; }
 
         public Timer Timer { get; private set; }
         public Stopwatch Stopwatch { get; private set; }
@@ -148,15 +188,15 @@ namespace AnimationEditor.Animation.Methods
         /// <summary>
         /// Get the current animation object loaded
         /// </summary>
-        public BridgedAnimation.BridgedAnimationEntry CurrentAnimation => _currentAnimation;
+        public EditorAnimation.EditorAnimationInfo CurrentAnimation => _currentAnimation;
 
-        public BridgedAnimation.BridgedFrame CurrentFrame => _currentFrame;
+        public EditorAnimation.EditorFrame CurrentFrame => _currentFrame;
 
         /// <summary>
         /// Initialize a new instance of an animation service
         /// </summary>
         /// <param name="animData">Animation data where information are loaded</param>
-        public PlaybackService(BridgedAnimation animData, MainWindow instance)
+        public PlaybackService(EditorAnimation animData, MainWindow instance)
         {
             ParentInstance = instance;
             AnimationData = animData;
@@ -204,7 +244,7 @@ namespace AnimationEditor.Animation.Methods
         {
             var curAnim = CurrentAnimation;
             if (ms < 0 || curAnim == null ||
-                (CurrentAnimation?.SpeedMultiplyer ?? 0) <= 0 && !MainWindow.isForcePlaybackOn)
+                (CurrentAnimation?.SpeedMultiplyer ?? 0) <= 0 && !isForcePlaybackOn)
                 return 0;
 
             int framesCount = curAnim.Frames.Count();
@@ -213,12 +253,12 @@ namespace AnimationEditor.Animation.Methods
                 return 0;
 
             const int Divisor = 1024;
-            var baseSpeed = (MainWindow.isForcePlaybackOn ? MainWindow.ForcePlaybackSpeed : CurrentAnimation.SpeedMultiplyer);
+            var baseSpeed = (isForcePlaybackOn ? ForcePlaybackSpeed : CurrentAnimation.SpeedMultiplyer);
             long prevMs;
             do
             {
                 prevMs = ms;
-                var frameSpeed = (MainWindow.isForcePlaybackOn ? MainWindow.ForcePlaybackDuration : CurrentFrame?.Delay ?? 256);
+                var frameSpeed = (isForcePlaybackOn ? ForcePlaybackDuration : CurrentFrame?.Delay ?? 256);
 
                 if (frameSpeed > 0)
                 {

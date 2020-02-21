@@ -1,4 +1,4 @@
-﻿using AnimationEditor.Animation;
+﻿using AnimationEditor.ViewModel;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -8,8 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Xceed.Wpf.Toolkit;
 using AnimationEditor.Services;
-using AnimationEditor.Animation.Classes;
-using AnimationEditor.Animation.Methods;
+using AnimationEditor.Classes;
+using AnimationEditor.Methods;
 using AnimationEditor.Pages;
 
 namespace AnimationEditor.Pages
@@ -19,7 +19,8 @@ namespace AnimationEditor.Pages
     /// </summary>
     public partial class MainWindow : Window
     {
-        public CurrentAnimation ViewModel => (CurrentAnimation)this.DataContext;
+        #region Definitions
+        public AnimationModel ViewModel => (AnimationModel)this.DataContext;
 
         public UserInterfacer Interfacer;
         public InputController InputControl;
@@ -27,62 +28,42 @@ namespace AnimationEditor.Pages
         public Brush DefaultBorderBrush;
         public Brush DefaultTextBrush;
         public EngineType AnimationType { get => ViewModel.AnimationType; set => ViewModel.AnimationType = value; }
-        public static int AnimationIndex { get; set; }
 
-        private PlaybackService PlaybackService;
 
-        public bool isPlaybackEnabled = false;
-        private bool PreventScrollChange = true;
-        public static bool isForcePlaybackOn = false;
-        public static int ForcePlaybackDuration = 256;
-        public static int ForcePlaybackSpeed = 128;
+        private bool PreventScrollChange { get; set; } = true;
 
         public bool isLoadedFully { get; set; } = false;
+        public string WindowName { set { this.Title = value; } }
+        public string DefaultWindowName { get { return $"RSDK Animation Editor v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}"; } }
 
-        public string WindowName
-        {
-            set
-            {
-                this.Title = value;
-            }
-        }
+        #endregion
 
-        public string DefaultWindowName
-        {
-            get
-            {
-                return $"RSDK Animation Editor v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
-            }
-        }
-
+        #region Init
         public MainWindow()
+        {
+            InitializeDesignTimeComponents();
+            InitializeComponent();
+            InitializeBaseComponents();
+        }
+        private void InitializeDesignTimeComponents()
         {
             DefaultBorderBrush = (Brush)FindResource("ComboBoxBorder");
             DefaultTextBrush = (Brush)FindResource("NormalText");
-            InitializeComponent();
+        }
+        private void InitializeBaseComponents()
+        {
             InputControl = new InputController(this);
-            DataContext = new CurrentAnimation();
+            DataContext = new AnimationModel();
             List.AllowDrop = true;
             Interfacer = new UserInterfacer(this);
             Handler = new FileHandler(this);
             PreventScrollChange = false;
-            HitboxColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
-            AxisColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
-            BGColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
+            InitializeColorPickerEvents();
             WindowName = DefaultWindowName;
         }
+        #endregion
 
-        private void PlaybackService_OnFrameChanged(PlaybackService obj)
-        {
-            Application.Current.Dispatcher.Invoke(new Action(() => UpdatePlaybackIndex(obj.FrameIndex)));
-
-        }
-
-        private void UpdatePlaybackIndex(int frameIndex)
-        {
-            FramesList.SelectedIndex = frameIndex;
-            Interfacer.UpdateCanvasVisual();
-        }
+        #region Menu Items
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
         {
@@ -106,6 +87,88 @@ namespace AnimationEditor.Pages
         {
             Close();
         }
+
+        private void MenuViewTexture_Click(object sender, RoutedEventArgs e)
+        {
+            TextureManagerMenu.Startup(this);
+            TextureManagerPopup.IsOpen = true;
+            Interfacer.UpdateControls();
+
+        }
+
+        private void MenuViewHitbox_Click(object sender, RoutedEventArgs e)
+        {
+            HitboxManagerMenu.Startup(this);
+            HitboxManagerPopup.IsOpen = true;
+            Interfacer.UpdateControls();
+        }
+
+        private void MenuInfoAbout_Click(object sender, RoutedEventArgs e)
+        {
+            AboutWindow about = new AboutWindow();
+            about.Owner = App.Current.MainWindow;
+            about.ShowDialog();
+        }
+
+        private void MenuRecentFile_Click(object sender, RoutedEventArgs e)
+        {
+            Handler.RecentDataDirectoryClicked(sender, e);
+            Interfacer.UpdateControls();
+        }
+
+        private void MenuFileOpenRecently_SubmenuOpened(object sender, RoutedEventArgs e)
+        {
+            Handler.RefreshDataDirectories();
+            Interfacer.UpdateControls();
+        }
+
+        private void MenuViewTransparentSpriteSheets_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.ShowSolidImageBackground = MenuViewTransparentSpriteSheets.IsChecked;
+            Interfacer.UpdateCanvasVisual();
+        }
+
+        private void MenuFileUnloadAnimation_Click(object sender, RoutedEventArgs e)
+        {
+            Handler.UnloadAnimationData();
+            Interfacer.UpdateControls();
+        }
+
+        private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.ShowFullFrame = MenuViewFullSpriteSheets.IsChecked;
+            Interfacer.UpdateCanvasVisual();
+        }
+
+        private void MenuViewFrameBorder_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.ShowFrameBorder = MenuViewFrameBorder.IsChecked;
+            Interfacer.UpdateCanvasVisual();
+        }
+
+        private void MenuViewSetBackgroundToTransparentColor_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.SetBackgroundColorToMatchSpriteSheet = MenuViewSetBackgroundToTransparentColor.IsChecked;
+            Interfacer.UpdateCanvasVisual();
+        }
+
+        private void MenuViewUseDarkTheme_Checked(object sender, RoutedEventArgs e)
+        {
+            App.ChangeSkin(Skin.Dark);
+            this.Refresh();
+            Interfacer.RefreshUIThemes();
+        }
+
+        private void MenuViewUseDarkTheme_Unchecked(object sender, RoutedEventArgs e)
+        {
+            App.ChangeSkin(Skin.Light);
+            this.Refresh();
+            Interfacer.RefreshUIThemes();
+        }
+
+        #endregion
+
+        #region Animation Info Items
 
         private void ButtonAnimationAdd_Click(object sender, RoutedEventArgs e)
         {
@@ -171,6 +234,22 @@ namespace AnimationEditor.Pages
             Interfacer.UpdateControls();
         }
 
+        private void ButtonAnimationRename_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.SelectedAnimation != null)
+            {
+                int tempIndex = ViewModel.SelectedAnimationIndex;
+                ViewModel.SelectedAnimationEntries[ViewModel.SelectedAnimationIndex].AnimName = RSDKrU.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Animation:", ViewModel.SelectedAnimation.AnimName);
+                List.ItemsSource = null;
+                Interfacer.UpdateControls();
+                List.SelectedIndex = tempIndex;
+            }
+        }
+
+        #endregion
+
+        #region Frame Items
+
         private void ButtonFrameAdd_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.AddFrame((ViewModel.SelectedFrameIndex != -1 ? ViewModel.SelectedFrameIndex : 0));
@@ -230,6 +309,86 @@ namespace AnimationEditor.Pages
 
         }
 
+
+
+        #endregion
+
+        #region Frame Viewer Controls
+
+        private void AnimationScroller_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (!PreventScrollChange)
+            {
+                PreventScrollChange = true;
+                if (AnimationScroller.Value == 3) Interfacer.ScrollFrameIndex(false);
+                if (AnimationScroller.Value == 1) Interfacer.ScrollFrameIndex(true);
+                AnimationScroller.Value = 2;
+                PreventScrollChange = false;
+            }
+
+        }
+
+        private void ButtonPlay_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ButtonShowCenter_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.ShowAlignmentLines = ButtonShowCenter.IsChecked.Value;
+            Interfacer.UpdateControls();
+        }
+
+        private void ButtonPlay_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.LoadedAnimationFile != null && ViewModel.SelectedAnimation != null)
+            {
+                bool enabled = ButtonPlay.IsChecked.Value && List.SelectedItem != null;
+                Interfacer.TogglePlayback(enabled);
+            }
+        }
+
+        private void PlaybackOptionsButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlaybackOptionsContextMenu.IsOpen = true;
+        }
+
+        private void ForcePlaybackMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.isForcePlaybackOn = ForcePlaybackMenuItem.IsChecked;
+        }
+
+        private void ForcedPlaybackSpeedNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (Interfacer != null) Interfacer.ForcePlaybackSpeed = ForcedPlaybackSpeedNUD.Value.Value;
+        }
+
+        private void ForcedPlaybackDurationNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (Interfacer != null) Interfacer.ForcePlaybackDuration = ForcedPlaybackDurationNUD.Value.Value;
+        }
+
+        private void ExportAnimationImages_Click(object sender, RoutedEventArgs e)
+        {
+            Handler.ExportAnimationFramesToImages();
+            Interfacer.UpdateControls();
+        }
+
+        private void ButtonShowFieldHitbox_Click(object sender, RoutedEventArgs e)
+        {
+            Interfacer.ShowHitBox = ButtonShowFieldHitbox.IsChecked.Value;
+            Interfacer.UpdateControls();
+        }
+
+        private void ButtonHelp_Click(object sender, RoutedEventArgs e)
+        {
+            ButtonHelp.ContextMenu.IsOpen = true;
+        }
+
+        #endregion
+
+        #region Canvas Controls
+
         private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             Interfacer.UpdateControls();
@@ -254,82 +413,120 @@ namespace AnimationEditor.Pages
             Interfacer.UpdateControls();
         }
 
-        private void MenuViewTexture_Click(object sender, RoutedEventArgs e)
-        {
-            TextureManagerMenu.Startup(this);
-            TextureManagerPopup.IsOpen = true;
-            Interfacer.UpdateControls();
+        #endregion
 
-        }
-
-        private void MenuViewHitbox_Click(object sender, RoutedEventArgs e)
-        {
-            HitboxManagerMenu.Startup(this);
-            HitboxManagerPopup.IsOpen = true;
-            Interfacer.UpdateControls();
-        }
-
-        private void MenuInfoAbout_Click(object sender, RoutedEventArgs e)
-        {
-            AboutWindow about = new AboutWindow();
-            about.Owner = App.Current.MainWindow;
-            about.ShowDialog();
-        }
-
-        private void FramesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            Interfacer.UpdateControls();
-        }
-
-        private void NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (isLoadedFully)
-            {
-                Interfacer.UpdateControls();
-                Interfacer.UpdateCurrentFrameMaxMinProperties();
-            }
-        }
-
+        #region List Controls
         private void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             ViewModel.SelectedAnimationIndex = List.SelectedIndex;
             Interfacer.UpdateControls();
             Interfacer.UpdateSelectedSectionProperties();
         }
-
         private void FramesList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             ViewModel.SelectedFrameIndex = FramesList.SelectedIndex;
-            Interfacer.UpdateControls();
-            Interfacer.UpdateCurrentFrameProperties();
+            if (!Interfacer.isPlaybackEnabled)
+            {
+                Interfacer.UpdateControls();
+                Interfacer.UpdateCurrentFrameProperties();
+            }
         }
-
-        private void SpriteSheetList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void FramesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Interfacer.UpdateControls();
         }
-
-        private void HitBoxComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            Interfacer.UpdateControls();
-        }
-
         private void FramesList_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
             Interfacer.UpdateControls();
         }
 
+        #endregion
+
+        #region Frame Property Controls
+        public void NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (isLoadedFully)
+            {
+                Interfacer.UpdateFrameNUDValues(sender, e);
+                Interfacer.UpdateControls();
+                Interfacer.UpdateCurrentFrameMaxMinProperties();
+            }
+        }
+        public void SpriteSheetList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Interfacer.UpdateFrameSpriteSheetValues(sender, e);
+            Interfacer.UpdateControls();
+        }
+        private void HitBoxComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Interfacer.UpdateFrameHitboxValues(sender, e);
+            Interfacer.UpdateControls();
+            Interfacer.UpdateCurrentFrameHitboxProperties();
+        }
         private void HitBoxComboBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Interfacer.UpdateControls();
         }
+        #endregion
 
-        private void MenuRecentFile_Click(object sender, RoutedEventArgs e)
+        #region Animation Info Controls
+        public void SpeedNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            Handler.RecentDataDirectoryClicked(sender, e);
-            Interfacer.UpdateControls();
-
+            if (isLoadedFully)
+            {
+                Interfacer.UpdateAnimationInfoNUDValues(sender, e);
+                Interfacer.UpdateControls();
+            }
         }
+
+        public void LoopIndexNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (isLoadedFully)
+            {
+                Interfacer.UpdateAnimationInfoNUDValues(sender, e);
+                Interfacer.UpdateControls();
+            }
+        }
+
+        public void PlayerID_NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (isLoadedFully)
+            {
+                Interfacer.UpdateAnimationInfoNUDValues(sender, e);
+                Interfacer.UpdateControls();
+            }
+        }
+
+        public void FlagsSelector_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (isLoadedFully)
+            {
+                Interfacer.UpdateAnimationInfoFlagValues(sender, e);
+                Interfacer.UpdateControls();
+            }
+        }
+
+        public void Unknown_NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (isLoadedFully)
+            {
+                Interfacer.UpdateAnimationInfoNUDValues(sender, e);
+                Interfacer.UpdateControls();
+            }
+        }
+
+        public void DreamcastVer_Checkbox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (isLoadedFully)
+            {
+                Interfacer.UpdateAnimationInfoMiscValues(sender, e);
+                Interfacer.UpdateControls();
+            }
+        }
+
+        #endregion
+
+        #region Spritesheet/Hitbox Popup Controls
 
         private void ContextMenu_ContextMenuClosing(object sender, System.Windows.Controls.ContextMenuEventArgs e)
         {
@@ -353,148 +550,55 @@ namespace AnimationEditor.Pages
             //Interfacer.UpdateUI();
         }
 
-        private void AnimationScroller_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (!PreventScrollChange)
-            {
-                PreventScrollChange = true;
-                if (AnimationScroller.Value == 3) Interfacer.ScrollFrameIndex(false);
-                if (AnimationScroller.Value == 1) Interfacer.ScrollFrameIndex(true);
-                AnimationScroller.Value = 2;
-                PreventScrollChange = false;
-            }
+        #endregion
 
+        #region Color Picker Controls
+
+        private void InitializeColorPickerEvents()
+        {
+            HitboxColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
+            AxisColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
+            BGColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
+            FrameBorderColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
+            FrameBackgroundColorPicker.SelectedColorChanged += ColorPicker_SelectedColorChanged;
         }
 
-        private void HitboxColorBox_Click(object sender, RoutedEventArgs e)
+        private void ColorLabels_Click(object sender, RoutedEventArgs e)
         {
-            HitboxColorPicker.ColorMode = ColorMode.ColorCanvas;
-            HitboxColorPicker.ShowStandardColors = false;
-            HitboxColorPicker.IsOpen = true;
+            if (sender == ButtonBGColorReset) BGColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#303030");
+            else if (sender == ButtonAxisColorReset) AxisColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#FFFF0000");
+            else if (sender == ButtonHitboxColorReset) HitboxColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#FFE700FF");
+            else if (sender == ButtonFrameBorderColorReset) FrameBorderColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("Black");
+            else if (sender == ButtonFrameBGColorReset) FrameBackgroundColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("Transparent");
         }
 
         private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
         {
             if (HitboxColorPicker.SelectedColor != null)
             {
-                //HitBoxViewer.BorderBrush = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
-                //HitBoxBackground.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
-                HitboxColorBox.Background = new SolidColorBrush(HitboxColorPicker.SelectedColor.Value);
+                Interfacer.HitboxBackground = HitboxColorPicker.SelectedColor.Value;
             }
             if (AxisColorPicker.SelectedColor != null)
             {
-                //AxisX.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
-                //AxisY.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
-                AxisColorBox.Background = new SolidColorBrush(AxisColorPicker.SelectedColor.Value);
+                Interfacer.AlignmentLinesColor = AxisColorPicker.SelectedColor.Value;
             }
-            if (BGColorPicker.SelectedColor != null && !MenuViewSetBackgroundToTransparentColor.IsChecked)
+            if (BGColorPicker.SelectedColor != null)
             {
-                CanvasBackground.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
-                BGColorBox.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
+                Interfacer.CanvasBackground = BGColorPicker.SelectedColor.Value;
             }
-        }
-
-        private void MenuFileOpenRecently_SubmenuOpened(object sender, RoutedEventArgs e)
-        {
-            Handler.RefreshDataDirectories();
-            Interfacer.UpdateControls();
-        }
-
-        private void ButtonPlay_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-
-        #region Playback Triggers
-
-        public void TogglePlayback(bool enabled)
-        {
-            if (PlaybackService == null) IntilizePlayback();
-
-            if (enabled)
+            if (FrameBorderColorPicker.SelectedColor != null)
             {
-                isPlaybackEnabled = true;
-                PlaybackService.AnimationData = ViewModel.LoadedAnimationFile;
-                PlaybackService.Animation = ViewModel.SelectedAnimation.AnimName;
-                PlaybackService.IsRunning = true;
+                Interfacer.FrameBorder = FrameBorderColorPicker.SelectedColor.Value;
             }
-            else
+            if (FrameBackgroundColorPicker.SelectedColor != null)
             {
-                isPlaybackEnabled = false;
-                PlaybackService.IsRunning = false;
-                Interfacer.UpdateControls();
+                Interfacer.FrameBackground = FrameBackgroundColorPicker.SelectedColor.Value;
             }
-        }
-
-        public void IntilizePlayback(bool kill = false)
-        {
-            if (kill)
-            {
-                PlaybackService = null;
-            }
-            else
-            {
-                PlaybackService = new PlaybackService(ViewModel.LoadedAnimationFile, this);
-                PlaybackService.OnFrameChanged += PlaybackService_OnFrameChanged;
-            }
-
-        }
-
-        #endregion
-
-        private void ButtonPlay_CheckChanged(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.LoadedAnimationFile != null && ViewModel.SelectedAnimation != null)
-            {
-                bool enabled = ButtonPlay.IsChecked.Value && List.SelectedItem != null;
-                Interfacer.UpdatePlaybackModeElementsEnabledState(!enabled);
-                TogglePlayback(enabled);
-            }
-        }
-
-        private void MenuViewTransparentSpriteSheets_Click(object sender, RoutedEventArgs e)
-        {
             Interfacer.UpdateCanvasVisual();
         }
+        #endregion
 
-        private void MenuFileUnloadAnimation_Click(object sender, RoutedEventArgs e)
-        {
-            Handler.UnloadAnimationData();
-            Interfacer.UpdateControls();
-        }
-
-        private void PlaybackOptionsButton_Click(object sender, RoutedEventArgs e)
-        {
-            PlaybackOptionsContextMenu.IsOpen = true;
-        }
-
-        private void ForcePlaybackMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            isForcePlaybackOn = ForcePlaybackMenuItem.IsChecked;
-        }
-
-        private void ForcedPlaybackSpeedNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            ForcePlaybackSpeed = ForcedPlaybackSpeedNUD.Value.Value;
-        }
-
-        private void ForcedPlaybackDurationNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            ForcePlaybackDuration = ForcedPlaybackDurationNUD.Value.Value;
-        }
-
-        private void ExportAnimationImages_Click(object sender, RoutedEventArgs e)
-        {
-            Handler.ExportAnimationFramesToImages();
-                        Interfacer.UpdateControls();
-        }
-
-        private void ButtonShowFieldHitbox_Click(object sender, RoutedEventArgs e)
-        {
-            Interfacer.UpdateControls();
-        }
-
+        #region Window Controls
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (MenuViewUseDarkTheme.IsChecked)
@@ -517,37 +621,28 @@ namespace AnimationEditor.Pages
                 MenuViewUseDarkTheme.IsChecked = true;
             }
         }
+        #endregion
 
-
+        #region Canvas Controls
 
         private void CanvasView_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isPlaybackEnabled) InputControl.MouseMove(sender, e);
+            if (!Interfacer.isPlaybackEnabled) InputControl.MouseMove(sender, e);
         }
 
         private void CanvasView_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!isPlaybackEnabled) InputControl.MouseDown(sender, e);
+            if (!Interfacer.isPlaybackEnabled) InputControl.MouseDown(sender, e);
         }
 
         private void CanvasView_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (!isPlaybackEnabled) InputControl.MouseUp(sender, e);
-        }
-
-        private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
-        {            
-            Interfacer.UpdateCanvasVisual();
-        }
-
-        private void MenuViewFrameBorder_Click(object sender, RoutedEventArgs e)
-        {
-            Interfacer.UpdateCanvasVisual();
+            if (!Interfacer.isPlaybackEnabled) InputControl.MouseUp(sender, e);
         }
 
         private void CanvasView_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!isPlaybackEnabled) InputControl.KeyDown(sender, e);
+            if (!Interfacer.isPlaybackEnabled) InputControl.KeyDown(sender, e);
         }
 
         private void CanvasView_KeyUp(object sender, KeyEventArgs e)
@@ -563,71 +658,7 @@ namespace AnimationEditor.Pages
             Keyboard.Focus(CanvasView);
         }
 
-        private void AxisColorTrigger_Click(object sender, RoutedEventArgs e)
-        {
-            AxisColorPicker.ColorMode = ColorMode.ColorCanvas;
-            AxisColorPicker.ShowStandardColors = false;
-            AxisColorPicker.IsOpen = true;
-        }
-
-        private void ButtonShowCenter_Click(object sender, RoutedEventArgs e)
-        {
-            Interfacer.UpdateControls();
-        }
-
-        private void ButtonAnimationRename_Click(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.SelectedAnimation != null)
-            {
-                int tempIndex = ViewModel.SelectedAnimationIndex;
-                ViewModel.SelectedAnimationEntries[ViewModel.SelectedAnimationIndex].AnimName = RSDKrU.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Animation:", ViewModel.SelectedAnimation.AnimName);
-                List.ItemsSource = null;
-                Interfacer.UpdateControls();
-                List.SelectedIndex = tempIndex;
-            }
-        }
-
-        private void BGColorTrigger_Click(object sender, RoutedEventArgs e)
-        {
-            BGColorPicker.ColorMode = ColorMode.ColorCanvas;
-            BGColorPicker.ShowStandardColors = false;
-            BGColorPicker.IsOpen = true;
-        }
-
-        private void BGColorHyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            //CanvasView.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
-            BGColorBox.Background = new SolidColorBrush(BGColorPicker.SelectedColor.Value);
-        }
-
-        private void MenuViewSetBackgroundToTransparentColor_Click(object sender, RoutedEventArgs e)
-        {
-            Interfacer.UpdateCanvasVisual();
-        }
-
-        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (sender == BGLabel) BGColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#303030");
-            else if (sender == AxisLabel) AxisColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#FFFF0000");
-            else if (sender == HBLabel) HitboxColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString("#FFE700FF");
-        }
-
-        private void ButtonHelp_Click(object sender, RoutedEventArgs e)
-        {
-            ButtonHelp.ContextMenu.IsOpen = true;
-        }
-
-        private void MenuViewUseDarkTheme_Checked(object sender, RoutedEventArgs e)
-        {
-            App.ChangeSkin(Skin.Dark);
-            this.Refresh();
-        }
-
-        private void MenuViewUseDarkTheme_Unchecked(object sender, RoutedEventArgs e)
-        {
-            App.ChangeSkin(Skin.Light);
-            this.Refresh();
-        }
+        #endregion
 
         #region Rendering
         private void CanvasView_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs e)
@@ -636,7 +667,11 @@ namespace AnimationEditor.Pages
             
         }
 
+
+
         #endregion
+
+
     }
 
 

@@ -84,10 +84,12 @@ namespace AnimationEditor.Services
             else if (Instance.HitboxSection3.IsMouseOver) HitboxBottomLeft = true;
             else if (Instance.HitboxSection4.IsMouseOver) HitboxBottomRight = true;*/
 
+            /*
             if (Instance.ImageSection1.IsMouseOver) FrameTopLeft = true;
             else if (Instance.ImageSection2.IsMouseOver) FrameTopRight = true;
             else if (Instance.ImageSection3.IsMouseOver) FrameBottomLeft = true;
             else if (Instance.ImageSection4.IsMouseOver) FrameBottomRight = true;
+            */
 
             Instance.CanvasView.Focus();
             AnchorPoint = e.GetPosition(Instance);

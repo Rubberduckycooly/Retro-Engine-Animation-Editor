@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AnimationEditor.Animation;
+using AnimationEditor.ViewModel;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;

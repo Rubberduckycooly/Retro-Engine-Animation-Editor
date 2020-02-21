@@ -114,29 +114,28 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Animation\Classes\Settings.cs" />
-    <Compile Include="Animation\Classes\SpriteSheets.cs" />
-    <Compile Include="Animation\Methods\ImportExportHandler.cs" />
-    <Compile Include="Animation\ViewModelBase.cs" />
+    <Compile Include="Classes\Settings.cs" />
+    <Compile Include="Classes\SpriteSheets.cs" />
+    <Compile Include="Methods\ImportExportHandler.cs" />
     <Compile Include="Pages\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Animation\Classes\BridgedAnimation.cs" />
+    <Compile Include="Classes\EditorAnimation.cs" />
     <Compile Include="Pages\HitboxManager.xaml.cs">
       <DependentUpon>HitboxManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Graphics\BitmapConversion.cs" />
     <Compile Include="Services\BitmapExtensions.cs" />
     <Compile Include="Services\Extensions.cs" />
-    <Compile Include="Animation\Methods\FileHandler.cs" />
+    <Compile Include="Methods\FileHandler.cs" />
     <Compile Include="Input\InputController.cs" />
-    <Compile Include="Animation\Methods\PlaybackService.cs" />
+    <Compile Include="Methods\PlaybackService.cs" />
     <Compile Include="Styles\SkinResourceDictionary.cs" />
     <Compile Include="Pages\TextureManager.xaml.cs">
       <DependentUpon>TextureManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Input\UserInterfacer.cs" />
-    <Compile Include="Animation\CurrentAnimation.cs" />
+    <Compile Include="ViewModel\AnimationModel.cs" />
     <Page Include="Pages\AboutWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

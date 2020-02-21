@@ -1,4 +1,4 @@
-﻿using AnimationEditor.Animation;
+﻿using AnimationEditor.ViewModel;
 using System;
 using Microsoft.Win32;
 using System.IO;
@@ -153,7 +153,7 @@ namespace AnimationEditor.Pages
 
 
                 ParentInstance.ViewModel.SpriteSheets.RemoveAt(index);
-                ParentInstance.ViewModel.SpriteSheets.Insert(index, new CurrentAnimation.Spritesheet(normalTexture.Item1, transparentTexture.Item1, transparentTexture.Item2));
+                ParentInstance.ViewModel.SpriteSheets.Insert(index, new AnimationModel.Spritesheet(normalTexture.Item1, transparentTexture.Item1, transparentTexture.Item2));
             }
 
             InitializeVarriables();
@@ -198,7 +198,7 @@ namespace AnimationEditor.Pages
                 if (modifiedPath[0] == '/') modifiedPath = modifiedPath.Remove(0, 1);
 
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Add(modifiedPath);
-                var sheet = new CurrentAnimation.Spritesheet(image.Item1, transparentimage.Item1, transparentimage.Item2);
+                var sheet = new AnimationModel.Spritesheet(image.Item1, transparentimage.Item1, transparentimage.Item2);
                 sheet.isReady = true;
                 ParentInstance.ViewModel.SpriteSheets.Add(sheet);
             }

@@ -1,4 +1,4 @@
-﻿using AnimationEditor.Animation;
+﻿using AnimationEditor.ViewModel;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -13,12 +13,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Collections.Specialized;
 using GenerationsLib.Core;
-using AnimationEditor.Animation.Classes;
-using AnimationEditor.Animation.Methods;
+using AnimationEditor.Classes;
+using AnimationEditor.Methods;
 using AnimationEditor.Pages;
-using RecentFile = AnimationEditor.Animation.Classes.Settings.Instance.RecentFile;
+using RecentFile = AnimationEditor.Classes.Settings.Instance.RecentFile;
 
-namespace AnimationEditor.Animation.Methods
+namespace AnimationEditor.Methods
 {
     public class FileHandler
     {
@@ -86,7 +86,8 @@ namespace AnimationEditor.Animation.Methods
         {
             try
             {
-                Instance.ViewModel.LoadedAnimationFile = new BridgedAnimation(Instance.AnimationType);
+                Instance.AnimationType = type;
+                Instance.ViewModel.LoadedAnimationFile = new EditorAnimation(Instance.AnimationType);
                 Instance.ViewModel.AnimationFilepath = filepath;
                 Instance.WindowName = Instance.DefaultWindowName + " - " + GetFilenameAndFolder(filepath);
                 Instance.ViewModel.LoadedAnimationFile.LoadFrom((type != EngineType.Invalid ? type : Instance.AnimationType), filepath);
@@ -102,26 +103,9 @@ namespace AnimationEditor.Animation.Methods
 
         public void LoadFile(OpenFileDialog fd)
         {
-
             EngineType engineType = GetTypeFromFilterIndex(fd.FilterIndex);
-
-            //RSDKvRS and RSDKv1 don't have rotation flags
-            if (engineType == EngineType.RSDKvRS || engineType == EngineType.RSDKv1) { Instance.FlagsSelector.IsEnabled = false; }
-            else { Instance.FlagsSelector.IsEnabled = true; }
-
-            //For RSDKvRS, RSDKv1 and RSDKv2 & RSDKvB there is no ID and the Delay is always 256, so there is no point to let users change their values
-            if (engineType != EngineType.RSDKv5) { Instance.Delay_NUD.IsEnabled = false; Instance.FrameID_NUD.IsEnabled = false; }
-
-            if (engineType == EngineType.RSDKv1) { Instance.FrameID_NUD.IsEnabled = true; }
-
-            if (engineType == EngineType.RSDKv5) { Instance.Delay_NUD.IsEnabled = true; Instance.FrameID_NUD.IsEnabled = true; }
-
             Instance.AnimationType = engineType;
-
-            LoadFile(fd.FileName);
-
-
-
+            LoadFile(fd.FileName, engineType);
         }
         #endregion
 
@@ -202,10 +186,10 @@ namespace AnimationEditor.Animation.Methods
             Instance.List.SelectedIndex = -1;
             Instance.FramesList.SelectedIndex = -1;
             InitlizeSpriteSheets(true);
-            Instance.DataContext = new CurrentAnimation();
+            Instance.DataContext = new AnimationModel();
             InitlizeSpriteSheets();
             Instance.ViewModel.NullSpriteSheetList.Clear();
-            Instance.IntilizePlayback(true);
+            Instance.Interfacer.IntilizePlayback(true);
             Instance.WindowName = Instance.DefaultWindowName;
         }
 
@@ -281,11 +265,11 @@ namespace AnimationEditor.Animation.Methods
                 {
                     var normalImage = LoadAnimationTexture(imagePath);
                     var transparentImage = LoadAnimationTexture(imagePath, true);
-                    Instance.ViewModel.SpriteSheets.Add(new CurrentAnimation.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
+                    Instance.ViewModel.SpriteSheets.Add(new AnimationModel.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
                 }
                 else
                 {
-                    Instance.ViewModel.SpriteSheets.Add(new CurrentAnimation.Spritesheet(new BitmapImage(), new BitmapImage(), true));
+                    Instance.ViewModel.SpriteSheets.Add(new AnimationModel.Spritesheet(new BitmapImage(), new BitmapImage(), true));
                     Instance.ViewModel.NullSpriteSheetList.Add(path);
                 }
 
@@ -303,7 +287,7 @@ namespace AnimationEditor.Animation.Methods
         {
             var normalImage = LoadAnimationTexture(imagePath);
             var transparentImage = LoadAnimationTexture(imagePath, true);
-            Instance.ViewModel.SpriteSheets.Add(new CurrentAnimation.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
+            Instance.ViewModel.SpriteSheets.Add(new AnimationModel.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
         }
 
         public void InitlizeSpriteSheets(bool clearMode = false)
@@ -314,7 +298,7 @@ namespace AnimationEditor.Animation.Methods
             }
             else
             {
-                Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<CurrentAnimation.Spritesheet>();
+                Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<AnimationModel.Spritesheet>();
 
             }
         }
@@ -353,7 +337,7 @@ namespace AnimationEditor.Animation.Methods
             fd.Filter = "RSDK Animation Files|*.anim";
             if (fd.ShowDialog() == true)
             {
-                var importAnim = new BridgedAnimation.BridgedAnimationEntry(EngineType.RSDKv5, Instance.ViewModel.LoadedAnimationFile);
+                var importAnim = new EditorAnimation.EditorAnimationInfo(EngineType.RSDKv5, Instance.ViewModel.LoadedAnimationFile);
                 importAnim.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations.Add(importAnim);
             }
@@ -380,7 +364,7 @@ namespace AnimationEditor.Animation.Methods
             fd.Filter = "RSDK Frame Files|*.frame";
             if (fd.ShowDialog() == true)
             {
-                var importFrame = new BridgedAnimation.BridgedFrame(EngineType.RSDKv5, Instance.ViewModel.SelectedAnimation);
+                var importFrame = new EditorAnimation.EditorFrame(EngineType.RSDKv5, Instance.ViewModel.SelectedAnimation);
                 importFrame.ImportFrom(EngineType.RSDKv5, fd.FileName);
                 Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Add(importFrame); 
             }
@@ -414,7 +398,7 @@ namespace AnimationEditor.Animation.Methods
         {
             var menuItem = sender as System.Windows.Controls.MenuItem;
             RecentFile dataDirectory = menuItem.Tag as RecentFile;
-            var dataDirectories = AnimationEditor.Animation.Classes.Settings.Default.RecentFiles;
+            var dataDirectories = AnimationEditor.Classes.Settings.Default.RecentFiles;
             if (File.Exists(dataDirectory.FilePath))
             {
                 EngineType type = GetInputGestureTextEngineType(dataDirectory.Format);
@@ -431,13 +415,13 @@ namespace AnimationEditor.Animation.Methods
                 RefreshDataDirectories();
 
             }
-            AnimationEditor.Animation.Classes.Settings.Save();
+            AnimationEditor.Classes.Settings.Save();
         }
 
         public void RefreshDataDirectories()
         {
-            List<AnimationEditor.Animation.Classes.Settings.Instance.RecentFile> recentDataDirectories = AnimationEditor.Animation.Classes.Settings.Default.RecentFiles;
-            if (AnimationEditor.Animation.Classes.Settings.Default.RecentFiles?.Count > 0)
+            List<AnimationEditor.Classes.Settings.Instance.RecentFile> recentDataDirectories = AnimationEditor.Classes.Settings.Default.RecentFiles;
+            if (AnimationEditor.Classes.Settings.Default.RecentFiles?.Count > 0)
             {
                 Instance.NoRecentFiles.Visibility = Visibility.Collapsed;
                 CleanUpRecentList();
@@ -580,14 +564,14 @@ namespace AnimationEditor.Animation.Methods
 
             List<string> ItemsForRemoval = new List<string>();
 
-            for (int i = 0; i < AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.Count; i++)
+            for (int i = 0; i < AnimationEditor.Classes.Settings.Default.RecentFiles.Count; i++)
             {
-                if (File.Exists(AnimationEditor.Animation.Classes.Settings.Default.RecentFiles[i].FilePath)) continue;
-                else ItemsForRemoval.Add(AnimationEditor.Animation.Classes.Settings.Default.RecentFiles[i].FilePath);
+                if (File.Exists(AnimationEditor.Classes.Settings.Default.RecentFiles[i].FilePath)) continue;
+                else ItemsForRemoval.Add(AnimationEditor.Classes.Settings.Default.RecentFiles[i].FilePath);
             }
             foreach(string item in ItemsForRemoval)
             {
-                AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.RemoveAll(x => x.FilePath == item);
+                AnimationEditor.Classes.Settings.Default.RecentFiles.RemoveAll(x => x.FilePath == item);
             }
 
             RecentItems.Clear();
@@ -597,30 +581,30 @@ namespace AnimationEditor.Animation.Methods
             try
             {
 
-                if (AnimationEditor.Animation.Classes.Settings.Default.RecentFiles == null)
+                if (AnimationEditor.Classes.Settings.Default.RecentFiles == null)
                 {
-                    AnimationEditor.Animation.Classes.Settings.Default.RecentFiles = new List<AnimationEditor.Animation.Classes.Settings.Instance.RecentFile>();
+                    AnimationEditor.Classes.Settings.Default.RecentFiles = new List<AnimationEditor.Classes.Settings.Instance.RecentFile>();
                 }
 
-                if (AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.Exists(x => x.FilePath == dataDirectory))
+                if (AnimationEditor.Classes.Settings.Default.RecentFiles.Exists(x => x.FilePath == dataDirectory))
                 {
-                    AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.RemoveAll(x => x.FilePath == dataDirectory);
+                    AnimationEditor.Classes.Settings.Default.RecentFiles.RemoveAll(x => x.FilePath == dataDirectory);
                 }
 
-                if (AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.Count >= 10)
+                if (AnimationEditor.Classes.Settings.Default.RecentFiles.Count >= 10)
                 {
-                    for (int i = 9; i < AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.Count; i++)
+                    for (int i = 9; i < AnimationEditor.Classes.Settings.Default.RecentFiles.Count; i++)
                     {
-                        AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.RemoveAt(i);
+                        AnimationEditor.Classes.Settings.Default.RecentFiles.RemoveAt(i);
                     }
                 }
 
-                AnimationEditor.Animation.Classes.Settings.Instance.RecentFile recentFile = new Settings.Instance.RecentFile(name, dataDirectory, format);
+                AnimationEditor.Classes.Settings.Instance.RecentFile recentFile = new Settings.Instance.RecentFile(name, dataDirectory, format);
 
-                AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.Insert(0, recentFile);
+                AnimationEditor.Classes.Settings.Default.RecentFiles.Insert(0, recentFile);
 
-                AnimationEditor.Animation.Classes.Settings.Save();
-                AnimationEditor.Animation.Classes.Settings.Reload();
+                AnimationEditor.Classes.Settings.Save();
+                AnimationEditor.Classes.Settings.Reload();
 
                 RefreshDataDirectories();
 

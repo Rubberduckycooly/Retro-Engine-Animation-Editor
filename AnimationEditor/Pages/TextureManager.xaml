@@ -54,7 +54,13 @@
                         </StackPanel>
                     </Button.ToolTip>
                 </Button>
-                <ComboBox x:Name="ListTextures" SelectionChanged="ListTextures_SelectionChanged"/>
+                <ComboBox x:Name="ListTextures" SelectionChanged="ListTextures_SelectionChanged">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Width" Value="{Binding ElementName=ListTextures, Path=ActualWidth}" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
             </DockPanel>
             <TextBlock x:Name="SizeText" DockPanel.Dock="Top" Margin="5 0 5 5"/>
             <TextBlock x:Name="FormatText" DockPanel.Dock="Top" Text="" Margin="5 0 5 5"/>

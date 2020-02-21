@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Height="300" Width="200" Background="{DynamicResource NormalBackground2}" Margin="0">
     <Border x:Name="Border" BorderThickness="2">
-        <DockPanel Margin="5" >
-            <TextBlock DockPanel.Dock="Top" Text="Selected hitbox type" />
+        <DockPanel Margin="5">
+            <TextBlock DockPanel.Dock="Top" Text="Selected Hitbox" />
             <TextBox x:Name="SelectedHitboxTextbox" TextChanged="SelectedHitboxTextbox_TextChanged" DockPanel.Dock="Top" Margin="0 0 0 5" 
                  Text="{Binding SelectedValue, Mode=TwoWay}"/>
             <Grid DockPanel.Dock="Bottom">

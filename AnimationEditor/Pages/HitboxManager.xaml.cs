@@ -21,11 +21,32 @@ namespace AnimationEditor.Pages
     public partial class HitboxManager : UserControl
     {
         private MainWindow ParentInstance;
-        private List<string> HitboxTypeItems { get; set; }
+        private List<string> HitboxTypeItems
+        {
+            get
+            {
+                if (ParentInstance != null && ParentInstance.AnimationType == Classes.EngineType.RSDKv5)
+                {
+                    return ParentInstance.ViewModel.Hitboxes;
+                }
+                else
+                {
+                    return ParentInstance.ViewModel.RetroHitboxStrings;
+                }
+
+            }
+            set
+            {
+                if (ParentInstance != null && ParentInstance.AnimationType == Classes.EngineType.RSDKv5)
+                {
+                    ParentInstance.ViewModel.Hitboxes = value;
+                }
+            }
+        }
         private int SelectedIndex { get; set; }
         private string SelectedValue { get; set; }
 
-        private bool TextboxUpdateLock = false;
+        private bool TextboxUpdateLock { get; set; } = false;
 
         public HitboxManager()
         {
@@ -41,20 +62,11 @@ namespace AnimationEditor.Pages
                 InitializeVarriables();
                 UpdateUI();
 
-                if (ParentInstance.ViewModel.LoadedAnimationFile.EngineType == Animation.Classes.EngineType.RSDKv5)
-                {
-                    ButtonRemove.IsEnabled = true;
-                    ButtonAdd.IsEnabled = true;
-                    SelectedHitboxTextbox.IsEnabled = true;
-                    List.IsEnabled = true;
-                }
-                else
-                {
-                    ButtonRemove.IsEnabled = false;
-                    ButtonAdd.IsEnabled = false;
-                    SelectedHitboxTextbox.IsEnabled = false;
-                    List.IsEnabled = false;
-                }
+                bool isRenamePossible = ParentInstance.ViewModel.LoadedAnimationFile.EngineType == Classes.EngineType.RSDKv5;
+                ButtonRemove.IsEnabled = true;
+                ButtonAdd.IsEnabled = true;
+                SelectedHitboxTextbox.IsEnabled = isRenamePossible;
+                List.IsEnabled = true;
             }
             else
             {
@@ -76,7 +88,6 @@ namespace AnimationEditor.Pages
 
         public void InitializeVarriables()
         {
-            HitboxTypeItems = ParentInstance.ViewModel.Hitboxes;
             List.ItemsSource = HitboxTypeItems;
             UpdateSelectedHitboxTextbox();
             List.SelectedIndex = SelectedIndex;
@@ -100,7 +111,6 @@ namespace AnimationEditor.Pages
             int tempIndex = List.SelectedIndex;
             int textboxIndex = SelectedHitboxTextbox.CaretIndex;
             List.ItemsSource = null;
-            HitboxTypeItems = ParentInstance.ViewModel.Hitboxes;
             List.ItemsSource = HitboxTypeItems;
             List.SelectedIndex = tempIndex;
             SelectedHitboxTextbox.CaretIndex = textboxIndex;
@@ -115,38 +125,72 @@ namespace AnimationEditor.Pages
 
         private void SelectedHitboxTextbox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (TextboxUpdateLock || ParentInstance.ViewModel == null || ParentInstance.ViewModel.LoadedAnimationFile == null) return;
-            HitboxTypeItems[SelectedIndex] = SelectedHitboxTextbox.Text;
-            ParentInstance.ViewModel.Hitboxes = HitboxTypeItems;
-            UpdateList();
+            if (ParentInstance != null && ParentInstance.AnimationType == Classes.EngineType.RSDKv5)
+            {
+                if (TextboxUpdateLock || ParentInstance.ViewModel == null || ParentInstance.ViewModel.LoadedAnimationFile == null) return;
+                HitboxTypeItems[SelectedIndex] = SelectedHitboxTextbox.Text;
+                UpdateList();
+            }
         }
 
         private void ButtonRemove_Click(object sender, RoutedEventArgs e)
         {
-            ParentInstance.ViewModel.Hitboxes.RemoveAt(SelectedIndex);
-
+            RemoveHitbox();
             SelectedIndex = 0;
-
-            foreach (var list in ParentInstance.ViewModel.LoadedAnimationFile.Animations)
-            {
-                foreach (var frame in list.Frames)
-                {
-                    if (frame.CollisionBox == SelectedIndex)
-                    {
-                        frame.CollisionBox = 0;
-                    }
-                }
-            }
-
             UpdateList();
         }
 
+        private void RemoveHitbox()
+        {
+            if (ParentInstance.AnimationType == Classes.EngineType.RSDKv5) RemoveV5Hitbox();
+            else RemoveV3Hitbox();
+
+            void RemoveV5Hitbox()
+            {
+                ParentInstance.ViewModel.Hitboxes.RemoveAt(SelectedIndex);
+            }
+
+            void RemoveV3Hitbox()
+            {
+                int removableIndex = SelectedIndex;
+                foreach (var list in ParentInstance.ViewModel.LoadedAnimationFile.Animations)
+                {
+                    foreach (var frame in list.Frames)
+                    {
+                        if (frame.CollisionBox == removableIndex)
+                        {
+                            frame.CollisionBox = 0;
+                        }
+                    }
+                }
+                ParentInstance.ViewModel.RetroHitboxes.RemoveAt(removableIndex);
+            }
+        }
+
+        private void AddHitbox()
+        {
+
+            if (ParentInstance.AnimationType == Classes.EngineType.RSDKv5) AddV5Hitbox();
+            else AddV3Hitbox();
+
+            void AddV5Hitbox()
+            {
+                ParentInstance.ViewModel.Hitboxes.Add("New Hitbox Type");
+            }
+
+            void AddV3Hitbox()
+            {
+                ParentInstance.ViewModel.RetroHitboxes.Add(new Classes.EditorAnimation.EditorRetroHitBox());
+            }
+        }
+
+
+
+
         private void ButtonAdd_Click(object sender, RoutedEventArgs e)
         {
-            ParentInstance.ViewModel.Hitboxes.Add("New Hitbox Type");
-
+            AddHitbox();
             SelectedIndex = 0;
-
             UpdateList();
         }
     }

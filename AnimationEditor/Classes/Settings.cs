@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
 
-namespace AnimationEditor.Animation.Classes
+namespace AnimationEditor.Classes
 {
     public static class Settings
     {

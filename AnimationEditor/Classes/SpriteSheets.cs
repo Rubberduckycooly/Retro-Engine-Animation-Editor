@@ -12,12 +12,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AnimationEditor.Services;
-using AnimationEditor.Animation;
-using AnimationEditor.Animation.Classes;
-using AnimationEditor.Animation.Methods;
+using AnimationEditor.ViewModel;
+using AnimationEditor.Classes;
+using AnimationEditor.Methods;
 using System.ComponentModel;
 
-namespace AnimationEditor.Animation.Classes
+namespace AnimationEditor.Classes
 {
     public class Spritesheet
     {

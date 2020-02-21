@@ -1,26 +1,26 @@
-﻿using AnimationEditor.Animation.Classes;
+﻿using AnimationEditor.Classes;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AnimationEditor.Animation.Methods
+namespace AnimationEditor.Methods
 {
     public static class ImportExportHandler
     {
         #region Load (Animation)
 
-        public static void RSDKv5_Load_Animation(BridgedAnimation BridgeHost, string filepath)
+        public static void RSDKv5_Load_Animation(EditorAnimation BridgeHost, string filepath)
         {
             RSDKv5.Animation animsetv5 = new RSDKv5.Animation(new RSDKv5.Reader(filepath));
             RSDKv5_Load_AnimHeader(BridgeHost, animsetv5);
 
             for (int a = 0; a < animsetv5.Animations.Count; a++)
             {
-                var animset = new BridgedAnimation.BridgedAnimationEntry(EngineType.RSDKv5, BridgeHost);
+                var animset = new EditorAnimation.EditorAnimationInfo(EngineType.RSDKv5, BridgeHost);
                 animset.LoadFrom(EngineType.RSDKv5, animsetv5.Animations[a]);
                 BridgeHost.Animations.Add(animset);
             }
         }
-        public static void RSDKvB_Load_Animation(BridgedAnimation BridgeHost, string filepath)
+        public static void RSDKvB_Load_Animation(EditorAnimation BridgeHost, string filepath)
         {
             RSDKvB.Animation animsetvB = new RSDKvB.Animation(new RSDKvB.Reader(filepath));
             RSDKvB_Load_AnimHeader(BridgeHost, animsetvB);
@@ -28,12 +28,12 @@ namespace AnimationEditor.Animation.Methods
 
             for (int a = 0; a < animsetvB.Animations.Count; a++)
             {
-                var animset = new BridgedAnimation.BridgedAnimationEntry(EngineType.RSDKvB, BridgeHost);
+                var animset = new EditorAnimation.EditorAnimationInfo(EngineType.RSDKvB, BridgeHost);
                 animset.LoadFrom(EngineType.RSDKvB, animsetvB.Animations[a]);
                 BridgeHost.Animations.Add(animset);
             }
         }
-        public static void RSDKv2_Load_Animation(BridgedAnimation BridgeHost, string filepath)
+        public static void RSDKv2_Load_Animation(EditorAnimation BridgeHost, string filepath)
         {
             RSDKv2.Animation animsetv2 = new RSDKv2.Animation(new RSDKv2.Reader(filepath));
             RSDKv2_Load_AnimHeader(BridgeHost, animsetv2);
@@ -41,12 +41,12 @@ namespace AnimationEditor.Animation.Methods
 
             for (int a = 0; a < animsetv2.Animations.Count; a++)
             {
-                var animset = new BridgedAnimation.BridgedAnimationEntry(EngineType.RSDKv2, BridgeHost);
+                var animset = new EditorAnimation.EditorAnimationInfo(EngineType.RSDKv2, BridgeHost);
                 animset.LoadFrom(EngineType.RSDKv2, animsetv2.Animations[a]);
                 BridgeHost.Animations.Add(animset);
             }
         }
-        public static void RSDKv1_Load_Animation(BridgedAnimation BridgeHost, string filepath)
+        public static void RSDKv1_Load_Animation(EditorAnimation BridgeHost, string filepath)
         {
             RSDKv1.Animation animsetv1 = new RSDKv1.Animation(new RSDKv1.Reader(filepath));
             RSDKv1_Load_AnimHeader(BridgeHost, animsetv1);
@@ -54,12 +54,12 @@ namespace AnimationEditor.Animation.Methods
 
             for (int a = 0; a < animsetv1.Animations.Count; a++)
             {
-                var animset = new BridgedAnimation.BridgedAnimationEntry(EngineType.RSDKv1, BridgeHost);
+                var animset = new EditorAnimation.EditorAnimationInfo(EngineType.RSDKv1, BridgeHost);
                 animset.LoadFrom(EngineType.RSDKv1, animsetv1.Animations[a]);
                 BridgeHost.Animations.Add(animset);
             }
         }
-        public static void RSDKvRS_Load_Animation(BridgedAnimation BridgeHost, string filepath)
+        public static void RSDKvRS_Load_Animation(EditorAnimation BridgeHost, string filepath)
         {
             RSDKvRS.Animation animsetvRS = new RSDKvRS.Animation(new RSDKvRS.Reader(filepath));
             RSDKvRS_Load_AnimHeader(BridgeHost, animsetvRS);
@@ -67,7 +67,7 @@ namespace AnimationEditor.Animation.Methods
 
             for (int a = 0; a < animsetvRS.Animations.Count; a++)
             {
-                var animset = new BridgedAnimation.BridgedAnimationEntry(EngineType.RSDKvRS, BridgeHost);
+                var animset = new EditorAnimation.EditorAnimationInfo(EngineType.RSDKvRS, BridgeHost);
                 animset.LoadFrom(EngineType.RSDKvRS, animsetvRS.Animations[a]);
                 BridgeHost.Animations.Add(animset);
             }
@@ -76,7 +76,7 @@ namespace AnimationEditor.Animation.Methods
         #endregion
             
         #region Save (Animation)
-        public static void RSDKv5_Save_Animation(BridgedAnimation BridgeHost, string filepath)
+        public static void RSDKv5_Save_Animation(EditorAnimation BridgeHost, string filepath)
         {
             RSDKv5.Animation animsetv5 = new RSDKv5.Animation();
             RSDKv5_Save_AnimHeader(BridgeHost, animsetv5);
@@ -89,7 +89,7 @@ namespace AnimationEditor.Animation.Methods
             }
             animsetv5.Write(new RSDKv5.Writer(filepath));
         }
-        public static void RSDKvB_Save_Animation(BridgedAnimation BridgeHost, string filepath)
+        public static void RSDKvB_Save_Animation(EditorAnimation BridgeHost, string filepath)
         {
             RSDKvB.Animation animsetvB = new RSDKvB.Animation();
             RSDKvB_Save_AnimHeader(BridgeHost, animsetvB);
@@ -105,7 +105,7 @@ namespace AnimationEditor.Animation.Methods
 
             animsetvB.Write(new RSDKvB.Writer(filepath));
         }
-        public static void RSDKv2_Save_Animation(BridgedAnimation BridgeHost, string filepath)
+        public static void RSDKv2_Save_Animation(EditorAnimation BridgeHost, string filepath)
         {
             RSDKv2.Animation animsetv2 = new RSDKv2.Animation();
             RSDKv2_Save_AnimHeader(BridgeHost, animsetv2);
@@ -121,7 +121,7 @@ namespace AnimationEditor.Animation.Methods
 
             animsetv2.Write(new RSDKv2.Writer(filepath));
         }
-        public static void RSDKv1_Save_Animation(BridgedAnimation BridgeHost, string filepath)
+        public static void RSDKv1_Save_Animation(EditorAnimation BridgeHost, string filepath)
         {
             RSDKv1.Animation animsetv1 = new RSDKv1.Animation();
             RSDKv1_Save_AnimHeader(BridgeHost, animsetv1);
@@ -137,7 +137,7 @@ namespace AnimationEditor.Animation.Methods
 
             animsetv1.Write(new RSDKv1.Writer(filepath));
         }
-        public static void RSDKvRS_Save_Animation(BridgedAnimation BridgeHost, string filepath)
+        public static void RSDKvRS_Save_Animation(EditorAnimation BridgeHost, string filepath)
         {
             RSDKvRS.Animation animsetvRS = new RSDKvRS.Animation();
             RSDKvRS_Save_AnimHeader(BridgeHost, animsetvRS);
@@ -156,7 +156,7 @@ namespace AnimationEditor.Animation.Methods
 
 
         #region Load (Animation Entry)
-        public static void RSDKv5_Load_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, RSDKv5.Animation.AnimationEntry animv5)
+        public static void RSDKv5_Load_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, RSDKv5.Animation.AnimationEntry animv5)
         {
             animEntry.AnimName = animv5.AnimName;
             animEntry.LoopIndex = animv5.LoopIndex;
@@ -165,12 +165,12 @@ namespace AnimationEditor.Animation.Methods
 
             for (int i = 0; i < animv5.Frames.Count; i++)
             {
-                BridgedAnimation.BridgedFrame frame = new BridgedAnimation.BridgedFrame(EngineType.RSDKv5, animEntry);
+                EditorAnimation.EditorFrame frame = new EditorAnimation.EditorFrame(EngineType.RSDKv5, animEntry);
                 RSDKv5_Load_Frame(frame, animv5.Frames[i]);
                 animEntry.Frames.Add(frame);
             }
         }
-        public static void RSDKvB_Load_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, RSDKvB.Animation.AnimationEntry animvB)
+        public static void RSDKvB_Load_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, RSDKvB.Animation.AnimationEntry animvB)
         {
             animEntry.AnimName = animvB.AnimName;
             animEntry.LoopIndex = animvB.LoopIndex;
@@ -179,12 +179,12 @@ namespace AnimationEditor.Animation.Methods
 
             for (int i = 0; i < animvB.Frames.Count; i++)
             {
-                BridgedAnimation.BridgedFrame frame = new BridgedAnimation.BridgedFrame(EngineType.RSDKvB, animEntry);
+                EditorAnimation.EditorFrame frame = new EditorAnimation.EditorFrame(EngineType.RSDKvB, animEntry);
                 RSDKvB_Load_Frame(frame, animvB.Frames[i]);
                 animEntry.Frames.Add(frame);
             }
         }
-        public static void RSDKv2_Load_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, RSDKv2.Animation.AnimationEntry animv2)
+        public static void RSDKv2_Load_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, RSDKv2.Animation.AnimationEntry animv2)
         {
             animEntry.AnimName = animv2.AnimName;
             animEntry.LoopIndex = animv2.LoopIndex;
@@ -193,12 +193,12 @@ namespace AnimationEditor.Animation.Methods
 
             for (int i = 0; i < animv2.Frames.Count; i++)
             {
-                BridgedAnimation.BridgedFrame frame = new BridgedAnimation.BridgedFrame(EngineType.RSDKv2, animEntry);
+                EditorAnimation.EditorFrame frame = new EditorAnimation.EditorFrame(EngineType.RSDKv2, animEntry);
                 RSDKv2_Load_Frame(frame, animv2.Frames[i]);
                 animEntry.Frames.Add(frame);
             }
         }
-        public static void RSDKv1_Load_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, RSDKv1.Animation.AnimationEntry animv1)
+        public static void RSDKv1_Load_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, RSDKv1.Animation.AnimationEntry animv1)
         {
             animEntry.AnimName = animv1.AnimationName;
             animEntry.LoopIndex = animv1.LoopIndex;
@@ -207,12 +207,12 @@ namespace AnimationEditor.Animation.Methods
 
             for (int i = 0; i < animv1.Frames.Count; i++)
             {
-                BridgedAnimation.BridgedFrame frame = new BridgedAnimation.BridgedFrame(EngineType.RSDKv1, animEntry);
+                EditorAnimation.EditorFrame frame = new EditorAnimation.EditorFrame(EngineType.RSDKv1, animEntry);
                 RSDKv1_Load_Frame(frame, animv1.Frames[i]);
                 animEntry.Frames.Add(frame);
             }
         }
-        public static void RSDKvRS_Load_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, RSDKvRS.Animation.AnimationEntry animvRS)
+        public static void RSDKvRS_Load_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, RSDKvRS.Animation.AnimationEntry animvRS)
         {
             animEntry.AnimName = animEntry.AnimName;
             animEntry.LoopIndex = animvRS.LoopIndex;
@@ -221,7 +221,7 @@ namespace AnimationEditor.Animation.Methods
 
             for (int i = 0; i < animvRS.Frames.Count; i++)
             {
-                BridgedAnimation.BridgedFrame frame = new BridgedAnimation.BridgedFrame(EngineType.RSDKvRS, animEntry);
+                EditorAnimation.EditorFrame frame = new EditorAnimation.EditorFrame(EngineType.RSDKvRS, animEntry);
                 RSDKvRS_Load_Frame(frame, animvRS.Frames[i]);
                 animEntry.Frames.Add(frame);
             }
@@ -230,7 +230,7 @@ namespace AnimationEditor.Animation.Methods
         #endregion
 
         #region Save (Animation Entry)
-        public static void RSDKv5_Save_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, RSDKv5.Animation.AnimationEntry animv5)
+        public static void RSDKv5_Save_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, RSDKv5.Animation.AnimationEntry animv5)
         {
             animv5.AnimName = animEntry.AnimName;
             animv5.LoopIndex = animEntry.LoopIndex;
@@ -245,7 +245,7 @@ namespace AnimationEditor.Animation.Methods
                 animv5.Frames.Add(frame);
             }
         }
-        public static void RSDKvB_Save_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, RSDKvB.Animation.AnimationEntry animvB)
+        public static void RSDKvB_Save_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, RSDKvB.Animation.AnimationEntry animvB)
         {
             animvB.AnimName = animEntry.AnimName;
             animvB.LoopIndex = animEntry.LoopIndex;
@@ -260,7 +260,7 @@ namespace AnimationEditor.Animation.Methods
                 animvB.Frames.Add(frame);
             }
         }
-        public static void RSDKv2_Save_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, RSDKv2.Animation.AnimationEntry animv2)
+        public static void RSDKv2_Save_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, RSDKv2.Animation.AnimationEntry animv2)
         {
             animv2.AnimName = animEntry.AnimName;
             animv2.LoopIndex = animEntry.LoopIndex;
@@ -274,7 +274,7 @@ namespace AnimationEditor.Animation.Methods
                 animv2.Frames.Add(frame);
             }
         }
-        public static void RSDKv1_Save_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, RSDKv1.Animation.AnimationEntry animv1)
+        public static void RSDKv1_Save_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, RSDKv1.Animation.AnimationEntry animv1)
         {
             animv1.LoopIndex = animEntry.LoopIndex;
             animv1.SpeedMultiplyer = (byte)animEntry.SpeedMultiplyer;
@@ -287,7 +287,7 @@ namespace AnimationEditor.Animation.Methods
                 animv1.Frames.Add(frame);
             }
         }
-        public static void RSDKvRS_Save_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, RSDKvRS.Animation.AnimationEntry animvRS)
+        public static void RSDKvRS_Save_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, RSDKvRS.Animation.AnimationEntry animvRS)
         {
             animvRS.LoopIndex = animEntry.LoopIndex;
             animvRS.SpeedMultiplyer = (byte)animEntry.SpeedMultiplyer;
@@ -306,7 +306,7 @@ namespace AnimationEditor.Animation.Methods
 
         #region Load (Animation Frame)
 
-        public static void RSDKv5_Load_Frame(BridgedAnimation.BridgedFrame frame, RSDKv5.Animation.AnimationEntry.Frame framev5)
+        public static void RSDKv5_Load_Frame(EditorAnimation.EditorFrame frame, RSDKv5.Animation.AnimationEntry.Frame framev5)
         {
             frame.engineType = EngineType.RSDKv5;
             frame.CollisionBox = framev5.CollisionBox;
@@ -319,16 +319,16 @@ namespace AnimationEditor.Animation.Methods
             frame.Width = framev5.Width;
             frame.X = framev5.X;
             frame.Y = framev5.Y;
-            frame.HitBoxes = new List<BridgedAnimation.BridgedHitBox>();
+            frame.HitBoxes = new List<EditorAnimation.EditorHitbox>();
 
             for (int i = 0; i < framev5.HitBoxes.Count; i++)
             {
-                BridgedAnimation.BridgedHitBox hb = new BridgedAnimation.BridgedHitBox();
+                EditorAnimation.EditorHitbox hb = new EditorAnimation.EditorHitbox();
                 RSDKv5_Load_Hitbox(hb, framev5.HitBoxes[i]);
                 frame.HitBoxes.Add(hb);
             }
         }
-        public static void RSDKvB_Load_Frame(BridgedAnimation.BridgedFrame frame, RSDKvB.Animation.AnimationEntry.Frame framevB)
+        public static void RSDKvB_Load_Frame(EditorAnimation.EditorFrame frame, RSDKvB.Animation.AnimationEntry.Frame framevB)
         {
             frame.engineType = EngineType.RSDKvB;
             frame.Delay = framevB.Delay;
@@ -341,7 +341,7 @@ namespace AnimationEditor.Animation.Methods
             frame.X = framevB.X;
             frame.Y = framevB.Y;
         }
-        public static void RSDKv2_Load_Frame(BridgedAnimation.BridgedFrame frame, RSDKv2.Animation.AnimationEntry.Frame framev2)
+        public static void RSDKv2_Load_Frame(EditorAnimation.EditorFrame frame, RSDKv2.Animation.AnimationEntry.Frame framev2)
         {
             frame.engineType = EngineType.RSDKv2;
             frame.Delay = framev2.Delay;
@@ -354,7 +354,7 @@ namespace AnimationEditor.Animation.Methods
             frame.X = framev2.X;
             frame.Y = framev2.Y;
         }
-        public static void RSDKv1_Load_Frame(BridgedAnimation.BridgedFrame frame, RSDKv1.Animation.AnimationEntry.Frame framev1)
+        public static void RSDKv1_Load_Frame(EditorAnimation.EditorFrame frame, RSDKv1.Animation.AnimationEntry.Frame framev1)
         {
             frame.engineType = EngineType.RSDKv1;
             frame.Delay = framev1.Delay;
@@ -367,7 +367,7 @@ namespace AnimationEditor.Animation.Methods
             frame.X = framev1.X;
             frame.Y = framev1.Y;
         }
-        public static void RSDKvRS_Load_Frame(BridgedAnimation.BridgedFrame frame, RSDKvRS.Animation.AnimationEntry.Frame framevRS)
+        public static void RSDKvRS_Load_Frame(EditorAnimation.EditorFrame frame, RSDKvRS.Animation.AnimationEntry.Frame framevRS)
         {
             frame.engineType = EngineType.RSDKvRS;
             frame.Delay = framevRS.Delay;
@@ -379,7 +379,7 @@ namespace AnimationEditor.Animation.Methods
             frame.X = framevRS.X;
             frame.Y = framevRS.Y;
 
-            BridgedAnimation.BridgedHitBox hb = new BridgedAnimation.BridgedHitBox();
+            EditorAnimation.EditorHitbox hb = new EditorAnimation.EditorHitbox();
             RSDKvRS_Load_Hitbox(hb, framevRS.CollisionBox);
             frame.HitBoxes.Add(hb);
         }
@@ -388,7 +388,7 @@ namespace AnimationEditor.Animation.Methods
 
         #region Save (Animation Frame)
 
-        public static void RSDKv5_Save_Frame(BridgedAnimation.BridgedFrame frame, RSDKv5.Animation.AnimationEntry.Frame framev5)
+        public static void RSDKv5_Save_Frame(EditorAnimation.EditorFrame frame, RSDKv5.Animation.AnimationEntry.Frame framev5)
         {
             framev5.CollisionBox = frame.CollisionBox;
             framev5.Delay = frame.Delay;
@@ -408,7 +408,7 @@ namespace AnimationEditor.Animation.Methods
                 framev5.HitBoxes.Add(hb);
             }
         }
-        public static void RSDKvB_Save_Frame(BridgedAnimation.BridgedFrame frame, RSDKvB.Animation.AnimationEntry.Frame framevB)
+        public static void RSDKvB_Save_Frame(EditorAnimation.EditorFrame frame, RSDKvB.Animation.AnimationEntry.Frame framevB)
         {
             framevB.CollisionBox = frame.CollisionBox;
             framevB.Height = (byte)frame.Height;
@@ -420,7 +420,7 @@ namespace AnimationEditor.Animation.Methods
             framevB.Y = (byte)frame.Y;
 
         }
-        public static void RSDKv2_Save_Frame(BridgedAnimation.BridgedFrame frame, RSDKv2.Animation.AnimationEntry.Frame framev2)
+        public static void RSDKv2_Save_Frame(EditorAnimation.EditorFrame frame, RSDKv2.Animation.AnimationEntry.Frame framev2)
         {
             framev2.CollisionBox = frame.CollisionBox;
             framev2.Height = (byte)frame.Height;
@@ -432,7 +432,7 @@ namespace AnimationEditor.Animation.Methods
             framev2.Y = (byte)frame.Y;
 
         }
-        public static void RSDKv1_Save_Frame(BridgedAnimation.BridgedFrame frame, RSDKv1.Animation.AnimationEntry.Frame framev1)
+        public static void RSDKv1_Save_Frame(EditorAnimation.EditorFrame frame, RSDKv1.Animation.AnimationEntry.Frame framev1)
         {
             framev1.CollisionBox = frame.CollisionBox;
             framev1.Height = (byte)frame.Height;
@@ -444,7 +444,7 @@ namespace AnimationEditor.Animation.Methods
             framev1.Y = (byte)frame.Y;
 
         }
-        public static void RSDKvRS_Save_Frame(BridgedAnimation.BridgedFrame frame, RSDKvRS.Animation.AnimationEntry.Frame framevRS)
+        public static void RSDKvRS_Save_Frame(EditorAnimation.EditorFrame frame, RSDKvRS.Animation.AnimationEntry.Frame framevRS)
         {
             framevRS.Height = (byte)frame.Height;
             framevRS.PivotX = (sbyte)frame.PivotX;
@@ -464,7 +464,7 @@ namespace AnimationEditor.Animation.Methods
 
         #region Load (Animation Hitbox) (RSDKv5 and RSDKvRS)
 
-        public static void RSDKv5_Load_Hitbox(BridgedAnimation.BridgedHitBox hb, RSDKv5.Animation.AnimationEntry.Frame.HitBox hbV5)
+        public static void RSDKv5_Load_Hitbox(EditorAnimation.EditorHitbox hb, RSDKv5.Animation.AnimationEntry.Frame.HitBox hbV5)
         {
             hb.Bottom = hbV5.Bottom;
             hb.Right = hbV5.Right;
@@ -472,7 +472,7 @@ namespace AnimationEditor.Animation.Methods
             hb.Left = hbV5.Left;
         }
 
-        public static void RSDKvRS_Load_Hitbox(BridgedAnimation.BridgedHitBox hb, RSDKvRS.Animation.AnimationEntry.Frame.HitBox hbvRS)
+        public static void RSDKvRS_Load_Hitbox(EditorAnimation.EditorHitbox hb, RSDKvRS.Animation.AnimationEntry.Frame.HitBox hbvRS)
         {
             hb.Bottom = hbvRS.Bottom;
             hb.Right = hbvRS.Right;
@@ -483,14 +483,14 @@ namespace AnimationEditor.Animation.Methods
         #endregion
 
         #region Save (Animation Hitbox)  (RSDKv5 and RSDKvRS)
-        public static void RSDKv5_Save_Hitbox(BridgedAnimation.BridgedHitBox hb, RSDKv5.Animation.AnimationEntry.Frame.HitBox hbv5)
+        public static void RSDKv5_Save_Hitbox(EditorAnimation.EditorHitbox hb, RSDKv5.Animation.AnimationEntry.Frame.HitBox hbv5)
         {
             hbv5.Bottom = hb.Bottom;
             hbv5.Right = hb.Right;
             hbv5.Top = hb.Top;
             hbv5.Left = hb.Left;
         }
-        public static void RSDKvRS_Save_Hitbox(BridgedAnimation.BridgedHitBox hb, RSDKvRS.Animation.AnimationEntry.Frame.HitBox hbvRS)
+        public static void RSDKvRS_Save_Hitbox(EditorAnimation.EditorHitbox hb, RSDKvRS.Animation.AnimationEntry.Frame.HitBox hbvRS)
         {
             hbvRS.Bottom = (sbyte)hb.Bottom;
             hbvRS.Right = (sbyte)hb.Right;
@@ -502,12 +502,12 @@ namespace AnimationEditor.Animation.Methods
 
         #region Load (Collision Boxes) (RSDKvB and Below)
 
-        public static void RSDKvB_Load_CollisionBoxes(BridgedAnimation BridgeHost, RSDKvB.Animation animsetvB)
+        public static void RSDKvB_Load_CollisionBoxes(EditorAnimation BridgeHost, RSDKvB.Animation animsetvB)
         {
-            var collisionBoxes = new List<BridgedAnimation.BridgedRetroHitBox>();
+            var collisionBoxes = new List<EditorAnimation.EditorRetroHitBox>();
             for (int i = 0; i < animsetvB.CollisionBoxes.Count; i++)
             {
-                var hitboxEntry = new BridgedAnimation.BridgedRetroHitBox();
+                var hitboxEntry = new EditorAnimation.EditorRetroHitBox();
                 for (int j = 0; j < animsetvB.CollisionBoxes[i].Hitboxes.Length; j++)
                 {
                     hitboxEntry.Hitboxes[j].Bottom = animsetvB.CollisionBoxes[i].Hitboxes[j].Bottom;
@@ -519,12 +519,12 @@ namespace AnimationEditor.Animation.Methods
             }
             BridgeHost.RetroCollisionBoxes = collisionBoxes;
         }
-        public static void RSDKv2_Load_CollisionBoxes(BridgedAnimation BridgeHost, RSDKv2.Animation animsetv2)
+        public static void RSDKv2_Load_CollisionBoxes(EditorAnimation BridgeHost, RSDKv2.Animation animsetv2)
         {
-            var collisionBoxes = new List<BridgedAnimation.BridgedRetroHitBox>();
+            var collisionBoxes = new List<EditorAnimation.EditorRetroHitBox>();
             for (int i = 0; i < animsetv2.CollisionBoxes.Count; i++)
             {
-                var hitboxEntry = new BridgedAnimation.BridgedRetroHitBox();
+                var hitboxEntry = new EditorAnimation.EditorRetroHitBox();
                 for (int j = 0; j < animsetv2.CollisionBoxes[i].Hitboxes.Length; j++)
                 {
                     hitboxEntry.Hitboxes[j].Bottom = animsetv2.CollisionBoxes[i].Hitboxes[j].Bottom;
@@ -536,12 +536,12 @@ namespace AnimationEditor.Animation.Methods
             }
             BridgeHost.RetroCollisionBoxes = collisionBoxes;
         }
-        public static void RSDKv1_Load_CollisionBoxes(BridgedAnimation BridgeHost, RSDKv1.Animation animsetv1)
+        public static void RSDKv1_Load_CollisionBoxes(EditorAnimation BridgeHost, RSDKv1.Animation animsetv1)
         {
-            var collisionBoxes = new List<BridgedAnimation.BridgedRetroHitBox>();
+            var collisionBoxes = new List<EditorAnimation.EditorRetroHitBox>();
             for (int i = 0; i < animsetv1.CollisionBoxes.Count; i++)
             {
-                var hitboxEntry = new BridgedAnimation.BridgedRetroHitBox();
+                var hitboxEntry = new EditorAnimation.EditorRetroHitBox();
                 for (int j = 0; j < animsetv1.CollisionBoxes[i].Hitboxes.Length; j++)
                 {
                     hitboxEntry.Hitboxes[j].Bottom = animsetv1.CollisionBoxes[i].Hitboxes[j].Bottom;
@@ -553,7 +553,7 @@ namespace AnimationEditor.Animation.Methods
             }
             BridgeHost.RetroCollisionBoxes = collisionBoxes;
         }
-        public static void RSDKvRS_Load_CollisionBoxes(BridgedAnimation BridgeHost, RSDKvRS.Animation animsetvRS)
+        public static void RSDKvRS_Load_CollisionBoxes(EditorAnimation BridgeHost, RSDKvRS.Animation animsetvRS)
         {
 
         }
@@ -563,7 +563,7 @@ namespace AnimationEditor.Animation.Methods
 
         #region Save (Collision Boxes) (RSDKvB and Below)
 
-        public static void RSDKvB_Save_CollisionBoxes(BridgedAnimation BridgeHost, RSDKvB.Animation animsetvB)
+        public static void RSDKvB_Save_CollisionBoxes(EditorAnimation BridgeHost, RSDKvB.Animation animsetvB)
         {
             animsetvB.CollisionBoxes = new List<RSDKvB.Animation.sprHitbox>(8);
             for (int a = 0; a < BridgeHost.RetroCollisionBoxes.Count; a++)
@@ -580,7 +580,7 @@ namespace AnimationEditor.Animation.Methods
                 }
             }
         }
-        public static void RSDKv2_Save_CollisionBoxes(BridgedAnimation BridgeHost, RSDKv2.Animation animsetv2)
+        public static void RSDKv2_Save_CollisionBoxes(EditorAnimation BridgeHost, RSDKv2.Animation animsetv2)
         {
             animsetv2.CollisionBoxes = new List<RSDKv2.Animation.sprHitbox>(8);
             for (int a = 0; a < BridgeHost.RetroCollisionBoxes.Count; a++)
@@ -597,7 +597,7 @@ namespace AnimationEditor.Animation.Methods
                 }
             }
         }
-        public static void RSDKv1_Save_CollisionBoxes(BridgedAnimation BridgeHost, RSDKv1.Animation animsetv1)
+        public static void RSDKv1_Save_CollisionBoxes(EditorAnimation BridgeHost, RSDKv1.Animation animsetv1)
         {
             animsetv1.CollisionBoxes = new List<RSDKv1.Animation.sprHitbox>(8);
             for (int a = 0; a < BridgeHost.RetroCollisionBoxes.Count; a++)
@@ -621,40 +621,56 @@ namespace AnimationEditor.Animation.Methods
 
         #region Load (Animation Header Properties)
 
-        public static void RSDKv5_Load_AnimHeader(BridgedAnimation BridgeHost, RSDKv5.Animation animsetv5)
+        private static List<string> GetV3HitboxList()
+        {
+            return new List<string>() 
+            {
+                "North - N",
+                "Northeast - NE",
+                "East - E",
+                "Southeast - SE",
+                "South - S",
+                "Southwest - SW",
+                "West - W",
+                "Northwest - NW"
+            };
+        }
+
+        private static List<string> GetOldV3HitboxList()
+        {
+            var output = new List<string>();
+            for (int i = 0; i < 8; i++)
+            {
+                output.Add(string.Format("Hitbox #{0}", i));
+            }
+            return output;
+        }
+
+        public static void RSDKv5_Load_AnimHeader(EditorAnimation BridgeHost, RSDKv5.Animation animsetv5)
         {
             BridgeHost.SpriteSheets = animsetv5.SpriteSheets;
             BridgeHost.TotalFrameCount = animsetv5.TotalFrameCount;
             BridgeHost.CollisionBoxes = animsetv5.CollisionBoxes;
         }
-        public static void RSDKvB_Load_AnimHeader(BridgedAnimation BridgeHost, RSDKvB.Animation animsetvB)
+        public static void RSDKvB_Load_AnimHeader(EditorAnimation BridgeHost, RSDKvB.Animation animsetvB)
         {
             BridgeHost.SpriteSheets = animsetvB.SpriteSheets;
-            for (int i = 0; i < 8; i++)
-            {
-                BridgeHost.CollisionBoxes.Add(string.Format("Hitbox #{0}", i));
-            }
+            BridgeHost.CollisionBoxes = GetV3HitboxList();
         }
-        public static void RSDKv2_Load_AnimHeader(BridgedAnimation BridgeHost, RSDKv2.Animation animsetv2)
+        public static void RSDKv2_Load_AnimHeader(EditorAnimation BridgeHost, RSDKv2.Animation animsetv2)
         {
             BridgeHost.SpriteSheets = animsetv2.SpriteSheets;
-            for (int i = 0; i < 8; i++)
-            {
-                BridgeHost.CollisionBoxes.Add(string.Format("Hitbox #{0}", i));
-            }
+            BridgeHost.CollisionBoxes = GetV3HitboxList();
         }
-        public static void RSDKv1_Load_AnimHeader(BridgedAnimation BridgeHost, RSDKv1.Animation animsetv1)
+        public static void RSDKv1_Load_AnimHeader(EditorAnimation BridgeHost, RSDKv1.Animation animsetv1)
         {
             for (int i = 0; i < animsetv1.SpriteSheets.Length; i++)
             {
                 BridgeHost.SpriteSheets.Add(animsetv1.SpriteSheets[i]);
             }
-            for (int i = 0; i < 8; i++)
-            {
-                BridgeHost.CollisionBoxes.Add(string.Format("Hitbox #{0}", i));
-            }
+            BridgeHost.CollisionBoxes = GetV3HitboxList();
         }
-        public static void RSDKvRS_Load_AnimHeader(BridgedAnimation BridgeHost, RSDKvRS.Animation animsetvRS)
+        public static void RSDKvRS_Load_AnimHeader(EditorAnimation BridgeHost, RSDKvRS.Animation animsetvRS)
         {
             BridgeHost.PlayerType = animsetvRS.PlayerType;
             BridgeHost.Unknown = animsetvRS.Unknown;
@@ -671,20 +687,20 @@ namespace AnimationEditor.Animation.Methods
 
         #region Save (Animation Header Properties)
 
-        public static void RSDKv5_Save_AnimHeader(BridgedAnimation BridgeHost, RSDKv5.Animation animsetv5)
+        public static void RSDKv5_Save_AnimHeader(EditorAnimation BridgeHost, RSDKv5.Animation animsetv5)
         {
             animsetv5.SpriteSheets = BridgeHost.SpriteSheets;
             animsetv5.CollisionBoxes = BridgeHost.CollisionBoxes;
         }
-        public static void RSDKvB_Save_AnimHeader(BridgedAnimation BridgeHost, RSDKvB.Animation animsetvB)
+        public static void RSDKvB_Save_AnimHeader(EditorAnimation BridgeHost, RSDKvB.Animation animsetvB)
         {
             animsetvB.SpriteSheets = BridgeHost.SpriteSheets;
         }
-        public static void RSDKv2_Save_AnimHeader(BridgedAnimation BridgeHost, RSDKv2.Animation animsetv2)
+        public static void RSDKv2_Save_AnimHeader(EditorAnimation BridgeHost, RSDKv2.Animation animsetv2)
         {
             animsetv2.SpriteSheets = BridgeHost.SpriteSheets;
         }
-        public static void RSDKv1_Save_AnimHeader(BridgedAnimation BridgeHost, RSDKv1.Animation animsetv1)
+        public static void RSDKv1_Save_AnimHeader(EditorAnimation BridgeHost, RSDKv1.Animation animsetv1)
         {
             for (int i = 0; i < BridgeHost.SpriteSheets.Count; i++)
             {
@@ -692,7 +708,7 @@ namespace AnimationEditor.Animation.Methods
                 animsetv1.SpriteSheets[i] = BridgeHost.SpriteSheets[i];
             }
         }
-        public static void RSDKvRS_Save_AnimHeader(BridgedAnimation BridgeHost, RSDKvRS.Animation animsetvRS)
+        public static void RSDKvRS_Save_AnimHeader(EditorAnimation BridgeHost, RSDKvRS.Animation animsetvRS)
         {
             animsetvRS.PlayerType = BridgeHost.PlayerType;
             animsetvRS.Unknown = BridgeHost.Unknown;
@@ -708,18 +724,18 @@ namespace AnimationEditor.Animation.Methods
 
 
         #region Import/Export
-        public static void RSDKvU_Import_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, string filepath)
+        public static void RSDKvU_Import_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, string filepath)
         {
             RSDKv5.Animation.AnimationEntry animv5 = new RSDKv5.Animation.AnimationEntry(new RSDKv5.Reader(filepath));
             RSDKv5_Load_AnimEntry(animEntry, animv5);
         }
-        public static void RSDKvU_Export_AnimEntry(BridgedAnimation.BridgedAnimationEntry animEntry, string filepath)
+        public static void RSDKvU_Export_AnimEntry(EditorAnimation.EditorAnimationInfo animEntry, string filepath)
         {
             RSDKv5.Animation.AnimationEntry animv5 = new RSDKv5.Animation.AnimationEntry();
             RSDKv5_Save_AnimEntry(animEntry, animv5);
             animv5.Write(new RSDKv5.Writer(filepath));
         }
-        public static void RSDKvU_Import_Hitbox(BridgedAnimation.BridgedHitBox hb, string filepath)
+        public static void RSDKvU_Import_Hitbox(EditorAnimation.EditorHitbox hb, string filepath)
         {
             //TODO: Add Hitbox Import to RSDKv5 Format
             /*
@@ -729,7 +745,7 @@ namespace AnimationEditor.Animation.Methods
             RSDKv5_Load_Hitbox(hb, hbv5);
             */
         }
-        public static void RSDKvU_Export_Hitbox(BridgedAnimation.BridgedHitBox hb, string filepath)
+        public static void RSDKvU_Export_Hitbox(EditorAnimation.EditorHitbox hb, string filepath)
         {
             //TODO: Add Hitbox Import to RSDKv5 Format
             /*
@@ -740,7 +756,7 @@ namespace AnimationEditor.Animation.Methods
             writerv5.Close();
             */
         }
-        public static void RSDKvU_Export_Frame(BridgedAnimation.BridgedFrame frame, string filepath)
+        public static void RSDKvU_Export_Frame(EditorAnimation.EditorFrame frame, string filepath)
         {
             RSDKv5.Animation.AnimationEntry.Frame framev5 = new RSDKv5.Animation.AnimationEntry.Frame();
             RSDKv5_Save_Frame(frame, framev5);
@@ -748,7 +764,7 @@ namespace AnimationEditor.Animation.Methods
             framev5.Write(writerv5);
             writerv5.Close();
         }
-        public static void RSDKvU_Import_Frame(BridgedAnimation.BridgedFrame frame, string filepath)
+        public static void RSDKvU_Import_Frame(EditorAnimation.EditorFrame frame, string filepath)
         {
             RSDKv5.Reader readerv5 = new RSDKv5.Reader(filepath);
             RSDKv5.Animation.AnimationEntry.Frame framev5 = new RSDKv5.Animation.AnimationEntry.Frame(readerv5);
