@@ -19,7 +19,7 @@ namespace AnimationEditor.Pages
     /// </summary>
     public partial class MainWindow : Window
     {
-        public CurrentAnimation ViewModel => (CurrentAnimation)DataContext;
+        public CurrentAnimation ViewModel => (CurrentAnimation)this.DataContext;
 
         public UserInterfacer Interfacer;
         public InputController InputControl;
@@ -36,6 +36,8 @@ namespace AnimationEditor.Pages
         public static bool isForcePlaybackOn = false;
         public static int ForcePlaybackDuration = 256;
         public static int ForcePlaybackSpeed = 128;
+
+        public bool isLoadedFully { get; set; } = false;
 
         public string WindowName
         {
@@ -79,25 +81,25 @@ namespace AnimationEditor.Pages
         private void UpdatePlaybackIndex(int frameIndex)
         {
             FramesList.SelectedIndex = frameIndex;
-            Interfacer.Render();
+            Interfacer.UpdateCanvasVisual();
         }
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
         {
             Handler.OpenFile();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void MenuFileSave_Click(object sender, RoutedEventArgs e)
         {
             Handler.SaveFile();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void MenuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
             Handler.SaveFileAs();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void MenuFileExit_Click(object sender, RoutedEventArgs e)
@@ -108,57 +110,49 @@ namespace AnimationEditor.Pages
         private void ButtonAnimationAdd_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.AddAnimation(ViewModel.SelectedAnimationIndex);
-            Interfacer.RefreshAnimationsListFully();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void ButtonAnimationUp_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftAnimationUp(ViewModel.SelectedAnimationIndex);
-            Interfacer.RefreshAnimationsListFully();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void ButtonAnimationDown_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftAnimationDown(ViewModel.SelectedAnimationIndex);
-            Interfacer.RefreshAnimationsListFully();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void ButtonFrameLeft_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftFrameLeft(ViewModel.SelectedFrameIndex);
-            Interfacer.RefreshFramesList();
-            Interfacer.UpdateUI(true);
+            Interfacer.UpdateControls();
         }
 
         private void ButtonFrameRight_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftFrameRight(ViewModel.SelectedFrameIndex);
-            Interfacer.RefreshFramesList();
-            Interfacer.UpdateUI(true);
+            Interfacer.UpdateControls();
         }
 
         private void ButtonAnimationDuplicate_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.DuplicateAnimation(ViewModel.SelectedAnimationIndex);
-            Interfacer.RefreshAnimationsListFully();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void ButtonAnimationRemove_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.RemoveAnimation(ViewModel.SelectedAnimationIndex);
-            Interfacer.RefreshAnimationsListFully();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void ButtonAnimationImport_Click(object sender, RoutedEventArgs e)
         {
             Handler.ImportAnimation();
-            Interfacer.RefreshAnimationsListFully();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void ButtonAnimationImport_Context(object sender, RoutedEventArgs e)
@@ -174,28 +168,25 @@ namespace AnimationEditor.Pages
         private void ButtonAnimationExport_Click(object sender, RoutedEventArgs e)
         {
             Handler.ExportAnimation();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void ButtonFrameAdd_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.AddFrame((ViewModel.SelectedFrameIndex != -1 ? ViewModel.SelectedFrameIndex : 0));
-            Interfacer.RefreshFramesList();
-            Interfacer.UpdateUI(true);
+            Interfacer.UpdateControls();
         }
 
         private void ButtonFrameDupe_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.DuplicateFrame(ViewModel.SelectedFrameIndex);
-            Interfacer.RefreshFramesList();
-            Interfacer.UpdateUI(true);
+            Interfacer.UpdateControls();
         }
 
         private void ButtonFrameRemove_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.RemoveFrame(ViewModel.SelectedFrameIndex);
-            Interfacer.RefreshFramesList();
-            Interfacer.UpdateUI(true);
+            Interfacer.UpdateControls();
         }
 
         private void ButtonFrameImport_Context(object sender, RoutedEventArgs e)
@@ -211,64 +202,63 @@ namespace AnimationEditor.Pages
         private void ButtonFrameImport_Click(object sender, RoutedEventArgs e)
         {
             Handler.ImportFrame();
-            Interfacer.RefreshFramesList();
-            Interfacer.UpdateUI(true);
+            Interfacer.UpdateControls();
         }
 
         private void ButtonFrameExport_Click(object sender, RoutedEventArgs e)
         {
             Handler.ExportFrame();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void ButtonZoomIn_Click(object sender, RoutedEventArgs e)
         {
-            if (ViewModel.SpriteScaleX < 8)
+            if (ViewModel.Zoom < 8)
             {
-                ViewModel.SpriteScaleX = ViewModel.SpriteScaleX + 1;
-                Interfacer.UpdateUI();
+                ViewModel.Zoom = ViewModel.Zoom + 1;
+                Interfacer.UpdateControls();
             }
         }
 
         private void ButtonZoomOut_Click(object sender, RoutedEventArgs e)
         {
-            if (ViewModel.SpriteScaleX > 1)
+            if (ViewModel.Zoom > 1)
             {
-                ViewModel.SpriteScaleX = ViewModel.SpriteScaleX - 1;
-                Interfacer.UpdateUI();
+                ViewModel.Zoom = ViewModel.Zoom - 1;
+                Interfacer.UpdateControls();
             }
 
         }
 
         private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 1)
             {
-                if (ViewModel.SpriteScaleX < 8)
+                if (ViewModel.Zoom < 8)
                 {
-                    ViewModel.SpriteScaleX = ViewModel.SpriteScaleX + 1;
+                    ViewModel.Zoom = ViewModel.Zoom + 1;
                 }
             }
             else
             {
-                if (ViewModel.SpriteScaleX > 1)
+                if (ViewModel.Zoom > 1)
                 {
-                    ViewModel.SpriteScaleX = ViewModel.SpriteScaleX - 1;
+                    ViewModel.Zoom = ViewModel.Zoom - 1;
                 }
             }
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void MenuViewTexture_Click(object sender, RoutedEventArgs e)
         {
             TextureManagerMenu.Startup(this);
             TextureManagerPopup.IsOpen = true;
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
 
         }
 
@@ -276,7 +266,7 @@ namespace AnimationEditor.Pages
         {
             HitboxManagerMenu.Startup(this);
             HitboxManagerPopup.IsOpen = true;
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void MenuInfoAbout_Click(object sender, RoutedEventArgs e)
@@ -288,51 +278,56 @@ namespace AnimationEditor.Pages
 
         private void FramesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            Interfacer.UpdateUI(true);
-            Interfacer.UpdateNUD_Cap_Values();
+            if (isLoadedFully)
+            {
+                Interfacer.UpdateControls();
+                Interfacer.UpdateCurrentFrameMaxMinProperties();
+            }
         }
 
         private void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Interfacer.RefreshFramesList();
-            Interfacer.UpdateUI();
+            ViewModel.SelectedAnimationIndex = List.SelectedIndex;
+            Interfacer.UpdateControls();
+            Interfacer.UpdateSelectedSectionProperties();
         }
 
         private void FramesList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if (!isPlaybackEnabled)
-            Interfacer.UpdateUI(true);
+            ViewModel.SelectedFrameIndex = FramesList.SelectedIndex;
+            Interfacer.UpdateControls();
+            Interfacer.UpdateCurrentFrameProperties();
         }
 
         private void SpriteSheetList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void HitBoxComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void FramesList_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void HitBoxComboBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void MenuRecentFile_Click(object sender, RoutedEventArgs e)
         {
             Handler.RecentDataDirectoryClicked(sender, e);
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
 
         }
 
@@ -401,8 +396,8 @@ namespace AnimationEditor.Pages
 
         private void MenuFileOpenRecently_SubmenuOpened(object sender, RoutedEventArgs e)
         {
-            Handler.RefreshDataDirectories(Properties.Settings.Default.RecentFiles);
-            Interfacer.UpdateUI();
+            Handler.RefreshDataDirectories();
+            Interfacer.UpdateControls();
         }
 
         private void ButtonPlay_Click(object sender, RoutedEventArgs e)
@@ -428,7 +423,7 @@ namespace AnimationEditor.Pages
             {
                 isPlaybackEnabled = false;
                 PlaybackService.IsRunning = false;
-                Interfacer.UpdateUI();
+                Interfacer.UpdateControls();
             }
         }
 
@@ -460,14 +455,13 @@ namespace AnimationEditor.Pages
 
         private void MenuViewTransparentSpriteSheets_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.Render();
+            Interfacer.UpdateCanvasVisual();
         }
 
         private void MenuFileUnloadAnimation_Click(object sender, RoutedEventArgs e)
         {
             Handler.UnloadAnimationData();
-            FramesList.Items.Clear();
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void PlaybackOptionsButton_Click(object sender, RoutedEventArgs e)
@@ -493,12 +487,12 @@ namespace AnimationEditor.Pages
         private void ExportAnimationImages_Click(object sender, RoutedEventArgs e)
         {
             Handler.ExportAnimationFramesToImages();
-                        Interfacer.UpdateUI();
+                        Interfacer.UpdateControls();
         }
 
         private void ButtonShowFieldHitbox_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -517,6 +511,7 @@ namespace AnimationEditor.Pages
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            isLoadedFully = true;
             if (Properties.Settings.Default.UseDarkTheme)
             {
                 MenuViewUseDarkTheme.IsChecked = true;
@@ -542,12 +537,12 @@ namespace AnimationEditor.Pages
 
         private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
         {            
-            Interfacer.Render();
+            Interfacer.UpdateCanvasVisual();
         }
 
         private void MenuViewFrameBorder_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.Render();
+            Interfacer.UpdateCanvasVisual();
         }
 
         private void CanvasView_KeyDown(object sender, KeyEventArgs e)
@@ -577,7 +572,7 @@ namespace AnimationEditor.Pages
 
         private void ButtonShowCenter_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.UpdateUI();
+            Interfacer.UpdateControls();
         }
 
         private void ButtonAnimationRename_Click(object sender, RoutedEventArgs e)
@@ -585,9 +580,9 @@ namespace AnimationEditor.Pages
             if (ViewModel.SelectedAnimation != null)
             {
                 int tempIndex = ViewModel.SelectedAnimationIndex;
-                ViewModel.Animations[ViewModel.SelectedAnimationIndex].AnimName = RSDKrU.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Animation:", ViewModel.SelectedAnimation.AnimName);
+                ViewModel.SelectedAnimationEntries[ViewModel.SelectedAnimationIndex].AnimName = RSDKrU.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Animation:", ViewModel.SelectedAnimation.AnimName);
                 List.ItemsSource = null;
-                Interfacer.UpdateUI();
+                Interfacer.UpdateControls();
                 List.SelectedIndex = tempIndex;
             }
         }
@@ -607,7 +602,7 @@ namespace AnimationEditor.Pages
 
         private void MenuViewSetBackgroundToTransparentColor_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.Render();
+            Interfacer.UpdateCanvasVisual();
         }
 
         private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)

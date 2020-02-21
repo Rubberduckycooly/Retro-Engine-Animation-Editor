@@ -92,7 +92,7 @@ namespace AnimationEditor.Pages
             ParentInstance.ViewModel.SpriteSheets.RemoveAt(index);
 
             SelectedTextureIndex = 0;
-            if (ParentInstance.ViewModel.CurrentSpriteSheet == index) ParentInstance.ViewModel.CurrentSpriteSheet = 0;
+            if (ParentInstance.ViewModel.CurrentFrame_SpriteSheet == index) ParentInstance.ViewModel.CurrentFrame_SpriteSheet = 0;
             if (ParentInstance.SpriteSheetList.SelectedIndex == index) ParentInstance.SpriteSheetList.SelectedIndex = 0;
 
             foreach (var list in ParentInstance.ViewModel.LoadedAnimationFile.Animations)
@@ -109,7 +109,7 @@ namespace AnimationEditor.Pages
 
             InitializeVarriables();
             UpdateUI();
-            ParentInstance.Interfacer.UpdateTextureList();
+            ParentInstance.Interfacer.UpdateLoadedAnimationTextureListProperties();
             ListTextures.ItemsSource = null;
             ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
@@ -162,7 +162,7 @@ namespace AnimationEditor.Pages
             ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
             ParentInstance.TextureManagerPopup.IsOpen = true;
-            ParentInstance.Interfacer.UpdateUI();
+            ParentInstance.Interfacer.UpdateControls();
         }
 
         public void AddTexture()
@@ -209,7 +209,7 @@ namespace AnimationEditor.Pages
             ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
             ParentInstance.TextureManagerPopup.IsOpen = true;
-            ParentInstance.Interfacer.UpdateUI();
+            ParentInstance.Interfacer.UpdateControls();
         }
 
         private void ListTextures_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

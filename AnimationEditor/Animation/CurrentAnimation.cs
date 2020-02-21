@@ -15,23 +15,229 @@ using AnimationEditor.Services;
 using AnimationEditor.Animation;
 using AnimationEditor.Animation.Classes;
 using AnimationEditor.Animation.Methods;
+using System.ComponentModel;
 
 namespace AnimationEditor.Animation
 {
     public class CurrentAnimation
     {
-        #region Animations and Frames
-        public BridgedAnimation LoadedAnimationFile;
+        #region Loaded Animation Data
+        public BridgedAnimation LoadedAnimationFile { get; set; }
+        #endregion
 
-        public EngineType AnimationType = EngineType.RSDKv5;
-
-        public bool FullFrameMode = false;
+        #region IO Paths
         public string AnimationFilepath { get; set; }
         public string AnimationDirectory { get; set; }
-
         public string SpriteDirectory { get; set; }
-        public List<Spritesheet> SpriteSheets { get; set; }
+        #endregion
 
+        #region Modes/States
+        public bool FullFrameMode { get; set; } = false;
+        public double Zoom { get; set; } = 1;
+
+        #endregion
+
+        #region Details
+        public EngineType AnimationType { get; set; } = EngineType.RSDKv5;
+        public int FramesCount
+        {
+            get
+            {
+                if (CanCollectAnimationEntryInformation) return SelectedAnimation.Frames.Count - 1;
+                else return -1;
+            }
+        }
+        public int AnimationsCount
+        {
+            get
+            {
+                if (CanCollectAnimationEntryInformation) return LoadedAnimationFile.Animations.Count - 1;
+                else return -1;
+            }
+        }
+        #endregion
+
+        #region Selected Items
+        public List<BridgedAnimation.BridgedAnimationEntry> SelectedAnimationEntries
+        {
+            get
+            {
+                if (LoadedAnimationFile != null) return LoadedAnimationFile.Animations;
+                else return null;
+            }
+            set
+            {
+                if (LoadedAnimationFile != null) LoadedAnimationFile.Animations = value;
+            }
+        }
+        public BridgedAnimation.BridgedAnimationEntry SelectedAnimation
+        {
+            get
+            {
+                try
+                {
+                    return LoadedAnimationFile.Animations[SelectedAnimationIndex];
+                }
+                catch
+                {
+                    return new BridgedAnimation.BridgedAnimationEntry(AnimationType, LoadedAnimationFile);
+                }
+            }
+            set
+            {
+                try
+                {
+                    LoadedAnimationFile.Animations[SelectedAnimationIndex] = value;
+                }
+                catch
+                {
+
+                }
+
+            }
+        }
+        public List<BridgedAnimation.BridgedFrame> SelectedAnimationFrameSet
+        {
+            get
+            {
+                if (CanCollectAnimationEntryInformation) return SelectedAnimation.Frames;
+                else return null;
+            }
+            set
+            {
+                if (CanCollectAnimationEntryInformation)
+                {
+                    SelectedAnimation.Frames = value;
+                }
+            }
+        }
+        public BridgedAnimation.BridgedFrame SelectedFrame
+        {
+            get
+            {
+                try
+                {
+                    return SelectedAnimation.Frames[SelectedFrameIndex];
+                }
+                catch
+                {
+                    return new BridgedAnimation.BridgedFrame();
+                }
+            }
+            set 
+            {
+                try
+                {
+                    SelectedAnimation.Frames[SelectedFrameIndex] = value;
+                }
+                catch
+                {
+
+                }
+
+            }
+        }
+        public BridgedAnimation.BridgedHitBox SelectedHitbox
+        {
+            get
+            {
+                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex];
+                else return null;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1) SelectedFrame.HitBoxes[SelectedFrameHitboxIndex] = value;
+                else return;
+            }
+        }
+        #endregion
+
+        #region Selected Indexes
+
+        public int SelectedFrameIndex { get; set; }
+        public int SelectedAnimationIndex { get; set; }
+        public int SelectedFrameHitboxIndex
+        {
+            get
+            {
+                if (CanCollectFrameInformation && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.CollisionBox;
+                else return -1;
+            }
+            set
+            {
+                if (CanCollectFrameInformation) SelectedFrame.CollisionBox = (byte)value;
+                else return;
+            }
+        }
+        public int GetCurrentFrameIndexForAllAnimations()
+        {
+            if (CanCollectFrameInformation)
+            {
+                int frames = 0;
+                for (int i = 0; i < SelectedAnimationIndex; i++)
+                {
+                    frames += LoadedAnimationFile.Animations[i].Frames.Count();
+                }
+                frames += SelectedFrameIndex;
+                return frames;
+            }
+            else return -1;
+        }
+        #endregion
+
+        #region Current Animation
+        public List<string> Hitboxes
+        {
+            get
+            {
+                if (LoadedAnimationFile != null) return LoadedAnimationFile.CollisionBoxes;
+                else return new List<string>();
+            }
+            set
+            {
+                if (LoadedAnimationFile != null) LoadedAnimationFile.CollisionBoxes = value;
+                else return;
+            }
+        }
+        public byte PlayerType
+        {
+            get
+            {
+                if (CanCollectFrameInformation)
+                {
+                    if (LoadedAnimationFile.EngineType == EngineType.RSDKvRS)
+                    {
+                        return LoadedAnimationFile.PlayerType;
+                    }
+                }
+                return 0x0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation)
+                {
+                    if (LoadedAnimationFile.EngineType == EngineType.RSDKvRS)
+                    {
+                        LoadedAnimationFile.PlayerType = value;
+                    }
+                }
+                return;
+            }
+        }
+
+        #endregion
+
+        #region Current Spritesheets
+        public List<Spritesheet> SpriteSheets { get; set; } = new List<Spritesheet>();
+        public List<string> SpriteSheetPaths
+        {
+            get
+            {
+                if (LoadedAnimationFile != null) return LoadedAnimationFile.SpriteSheets;
+                else return null;
+            }
+        }
+        public List<string> NullSpriteSheetList { get; set; } = new List<string>();
         public class Spritesheet
         {
             public System.Windows.Media.Imaging.BitmapImage Image;
@@ -54,47 +260,348 @@ namespace AnimationEditor.Animation
             }
         }
 
-        public List<string> NullSpriteSheetList { get => SpriteSheetNullList; set => SpriteSheetNullList = value; }
+        #endregion
 
-        private List<string> SpriteSheetNullList = new List<string>();
+        #region Current Status Variables
+        public bool CanCollectFrameInformation
+        {
+            get => CanCollectAnimationInformation && CanCollectAnimationEntryInformation && SelectedFrameIndex != -1 && SelectedAnimation.Frames.Count > 0;
+        }
+        public bool CanCollectAnimationEntryInformation
+        {
+            get => CanCollectAnimationInformation && SelectedAnimationIndex != -1;
+        }
+        public bool CanCollectAnimationInformation
+        {
+            get => LoadedAnimationFile != null;
+        }
+        public bool isCurrentSpriteSheetValid
+        {
+            get
+            {
+                if ((int)CurrentFrame_SpriteSheet < SpriteSheets.Count)
+                {
+                    if (SpriteSheets[(int)CurrentFrame_SpriteSheet].isReady) return true;
+                    else return false;
+                }
+                else return false;
+            }
 
-        public BridgedAnimation.BridgedAnimationEntry _SelectedAnimation;
-        public List<BridgedAnimation.BridgedAnimationEntry> Animations { get => GetAnimations(); set => SetAnimations(value); }
-        public List<string> SpriteSheetPaths { get => GetSpriteSheetsList(); }
-        public List<string> Hitboxes { get => GetHitboxesList(); set => SetHitboxesList(value); }
-        public List<string> CollisionBoxesNames { get => GetCollisionBoxes(); }
-        public List<BridgedAnimation.BridgedHitBox> CollisionBoxes { get => GetHitBoxes(); }
-        public BridgedAnimation.BridgedAnimationEntry SelectedAnimation { get => _SelectedAnimation; set { _SelectedAnimation = value; } }
-        public int SelectedAnimationIndex { get; set; }
+        }
+        #endregion
 
-        public int FramesCount { get => GetCurrentFrameCount(); }
-        public int AnimationsCount { get => GetCurrentAnimationCount(); }
+        #region Current Animation Entry
 
-        public double ViewWidth { get; set; }
-        public double ViewHeight { get; set; }
+        public byte? Loop
+        {
+            get
+            {
+                if (CanCollectAnimationEntryInformation) return SelectedAnimation.LoopIndex;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectAnimationEntryInformation && value.HasValue) SelectedAnimation.LoopIndex = value.Value;
+                else return;
+            }
+        }
+        public short? Speed
+        {
+            get
+            {
+                if (CanCollectAnimationEntryInformation) return SelectedAnimation.SpeedMultiplyer;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectAnimationEntryInformation && value.HasValue) SelectedAnimation.SpeedMultiplyer = value.Value;
+                else return;
+            }
+        }
+        public byte? Flags
+        {
+            get
+            {
+                if (CanCollectAnimationEntryInformation) return SelectedAnimation.RotationFlags;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectAnimationEntryInformation && value.HasValue) SelectedAnimation.RotationFlags = value.Value;
+                else return;
+            }
+        }
 
-        public List<BridgedAnimation.BridgedFrame> AnimationFrames { get => GetAnimationsFrames(); }
-        public int SelectedFrameIndex { get; set; }
-        public byte? Loop { get => GetLoopIndex(); set => SetLoopIndex(value); }
-        public short? Speed { get => GetSpeedMultiplyer(); set => SetSpeedMultiplyer(value); }
-        public byte? Flags { get => GetRotationFlag(); set => SetRotationFlag(value); }
 
-        private Dictionary<string, BitmapSource> _textures = new Dictionary<string, BitmapSource>(24);
-        private Dictionary<Tuple<string, int>, BitmapSource> _frames = new Dictionary<Tuple<string, int>, BitmapSource>(1024);
+        #endregion
 
+        #region Current Animation Frame
+
+        #region General Coordinates
+        public short? CurrentFrame_X
+        {
+            get
+            {
+                if (CanCollectFrameInformation) return SelectedFrame.X;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.X = value.Value;
+                else return;
+            }
+        }
+        public short? CurrentFrame_Y
+        {
+            get
+            {
+                if (CanCollectFrameInformation) return SelectedFrame.Y;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.Y = value.Value;
+                else return;
+            }
+        }
+        public short? CurrentFrame_Height
+        {
+            get
+            {
+                if (CanCollectFrameInformation) return SelectedFrame.Height;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.Height = value.Value;
+                else return;
+            }
+        }
+        public short? CurrentFrame_Width
+        {
+            get
+            {
+                if (CanCollectFrameInformation) return SelectedFrame.Width;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.Width = value.Value;
+                else return;
+            }
+        }
+        public short? CurrentFrame_PivotX
+        {
+            get
+            {
+                if (CanCollectFrameInformation) return SelectedFrame.PivotX;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.PivotX = value.Value;
+                else return;
+            }
+        }
+        public short? CurrentFrame_PivotY
+        {
+            get
+            {
+                if (CanCollectFrameInformation) return SelectedFrame.PivotY;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.PivotY = value.Value;
+                else return;
+            }
+        }
+        #endregion
+
+        #region Indentifier Value
+        public ushort? CurrentFrame_FrameID
+        {
+            get
+            {
+                if (CanCollectFrameInformation && LoadedAnimationFile.EngineType == EngineType.RSDKv5)
+                {
+                    return SelectedFrame.ID;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            set
+            {
+                if (CanCollectFrameInformation && value.HasValue && LoadedAnimationFile.EngineType == EngineType.RSDKv5)
+                {
+                    SelectedFrame.ID = value.Value;
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+        public byte? CurrentFrame_CollisionBox
+        {
+            get
+            {
+                if (CanCollectFrameInformation && LoadedAnimationFile.EngineType == (EngineType.RSDKvB | EngineType.RSDKv2 | EngineType.RSDKv1)) return SelectedFrame.CollisionBox;
+                else return 0x0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && LoadedAnimationFile.EngineType == (EngineType.RSDKvB | EngineType.RSDKv2 | EngineType.RSDKv1) && value.HasValue) SelectedFrame.CollisionBox = value.Value;
+                else return;
+            }
+        }
+        public short? CurrentFrame_FrameDuration
+        {
+            get
+            {
+                if (CanCollectFrameInformation) return SelectedFrame.Delay;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.Delay = value.Value;
+                else return;
+            }
+        }
+        public byte? CurrentFrame_SpriteSheet
+        {
+            get
+            {
+                if (CanCollectFrameInformation) return SelectedFrame.SpriteSheet;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.SpriteSheet = value.Value;
+                else return;
+            }
+        }
+        #endregion
+
+        #region Hitbox Info
+        public short? SelectedHitboxLeft
+        {
+            get
+            {
+                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Left;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue)
+                {
+                    BridgedAnimation.BridgedHitBox box = SelectedFrame.HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                    box.Left = value.Value;
+                    SelectedFrame.HitBoxes[SelectedFrameHitboxIndex] = box;
+                }
+                else return;
+            }
+        }
+        public short? SelectedHitboxTop
+        {
+            get
+            {
+                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Top;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue)
+                {
+                    BridgedAnimation.BridgedHitBox box = SelectedFrame.HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                    box.Top = value.Value;
+                    SelectedFrame.HitBoxes[SelectedFrameHitboxIndex] = box;
+                }
+                else return;
+            }
+        }
+        public short? SelectedHitboxRight
+        {
+            get
+            {
+                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Right;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue)
+                {
+                    BridgedAnimation.BridgedHitBox box = SelectedFrame.HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                    box.Right = value.Value;
+                    SelectedFrame.HitBoxes[SelectedFrameHitboxIndex] = box;
+                }
+                else return;
+            }
+        }
+        public short? SelectedHitboxBottom
+        {
+            get
+            {
+                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Bottom;
+                else return 0;
+            }
+            set
+            {
+                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue)
+                {
+                    BridgedAnimation.BridgedHitBox box = SelectedFrame.HitBoxes.ElementAt(SelectedFrameHitboxIndex);
+                    box.Bottom = value.Value;
+                    SelectedFrame.HitBoxes[SelectedFrameHitboxIndex] = box;
+                }
+                else return;
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region Cropped Frames (for Frame Viewer)
+        private List<System.Windows.Controls.Image> _AnimationFrameListSource { get; set; } = new List<System.Windows.Controls.Image>();
+        public List<System.Windows.Controls.Image> AnimationFrameListSource
+        {
+            get
+            {
+                if (CanCollectAnimationEntryInformation)
+                {
+                    _AnimationFrameListSource.Clear();
+                    for (int i = 0; i < SelectedAnimation.Frames.Count; i++)
+                    {
+                        System.Windows.Controls.Image frame = new System.Windows.Controls.Image();
+                        frame.Width = 45;
+                        frame.Height = 45;
+                        frame.Source = GetCroppedFrame(i);
+                        _AnimationFrameListSource.Add(frame);
+                    }
+                }
+                return _AnimationFrameListSource;
+            }
+        }
+        public BridgedAnimation.BridgedFrame GetAnimationFrameForCropping(int index)
+        {
+            if (CanCollectAnimationEntryInformation) return SelectedAnimation.Frames[index];
+            else return null;
+        }
+        private Dictionary<Tuple<string, int>, BitmapSource> CroppedFrames { get; set; } = new Dictionary<Tuple<string, int>, BitmapSource>(1024);
         public BitmapSource GetCroppedFrame(int texture, BridgedAnimation.BridgedFrame frame)
         {
             if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count || frame == null) return null;
             var name = LoadedAnimationFile.SpriteSheets[texture];
             var tuple = new Tuple<string, int>(name, frame.GetHashCode());
-            if (_frames.TryGetValue(tuple, out BitmapSource bitmap))
+            if (CroppedFrames.TryGetValue(tuple, out BitmapSource bitmap))
                 return bitmap;
             var textureBitmap = SpriteSheets[texture];
 
             if (NullSpriteSheetList.Contains(name))
             {
                 bitmap = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgr24, null, new byte[3] { 0, 0, 0 }, 3);
-                return _frames[tuple] = bitmap;
+                return CroppedFrames[tuple] = bitmap;
             }
 
             if (frame.Width > 0 && frame.Height > 0 && textureBitmap != null && textureBitmap.isReady)
@@ -118,548 +625,25 @@ namespace AnimationEditor.Animation
             {
                 bitmap = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgr24, null, new byte[3] { 0, 0, 0 }, 3);
             }
-            return _frames[tuple] = bitmap;
+            return CroppedFrames[tuple] = bitmap;
         }
-
-        public void InvalidateFrame(int texture, BridgedAnimation.BridgedFrame frame)
+        public BitmapSource GetCroppedFrame(int index)
+        {
+            if (GetAnimationFrameForCropping(index) == null) return null;
+            return GetCroppedFrame(GetAnimationFrameForCropping(index).SpriteSheet, GetAnimationFrameForCropping(index));
+        }
+        public void InvalidateCroppedFrame(int texture, BridgedAnimation.BridgedFrame frame)
         {
             if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count)
                 return;
             var name = LoadedAnimationFile.SpriteSheets[texture];
-            _frames.Remove(new Tuple<string, int>(name, frame.GetHashCode()));
+            CroppedFrames.Remove(new Tuple<string, int>(name, frame.GetHashCode()));
         }
-
-        public BitmapSource GetFrameImage(int index)
+        public void InvalidateCroppedFrame(int index)
         {
-            if (GetAnimationFrame(index) == null) return null;
-            return GetCroppedFrame(GetAnimationFrame(index).SpriteSheet, GetAnimationFrame(index));
+            if (GetAnimationFrameForCropping(index) == null) return;
+            InvalidateCroppedFrame(GetAnimationFrameForCropping(index).SpriteSheet, GetAnimationFrameForCropping(index));
         }
-
-        public void InvalidateFrameImage(int index)
-        {
-            if (GetAnimationFrame(index) == null) return;
-            InvalidateFrame(GetAnimationFrame(index).SpriteSheet, GetAnimationFrame(index));
-        }
-
-        public List<BridgedAnimation.BridgedAnimationEntry> GetAnimations()
-        {
-            if (LoadedAnimationFile != null) return LoadedAnimationFile.Animations;
-            else return null;
-        }
-        public void SetAnimations(List<BridgedAnimation.BridgedAnimationEntry> value)
-        {
-            if (LoadedAnimationFile != null) LoadedAnimationFile.Animations = value;
-            else return;
-        }
-
-        public int GetCurrentFrameIndexForAllAnimations()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1)
-            {
-                int frames = 0;
-                for (int i = 0; i < SelectedAnimationIndex; i++)
-                {
-                    frames += LoadedAnimationFile.Animations[i].Frames.Count();
-                }
-                frames += SelectedFrameIndex;
-                return frames;
-            }
-            else return -1;
-        }
-
-        public int GetCurrentFrameCount()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Count - 1;
-            else return -1;
-        }
-
-        public int GetCurrentAnimationCount()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations.Count - 1;
-            else return -1;
-        }
-
-        public double BorderLeft => GetBorderLeft();
-        public double BorderTop => GetBorderTop();
-
-        public double SpriteLeft => GetSpriteLeft();
-        public double SpriteTop => GetSpriteTop();
-        public double SpriteRight => GetSpriteRight();
-        public double SpriteBottom => GetSpriteBottom();
-
-        public double HitboxLeft => GetHitboxLeft();
-        public double HitboxTop => GetHitboxTop();
-        public Rect SpriteFrame => GetFrame();
-        public Point SpriteCenter
-        {
-            get
-            {
-                return new Point(0, 0);
-            }
-        }
-
-        public double GetBorderTop()
-        {
-            double Center = ViewHeight / 2.0;
-            double FrameTop = SelectedFrameTop ?? 0;
-            double FrameCenterY = SelectedFramePivotY ?? 0;
-            return (int)((Center) + FrameCenterY * Zoom);
-        }
-
-        public double GetBorderLeft()
-        {
-            double Center = ViewWidth / 2.0;
-            double FrameLeft = SelectedFrameLeft ?? 0;
-            double FrameCenterX = SelectedFramePivotX ?? 0;
-            return (int)((Center) + FrameCenterX * Zoom);
-        }
-
-
-        public double GetSpriteTop()
-        {
-            double Center = ViewHeight / 2.0;
-            double FrameTop = SelectedFrameTop ?? 0;
-            double FrameCenterY = SelectedFramePivotY ?? 0;
-            double FrameHeight = SelectedFrameHeight ?? 0;
-            return (int)(Center - FrameTop * Zoom) + FrameCenterY * Zoom;
-        }
-
-        public double GetSpriteLeft()
-        {
-            double Center = ViewWidth / 2.0;
-            double FrameLeft = SelectedFrameLeft ?? 0;
-            double FrameCenterX = SelectedFramePivotX ?? 0;
-            double FrameWidth = SelectedFrameWidth ?? 0;
-            return (int)(Center - FrameLeft * Zoom) + FrameCenterX * Zoom;
-        }
-
-        public double GetSpriteRight()
-        {
-            if (FullFrameMode)
-            {
-                return 0;
-            }
-            else
-            {
-                double FrameWidth = SelectedFrameWidth ?? 0;
-                return (int)(SpriteLeft + FrameWidth * Zoom);
-            }
-
-        }
-
-        public double GetSpriteBottom()
-        {
-            if (FullFrameMode)
-            {
-                return 0;
-            }
-            else
-            {
-                double FrameHeight = SelectedFrameHeight ?? 0;
-                return (int)(SpriteTop + FrameHeight * Zoom);
-            }
-
-        }
-
-        public double GetHitboxTop()
-        {
-            double FrameCenterY = SelectedFramePivotY ?? 0;
-            double Center = ViewHeight / 2.0;
-            double HitboxOffset = SelectedHitboxRight * Zoom;
-            return Center + HitboxOffset;
-        }
-
-        public double GetHitboxLeft()
-        {
-            double Center = ViewWidth / 2.0;
-            double HitboxOffset = SelectedHitboxLeft * Zoom;
-            return Center + HitboxOffset;
-        }
-
-        public double SpriteScaleX { get => Zoom; set => Zoom = value; }
-
-        public double Zoom = 1;
-        public Rect GetFrame()
-        {
-            if (SelectedFrameLeft != null && SelectedFrameTop != null && SelectedFrameWidth != null && SelectedFrameHeight != null)
-            {
-                if (SpriteSheets != null && isCurrentSpriteSheetValid())
-                {
-                    if (FullFrameMode)
-                    {
-                        if (!NullSpriteSheetList.Contains(SpriteSheetPaths[(int)CurrentSpriteSheet.Value])) return new Rect(0, 0, SpriteSheets[(int)CurrentSpriteSheet.Value].Image.Width, SpriteSheets[(int)CurrentSpriteSheet.Value].Image.Height);
-                        else return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
-
-                    }
-                    else
-                    {
-                        return new Rect(SelectedFrameLeft.Value, SelectedFrameTop.Value, SelectedFrameWidth.Value, SelectedFrameHeight.Value);
-                    }
-                }
-                else
-                {
-                    return new Rect(0, 0, 0.5, 0.5);
-
-                }
-
-
-            }
-            return new Rect(0, 0, 0.5, 0.5);
-
-        }
-
-
-        public bool isCurrentSpriteSheetValid()
-        {
-            if ((int)CurrentSpriteSheet < SpriteSheets.Count)
-            {
-                if (SpriteSheets[(int)CurrentSpriteSheet].isReady) return true;
-                else return false;
-            }
-            else return false;
-
-        }
-
-        public BridgedAnimation.BridgedFrame GetAnimationFrame(int index)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[index];
-            else return null;
-        }
-
-        public List<string> GetSpriteSheetsList()
-        {
-            if (LoadedAnimationFile != null) return LoadedAnimationFile.SpriteSheets;
-            else return null;
-        }
-
-        public List<string> GetHitboxesList()
-        {
-            if (LoadedAnimationFile != null) return LoadedAnimationFile.CollisionBoxes;
-            else return null;
-        }
-
-        public List<BridgedAnimation.BridgedFrame> GetAnimationsFrames()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames;
-            else return null;
-        }
-
-        public byte GetLoopIndex()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].LoopIndex;
-            else return 0;
-        }
-        public short GetSpeedMultiplyer()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].SpeedMultiplyer;
-            else return 0;
-        }
-        public byte GetRotationFlag()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].RotationFlags;
-            else return 0;
-        }
-
-        public void SetLoopIndex(byte? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].LoopIndex = value.Value;
-            else return;
-        }
-        public void SetSpeedMultiplyer(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].SpeedMultiplyer = value.Value;
-            else return;
-        }
-        public void SetRotationFlag(byte? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].RotationFlags = value.Value;
-            else return;
-        }
-
-        public void SetHitboxesList(List<string> value)
-        {
-            if (LoadedAnimationFile != null) LoadedAnimationFile.CollisionBoxes = value;
-            else return;
-        }
-
-        #region Hitboxes
-
-        public List<string> GetCollisionBoxes()
-        {
-            if (LoadedAnimationFile != null) return LoadedAnimationFile.CollisionBoxes;
-            else return new List<string> { "" };
-
-        }
-
-        public List<BridgedAnimation.BridgedHitBox> GetHitBoxes()
-        {
-            return null;
-        }
-
-        #endregion
-
-
-        #region Frame Info
-
-        public short? SelectedFramePivotX { get => GetPivotX(); set => SetPivotX(value); }
-        public short? SelectedFramePivotY { get => GetPivotY(); set => SetPivotY(value); }
-        public short? SelectedFrameHeight { get => GetHeight(); set => SetHeight(value); }
-        public short? SelectedFrameWidth { get => GetWidth(); set => SetWidth(value); }
-        public short? SelectedFrameLeft { get => GetX(); set => SetX(value); }
-        public short? SelectedFrameTop { get => GetY(); set => SetY(value); }
-        public ushort? SelectedFrameID { get => GetID(); set => SetID(value); }
-        public short? SelectedFrameDuration { get { return GetDelay(); } set { SetDelay(value); } }
-        public byte? CurrentSpriteSheet { get => GetSpriteSheet(); set => SetSpriteSheet(value); }
-
-        #region Get Methods
-        public byte GetSpriteSheet()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].SpriteSheet;
-            else return 0;
-        }
-        public short GetPivotX()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].PivotX;
-            else return 0;
-        }
-        public short GetPivotY()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].PivotY;
-            else return 0;
-        }
-        public short GetHeight()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Height;
-            else return 0;
-        }
-        public short GetWidth()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Width;
-            else return 0;
-        }
-        public short GetX()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].X;
-            else return 0;
-        }
-        public short GetY()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Y;
-            else return 0;
-        }
-        public ushort GetID()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1)
-            {
-                if (LoadedAnimationFile.EngineType == EngineType.RSDKv5)
-                {
-                    return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID;
-
-                }
-                else if (LoadedAnimationFile.EngineType != EngineType.RSDKvRS)
-                {
-                    return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].CollisionBox;
-                }
-                else
-                {
-                    return LoadedAnimationFile.PlayerType;
-                }
-
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        public short GetDelay()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Delay;
-            else return 0;
-        }
-        #endregion
-        #region Set Methods
-        public void SetSpriteSheet(byte? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].SpriteSheet = value.Value;
-            else return;
-        }
-        public void SetPivotX(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].PivotX = value.Value;
-            else return;
-        }
-        public void SetPivotY(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].PivotY = value.Value;
-            else return;
-        }
-        public void SetHeight(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Height = value.Value;
-            else return;
-        }
-        public void SetWidth(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Width = value.Value;
-            else return;
-        }
-        public void SetX(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].X = value.Value;
-            else return;
-        }
-        public void SetY(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Y = value.Value;
-            else return;
-        }
-        public void SetID(ushort? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue)
-            {
-                if (LoadedAnimationFile.EngineType == EngineType.RSDKvRS)
-                {
-                    LoadedAnimationFile.PlayerType = (byte)value.Value;
-                }
-                else if (LoadedAnimationFile.EngineType == EngineType.RSDKv5)
-                {
-                    LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].ID = value.Value;
-                }
-                else
-                {
-                    LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].CollisionBox = (byte)value.Value;
-                }
-            }
-            else
-            {
-                return;
-            }
-        }
-        public void SetDelay(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && value.HasValue) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].Delay = value.Value;
-            else return;
-        }
-        #endregion
-
-        #region Hitbox Info
-
-        public int SelectedFrameHitboxIndex { get; set; }
-
-        public BridgedAnimation.BridgedHitBox SelectedHitbox { get => GetSelectedHitbox(); set => SetSelectedHitbox(value); }
-
-        public short SelectedHitboxLeft { get => GetCurrentHitboxLeft(); set => SetCurrentHitboxLeft(value); }
-
-        public short SelectedHitboxTop { get => GetCurrentHitboxTop(); set => SetCurrentHitboxTop(value); }
-
-        public short SelectedHitboxRight { get => GetCurrentHitboxRight(); set => SetCurrentHitboxRight(value); }
-
-        public short SelectedHitboxBottom { get => GetCurrentHitboxBottom(); set => SetCurrentHitboxBottom(value); }
-
-        #region Get Methods
-
-        public BridgedAnimation.BridgedHitBox GetSelectedHitbox()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex];
-            else return null;
-        }
-        public int GetCurrentHitboxIndex()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].CollisionBox;
-            else return -1;
-        }
-
-        public short GetCurrentHitboxLeft()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Left;
-            else return 0;
-        }
-
-        public short GetCurrentHitboxTop()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Top;
-            else return 0;
-        }
-
-        public short GetCurrentHitboxRight()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Right;
-            else return 0;
-        }
-
-        public short GetCurrentHitboxBottom()
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1 && LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.Count > 0) return LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex].Bottom;
-            else return 0;
-        }
-
-        #endregion
-
-        #region Set Methods
-
-        public void SetSelectedHitbox(BridgedAnimation.BridgedHitBox value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = value;
-            else return;
-        }
-        public void SetCurrentHitboxIndex(int value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1) LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].CollisionBox = (byte)value;
-            else return;
-        }
-
-        public void SetCurrentHitboxLeft(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
-            {
-                BridgedAnimation.BridgedHitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
-                box.Left = value.Value;
-                LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
-            }
-            else return;
-        }
-
-        public void SetCurrentHitboxTop(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
-            {
-                BridgedAnimation.BridgedHitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
-                box.Top = value.Value;
-                LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
-            }
-            else return;
-        }
-
-        public void SetCurrentHitboxRight(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
-            {
-                BridgedAnimation.BridgedHitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
-                box.Right = value.Value;
-                LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
-            }
-            else return;
-        }
-
-        public void SetCurrentHitboxBottom(short? value)
-        {
-            if (LoadedAnimationFile != null && SelectedAnimationIndex != -1 && SelectedFrameIndex != -1 && SelectedFrameHitboxIndex != -1)
-            {
-                BridgedAnimation.BridgedHitBox box = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes.ElementAt(SelectedFrameHitboxIndex);
-                box.Bottom = value.Value;
-                LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[SelectedFrameIndex].HitBoxes[SelectedFrameHitboxIndex] = box;
-            }
-            else return;
-        }
-
-        #endregion
-
-
-
-        #endregion
-
-        #endregion
-
         #endregion
 
         #region Animation and Frame Management
@@ -667,15 +651,15 @@ namespace AnimationEditor.Animation
         public void ShiftFrameRight(int frameID)
         {
             int parentID = frameID + 1;
-            if (parentID < 0 || parentID > LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Count()) return;
-            var targetFrame = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID];
-            var parentFrame = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[parentID];
+            if (parentID < 0 || parentID > SelectedAnimation.Frames.Count()) return;
+            var targetFrame = SelectedAnimation.Frames[frameID];
+            var parentFrame = SelectedAnimation.Frames[parentID];
 
-            int parentIndex = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.IndexOf(parentFrame);
-            int targetIndex = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.IndexOf(parentFrame);
+            int parentIndex = SelectedAnimation.Frames.IndexOf(parentFrame);
+            int targetIndex = SelectedAnimation.Frames.IndexOf(parentFrame);
 
-            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Remove(targetFrame);
-            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(parentIndex, targetFrame);
+            SelectedAnimation.Frames.Remove(targetFrame);
+            SelectedAnimation.Frames.Insert(parentIndex, targetFrame);
 
 
         }
@@ -683,15 +667,15 @@ namespace AnimationEditor.Animation
         public void ShiftFrameLeft(int frameID)
         {
             int parentID = frameID - 1;
-            if (parentID < 0 || parentID > LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Count()) return;
-            var targetFrame = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID];
-            var parentFrame = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[parentID];
+            if (parentID < 0 || parentID > SelectedAnimation.Frames.Count()) return;
+            var targetFrame = SelectedAnimation.Frames[frameID];
+            var parentFrame = SelectedAnimation.Frames[parentID];
 
-            int parentIndex = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.IndexOf(parentFrame);
-            int targetIndex = LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.IndexOf(parentFrame);
+            int parentIndex = SelectedAnimation.Frames.IndexOf(parentFrame);
+            int targetIndex = SelectedAnimation.Frames.IndexOf(parentFrame);
 
-            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Remove(targetFrame);
-            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(parentIndex, targetFrame);
+            SelectedAnimation.Frames.Remove(targetFrame);
+            SelectedAnimation.Frames.Insert(parentIndex, targetFrame);
         }
 
         public void ShiftAnimationUp(int animID)
@@ -724,19 +708,19 @@ namespace AnimationEditor.Animation
 
         public void RemoveFrame(int frameID)
         {
-            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.RemoveAt(frameID);
+            if (frameID != -1) SelectedAnimation.Frames.RemoveAt(frameID);
         }
 
         public void AddFrame(int frameID)
         {
-            var frame = new BridgedAnimation.BridgedFrame(AnimationType, LoadedAnimationFile.Animations[SelectedAnimationIndex]);
-            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
+            var frame = new BridgedAnimation.BridgedFrame(AnimationType, SelectedAnimation);
+            SelectedAnimation.Frames.Insert(frameID, frame);
         }
 
         public void DuplicateFrame(int frameID)
         { 
-            var frame = (BridgedAnimation.BridgedFrame)LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames[frameID].Clone();
-            LoadedAnimationFile.Animations[SelectedAnimationIndex].Frames.Insert(frameID, frame);
+            var frame = (BridgedAnimation.BridgedFrame)SelectedAnimation.Frames[frameID].Clone();
+            SelectedAnimation.Frames.Insert(frameID, frame);
         }
 
         public void RemoveAnimation(int animID)
@@ -760,6 +744,5 @@ namespace AnimationEditor.Animation
 
 
         #endregion
-
     }
 }

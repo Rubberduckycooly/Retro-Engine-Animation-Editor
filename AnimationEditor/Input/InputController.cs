@@ -207,11 +207,11 @@ namespace AnimationEditor.Services
         private void AdjustFrameSize(double distanceX, double distanceY, MouseEventArgs e)
         {
             if (IsCtrlPressed()) AdjustNUDs(Instance.FrameHeightNUD, Instance.FrameWidthNUD, true, true, IsCtrlPressed(), IsCtrlPressed());
-            if (IsShiftPressed()) AdjustNUDs(Instance.FrameTopNUD, Instance.FrameLeftNUD, false, false, IsShiftPressed(), IsShiftPressed());
+            if (IsShiftPressed()) AdjustNUDs(Instance.FrameY_NUD, Instance.FrameX_NUD, false, false, IsShiftPressed(), IsShiftPressed());
 
             void AdjustNUDs(Xceed.Wpf.Toolkit.IntegerUpDown Y, Xceed.Wpf.Toolkit.IntegerUpDown X, bool NegX = false, bool NegY = false, bool XAllowed = false, bool YAllowed = false)
             {
-                Instance.Interfacer.UpdateNUD_Cap_Values();
+                Instance.Interfacer.UpdateCurrentFrameMaxMinProperties();
                 if (dirY >= 1 || dirY <= -1)
                 {
                     int YResult = Y.Value.Value - (NegY ? -(int)distanceY : (int)distanceY);
@@ -226,7 +226,7 @@ namespace AnimationEditor.Services
                     AnchorPoint = e.GetPosition(Instance);
                     dirY = 0;
                 }
-                Instance.Interfacer.UpdateNUD_Cap_Values();
+                Instance.Interfacer.UpdateCurrentFrameMaxMinProperties();
                 if (dirX >= 1 || dirX <= -1)
                 {
                     int XResult = X.Value.Value - (NegX ? -(int)distanceX : (int)distanceX);
@@ -287,7 +287,7 @@ namespace AnimationEditor.Services
                 }
                 else if (IsShiftPressed())
                 {
-                    Instance.FrameTopNUD.Value += 1;
+                    Instance.FrameY_NUD.Value += 1;
                 }
             }
             if (e.Key == Key.Up)
@@ -302,7 +302,7 @@ namespace AnimationEditor.Services
                 }
                 else if (IsShiftPressed())
                 {
-                    Instance.FrameTopNUD.Value -= 1;
+                    Instance.FrameY_NUD.Value -= 1;
                 }
             }
             if (e.Key == Key.Left)
@@ -317,7 +317,7 @@ namespace AnimationEditor.Services
                 }
                 else if (IsShiftPressed())
                 {
-                    Instance.FrameLeftNUD.Value -= 1;
+                    Instance.FrameX_NUD.Value -= 1;
                 }
             }
             if (e.Key == Key.Right)
@@ -332,7 +332,7 @@ namespace AnimationEditor.Services
                 }
                 else if (IsShiftPressed())
                 {
-                    Instance.FrameLeftNUD.Value += 1;
+                    Instance.FrameX_NUD.Value += 1;
                 }
             }
         }

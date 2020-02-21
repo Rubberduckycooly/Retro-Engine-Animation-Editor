@@ -16,6 +16,7 @@ using GenerationsLib.Core;
 using AnimationEditor.Animation.Classes;
 using AnimationEditor.Animation.Methods;
 using AnimationEditor.Pages;
+using RecentFile = AnimationEditor.Animation.Classes.Settings.Instance.RecentFile;
 
 namespace AnimationEditor.Animation.Methods
 {
@@ -50,7 +51,7 @@ namespace AnimationEditor.Animation.Methods
             fd.Filter = string.Join("", FilterOpen);
             if (fd.ShowDialog() == true)
             {
-                AddRecentDataFolder(fd.FileName + "," + GetTypeStringFromFilterIndex(fd.FilterIndex));
+                AddRecentDataFolder(fd.FileName, fd.FileName, GetTypeStringFromFilterIndex(fd.FilterIndex));
                 LoadFile(fd);
             }
             Instance.Interfacer.PreventIndexUpdate = false;
@@ -61,10 +62,10 @@ namespace AnimationEditor.Animation.Methods
             Instance.Interfacer.PreventIndexUpdate = true;
             UnloadAnimationData();
             LoadFile(file, type);
-            UpdateRecentsDropDown();
+            UpdateRecentsDropDown("","","");
             Instance.Interfacer.PreventIndexUpdate = false;
-            Instance.Interfacer.UpdateUI();
-            Instance.Interfacer.Render();
+            Instance.Interfacer.UpdateControls();
+            Instance.Interfacer.UpdateCanvasVisual();
         }
         #endregion
 
@@ -109,12 +110,11 @@ namespace AnimationEditor.Animation.Methods
             else { Instance.FlagsSelector.IsEnabled = true; }
 
             //For RSDKvRS, RSDKv1 and RSDKv2 & RSDKvB there is no ID and the Delay is always 256, so there is no point to let users change their values
-            if (engineType != EngineType.RSDKv5) { Instance.DelayNUD.IsEnabled = false; Instance.IdentificationNUD.IsEnabled = false; }
+            if (engineType != EngineType.RSDKv5) { Instance.Delay_NUD.IsEnabled = false; Instance.FrameID_NUD.IsEnabled = false; }
 
-            if (engineType == EngineType.RSDKv1) { Instance.IdentificationNUD.IsEnabled = true; Instance.IDLabel.Text = "PlayerID"; }
-            else { Instance.IDLabel.Text = "ID"; }
+            if (engineType == EngineType.RSDKv1) { Instance.FrameID_NUD.IsEnabled = true; }
 
-            if (engineType == EngineType.RSDKv5) { Instance.DelayNUD.IsEnabled = true; Instance.IdentificationNUD.IsEnabled = true; }
+            if (engineType == EngineType.RSDKv5) { Instance.Delay_NUD.IsEnabled = true; Instance.FrameID_NUD.IsEnabled = true; }
 
             Instance.AnimationType = engineType;
 
@@ -187,7 +187,7 @@ namespace AnimationEditor.Animation.Methods
             fd.Filter = string.Join("", FilterOpen);
             if (fd.ShowDialog() == true)
             {
-                UpdateRecentsDropDown(fd.FileName+","+GetTypeStringFromFilterIndex(fd.FilterIndex));
+                UpdateRecentsDropDown(fd.FileName, fd.FileName, GetTypeStringFromFilterIndex(fd.FilterIndex));
 
                 Instance.AnimationType = GetTypeFromFilterIndex(fd.FilterIndex);
                 Instance.ViewModel.LoadedAnimationFile.SaveTo(Instance.AnimationType, fd.FileName);
@@ -332,7 +332,7 @@ namespace AnimationEditor.Animation.Methods
                 string placeToSave = fd.FileName;
                 for (int i = 0; i < Instance.ViewModel.LoadedAnimationFile.Animations[Instance.ViewModel.SelectedAnimationIndex].Frames.Count; i++)
                 {
-                    var img = Instance.ViewModel.GetFrameImage(i);
+                    var img = Instance.ViewModel.GetCroppedFrame(i);
                     string fileName = Path.GetFileNameWithoutExtension(Instance.ViewModel.AnimationFilepath) + string.Format("_{0}_{1}.png", Instance.ViewModel.SelectedAnimationIndex, i);
                     string filePath = Path.Combine(placeToSave, fileName);
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -404,22 +404,22 @@ namespace AnimationEditor.Animation.Methods
 
         #region Recent Files (Lifted from Maniac Editor)
 
-        public void UpdateRecentsDropDown(string itemToAdd = "")
+        public void UpdateRecentsDropDown(string name, string filepath, string format)
         {
-            if (itemToAdd != "") AddRecentDataFolder(itemToAdd);
-            RefreshDataDirectories(Properties.Settings.Default.RecentFiles);
+            if (name != "" && filepath != "" && format != "") AddRecentDataFolder(filepath, name, format);
+            RefreshDataDirectories();
         }
 
         public void RecentDataDirectoryClicked(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as System.Windows.Controls.MenuItem;
-            string dataDirectory = menuItem.Tag.ToString();
-            var dataDirectories = Properties.Settings.Default.RecentFiles;
-            if (File.Exists(dataDirectory))
+            RecentFile dataDirectory = menuItem.Tag as RecentFile;
+            var dataDirectories = AnimationEditor.Animation.Classes.Settings.Default.RecentFiles;
+            if (File.Exists(dataDirectory.FilePath))
             {
-                EngineType type = GetInputGestureTextEngineType(menuItem.InputGestureText);
-                AddRecentDataFolder(dataDirectory + "," + menuItem.InputGestureText);
-                OpenFile(dataDirectory, type);
+                EngineType type = GetInputGestureTextEngineType(dataDirectory.Format);
+                AddRecentDataFolder(dataDirectory.FilePath, dataDirectory.Name, dataDirectory.Format);
+                OpenFile(dataDirectory.FilePath, type);
             }
             else
             {
@@ -428,15 +428,16 @@ namespace AnimationEditor.Animation.Methods
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
                 dataDirectories.Remove(dataDirectory);
-                RefreshDataDirectories(dataDirectories);
+                RefreshDataDirectories();
 
             }
-            Properties.Settings.Default.Save();
+            AnimationEditor.Animation.Classes.Settings.Save();
         }
 
-        public void RefreshDataDirectories(System.Collections.Specialized.StringCollection recentDataDirectories)
+        public void RefreshDataDirectories()
         {
-            if (Properties.Settings.Default.RecentFiles?.Count > 0)
+            List<AnimationEditor.Animation.Classes.Settings.Instance.RecentFile> recentDataDirectories = AnimationEditor.Animation.Classes.Settings.Default.RecentFiles;
+            if (AnimationEditor.Animation.Classes.Settings.Default.RecentFiles?.Count > 0)
             {
                 Instance.NoRecentFiles.Visibility = Visibility.Collapsed;
                 CleanUpRecentList();
@@ -445,11 +446,7 @@ namespace AnimationEditor.Animation.Methods
 
                 foreach (var dataDirectory in recentDataDirectories)
                 {
-                    string[] split = dataDirectory.Split(',');
-                    string target = split[0];
-                    string path = "?";
-                    if (split.ElementAtOrDefault(1) != null) path = split[1];
-                    RecentItems.Add(CreateDataDirectoryMenuLink(target, path));
+                    RecentItems.Add(CreateDataDirectoryMenuLink(dataDirectory));
                 }
 
 
@@ -468,12 +465,12 @@ namespace AnimationEditor.Animation.Methods
 
         }
 
-        private MenuItem CreateDataDirectoryMenuLink(string target, string ext = "?")
+        private MenuItem CreateDataDirectoryMenuLink(RecentFile file)
         {
             MenuItem newItem = new MenuItem();
-            newItem.Header = target;
-            newItem.InputGestureText = ext;
-            newItem.Tag = target;
+            newItem.Header = file.FilePath;
+            newItem.InputGestureText = file.Format;
+            newItem.Tag = file;
             newItem.Click += RecentDataDirectoryClicked;
             return newItem;
         }
@@ -517,7 +514,6 @@ namespace AnimationEditor.Animation.Methods
                 }
             }
         }
-
         private string GetRecentItemFileVersion(string target)
         {
             byte[] Header = null;
@@ -564,7 +560,6 @@ namespace AnimationEditor.Animation.Methods
 
             }
         }
-
         private bool HeaderMatches(byte[] target, byte[] format) {
             for (int i = 0; i < 4; i++)
             {
@@ -575,7 +570,6 @@ namespace AnimationEditor.Animation.Methods
             }
             return true;
         }
-
         private void CleanUpRecentList()
         {
             foreach (var menuItem in RecentItems)
@@ -586,47 +580,49 @@ namespace AnimationEditor.Animation.Methods
 
             List<string> ItemsForRemoval = new List<string>();
 
-            for (int i = 0; i < Properties.Settings.Default.RecentFiles.Count; i++)
+            for (int i = 0; i < AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.Count; i++)
             {
-                if (File.Exists(Properties.Settings.Default.RecentFiles[i])) continue;
-                else ItemsForRemoval.Add(Properties.Settings.Default.RecentFiles[i]);
+                if (File.Exists(AnimationEditor.Animation.Classes.Settings.Default.RecentFiles[i].FilePath)) continue;
+                else ItemsForRemoval.Add(AnimationEditor.Animation.Classes.Settings.Default.RecentFiles[i].FilePath);
             }
             foreach(string item in ItemsForRemoval)
             {
-                Properties.Settings.Default.RecentFiles.Remove(item);
+                AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.RemoveAll(x => x.FilePath == item);
             }
 
             RecentItems.Clear();
         }
-
-        public void AddRecentDataFolder(string dataDirectory)
+        public void AddRecentDataFolder(string dataDirectory, string name, string format)
         {
             try
             {
 
-                if (Properties.Settings.Default.RecentFiles == null)
+                if (AnimationEditor.Animation.Classes.Settings.Default.RecentFiles == null)
                 {
-                    Properties.Settings.Default.RecentFiles = new System.Collections.Specialized.StringCollection();
+                    AnimationEditor.Animation.Classes.Settings.Default.RecentFiles = new List<AnimationEditor.Animation.Classes.Settings.Instance.RecentFile>();
                 }
 
-                if (Properties.Settings.Default.RecentFiles.Contains(dataDirectory))
+                if (AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.Exists(x => x.FilePath == dataDirectory))
                 {
-                    Properties.Settings.Default.RecentFiles.Remove(dataDirectory);
+                    AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.RemoveAll(x => x.FilePath == dataDirectory);
                 }
 
-                if (Properties.Settings.Default.RecentFiles.Count >= 10)
+                if (AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.Count >= 10)
                 {
-                    for (int i = 9; i < Properties.Settings.Default.RecentFiles.Count; i++)
+                    for (int i = 9; i < AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.Count; i++)
                     {
-                        Properties.Settings.Default.RecentFiles.RemoveAt(i);
+                        AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.RemoveAt(i);
                     }
                 }
 
-                Properties.Settings.Default.RecentFiles.Insert(0, dataDirectory);
+                AnimationEditor.Animation.Classes.Settings.Instance.RecentFile recentFile = new Settings.Instance.RecentFile(name, dataDirectory, format);
 
-                Properties.Settings.Default.Save();
+                AnimationEditor.Animation.Classes.Settings.Default.RecentFiles.Insert(0, recentFile);
 
-                RefreshDataDirectories(Properties.Settings.Default.RecentFiles);
+                AnimationEditor.Animation.Classes.Settings.Save();
+                AnimationEditor.Animation.Classes.Settings.Reload();
+
+                RefreshDataDirectories();
 
 
             }

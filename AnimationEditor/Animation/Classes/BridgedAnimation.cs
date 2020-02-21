@@ -232,6 +232,12 @@ namespace AnimationEditor.Animation.Classes
 
             #endregion
 
+            public BridgedFrame()
+            {
+                engineType = EngineType.Invalid;
+                Parent = null;
+            }
+
             public BridgedFrame(EngineType type, BridgedAnimationEntry parent)
             {
                 engineType = type;

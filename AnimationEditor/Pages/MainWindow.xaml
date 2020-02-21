@@ -8,8 +8,8 @@
         xmlns:render="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
         x:Class="AnimationEditor.Pages.MainWindow"
         mc:Ignorable="d"
-        Title="RSDK Animation Editor v2" MinHeight="540" Height="540" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="772" Width="772" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
-    <DockPanel x:Name="MainPanel">
+        Title="RSDK Animation Editor v2" MinHeight="550" Height="550" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="800" Width="800" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
+    <DockPanel x:Name="MainEditor">
         <Menu DockPanel.Dock="Top" x:Name="MenuStrip" Background="{DynamicResource MenuBar}" Foreground="{DynamicResource NormalText}">
             <MenuItem Header="_File">
                 <MenuItem x:Name="MenuFileOpen" Header="_Open" Click="MenuFileOpen_Click"/>
@@ -48,7 +48,7 @@
                 <MenuItem x:Name="MenuInfoAbout" Header="_About" Click="MenuInfoAbout_Click"/>
             </MenuItem>
         </Menu>
-        <Grid Margin="5" IsEnabled="{Binding IsAnimationDataLoaded}">
+        <Grid Margin="5" x:Name="MainPanel">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="162"/>
                 <ColumnDefinition Width="5"/>
@@ -178,10 +178,7 @@
                             <Image Width="16" Source="{StaticResource EditTitleString_16x}"/>
                         </Button>
                     </ToolBarPanel>
-                    <ListBox x:Name="List" Width="160" HorizontalAlignment="Left" ItemsSource="{Binding Animations}" DisplayMemberPath="AnimName"
-                         SelectedItem="{Binding SelectedAnimation, Mode=OneWayToSource}"
-                          SelectedIndex="{Binding SelectedAnimationIndex, Mode=TwoWay}"
-                             SelectionChanged="List_SelectionChanged"/>
+                    <ListBox x:Name="List" Width="160" HorizontalAlignment="Left" DisplayMemberPath="AnimName" SelectionChanged="List_SelectionChanged"/>
                 </DockPanel>
             </DockPanel>
 
@@ -192,8 +189,7 @@
                             <ColumnDefinition Width="9*"/>
                             <ColumnDefinition Width="311*"/>
                         </Grid.ColumnDefinitions>
-                        <ListBox x:Name="FramesList" ScrollViewer.HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch"
-                         SelectedIndex="{Binding SelectedFrameIndex}" SelectionChanged="FramesList_SelectionChanged" MouseDoubleClick="FramesList_MouseDoubleClick" ScrollBar.Scroll="FramesList_Scroll" Grid.ColumnSpan="2">
+                        <ListBox x:Name="FramesList" ScrollViewer.HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch" SelectionChanged="FramesList_SelectionChanged" MouseDoubleClick="FramesList_MouseDoubleClick" ScrollBar.Scroll="FramesList_Scroll" Grid.ColumnSpan="2">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
@@ -307,22 +303,19 @@
 
                         <Separator  Margin="3 0 3 0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
-                        <Button  x:Name="ButtonFrameAdd" Grid.Column="1" Click="ButtonFrameAdd_Click"
-                            IsEnabled="{Binding IsAnimationSelected}">
+                        <Button  x:Name="ButtonFrameAdd" Grid.Column="1" Click="ButtonFrameAdd_Click">
                             <Button.ToolTip>
                                 <Label Content="Create an empty frame"/>
                             </Button.ToolTip>
                             <Image Source="{StaticResource Add_16x}" Width="16"/>
                         </Button>
-                        <Button x:Name="ButtonFrameDupe" Grid.Column="1" Click="ButtonFrameDupe_Click"
-                            IsEnabled="{Binding IsFrameSelected}">
+                        <Button x:Name="ButtonFrameDupe" Grid.Column="1" Click="ButtonFrameDupe_Click">
                             <Button.ToolTip>
                                 <Label Content="Duplicate selected frame"/>
                             </Button.ToolTip>
                             <Image Source="{StaticResource Copy_16x}" Width="16"/>
                         </Button>
-                        <Button x:Name="ButtonFrameRemove" Grid.Column="1" Click="ButtonFrameRemove_Click"
-                            IsEnabled="{Binding IsFrameSelected}">
+                        <Button x:Name="ButtonFrameRemove" Grid.Column="1" Click="ButtonFrameRemove_Click">
                             <Button.ToolTip>
                                 <Label Content="Delete the selected frame"/>
                             </Button.ToolTip>
@@ -342,8 +335,7 @@
                             </Button.ContextMenu>
                             <Image Source="{StaticResource Import_16x}" Width="16"/>
                         </Button>
-                        <Button x:Name="ButtonFrameExport" Grid.Column="1" Height="20" Width="20" Click="ButtonFrameExport_Context"
-                            IsEnabled="{Binding IsFrameSelected}">
+                        <Button x:Name="ButtonFrameExport" Grid.Column="1" Height="20" Width="20" Click="ButtonFrameExport_Context">
                             <Button.ToolTip>
                                 <Label Content="Export the selected frame"/>
                             </Button.ToolTip>
@@ -446,81 +438,326 @@
                 </Border>
             </DockPanel>
 
-            <DockPanel KeyboardNavigation.DirectionalNavigation="None" Grid.Column="4"
-                          IsEnabled="{Binding IsAnimationSelected}">
-                <StackPanel x:Name="ControlPanel" Background='{DynamicResource NormalBackground2}'>
-                    <Grid Margin="0 0 0 5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="5"/>
-                            <ColumnDefinition Width="1*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="20"/>
-                            <RowDefinition Height="5"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+            <ScrollViewer KeyboardNavigation.DirectionalNavigation="None" Grid.Column="4" Grid.RowSpan="2" x:Name="ControlPanelHost" Background="Transparent">
+                <StackPanel x:Name="ControlPanel" Margin="5,0" Background="Transparent">
+                    <StackPanel Background="Transparent">
+                        <TextBlock Margin="5,0" Foreground="{DynamicResource NormalText}"><Run Text="Current animation "/><Run Text=" "/><Run x:Name="SelectedAnimationIndexLabel"/><Run Text=" "/><Run Text="- Total "/><Run Text=" "/><Run x:Name="AnimationsCountLabel"/></TextBlock>
+                        <TextBlock Margin="5,0" Foreground="{DynamicResource NormalText}"><Run Text="Current frame "/><Run Text=" "/><Run x:Name="SelectedFrameIndexLabel"/><Run Text=" "/><Run Text="- Total "/><Run Text=" "/><Run x:Name="FramesCountLabel"/><Run Text=" "/><Run Text="- All "/><Run Text=" "/><Run x:Name="AllFramesCountLabel"/></TextBlock>
+                    </StackPanel>
 
-                        <TextBlock Foreground="{DynamicResource NormalText}" Grid.Column="0" Grid.Row="0" Text="Speed"/>
-                        <xc:IntegerUpDown x:Name="SpeedNUD" Grid.Column="0" Grid.Row="1" Minimum="0" Maximum="65535"
-                                          Value="{Binding Speed, Mode=TwoWay}"/>
-                        <TextBlock Foreground="{DynamicResource NormalText}" Grid.Column="2" Grid.Row="0" Text="Loop index"/>
-                        <xc:IntegerUpDown x:Name="LoopIndexNUD" Grid.Column="2" Grid.Row="1" Minimum="0" Maximum="255"
-                                          Value="{Binding Loop, Mode=TwoWay}"/>
-
-                        <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="3" Text="Rotation Flags" Foreground="{DynamicResource NormalText}"/>
-                        <ComboBox x:Name="FlagsSelector" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="5"
-                                  SelectedIndex="{Binding Flags, Mode=TwoWay}">
-                            <TextBlock Text="No Rotation"/>
-                            <TextBlock Text="Full engine rotation"/>
-                            <TextBlock Text="45 Degree engine rotation"/>
-                            <TextBlock Text="Static rotation using extra frames"/>
-                            <TextBlock Text="1/2 Engine Rotation"/>
-                            <TextBlock Text="90 Degree Engine Rotation"/>
-                            <TextBlock Text="135/225 degree Rotation"/>
-                            <TextBlock Text="Just 135 degree Rotation"/>
-                        </ComboBox>
-
-                    </Grid>
-                    <GroupBox IsEnabled="{Binding IsNotRunning}">
-                        <GroupBox.Header>
+                    <StackPanel Background="Transparent">
+                        <GroupBox Header="Animation Entry Properties">
                             <StackPanel Background="Transparent">
-                                <TextBlock Foreground="{DynamicResource NormalText}"><Run Text="Current animation "/><Run Text=" "/><Run Text="{Binding SelectedAnimationIndex, Mode=OneWay}"/><Run Text=" "/><Run Text="- Total "/><Run Text=" "/><Run x:Name="AnimationsCountLabel" Text="{Binding AnimationsCount, Mode=OneWay}"/></TextBlock>
-                                <TextBlock Foreground="{DynamicResource NormalText}"><Run Text="Current frame "/><Run Text=" "/><Run Text="{Binding SelectedFrameIndex, Mode=OneWay}"/><Run Text=" "/><Run Text="- Total "/><Run Text=" "/><Run x:Name="FramesCountLabel" Text="{Binding FramesCount, Mode=OneWay}"/><Run Text=" "/><Run Text="- All "/><Run Text=" "/><Run x:Name="AllFramesCountLabel"/></TextBlock>
-                            </StackPanel>
-                        </GroupBox.Header>
-                        <StackPanel Background='{DynamicResource NormalBackground2}'>
-                            <TextBlock Margin="0 5 0 0" Text="Texture" Foreground="{DynamicResource NormalText}"/>
-                            <Grid Height="22">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="20"/>
-                                </Grid.ColumnDefinitions>
-                                <ComboBox x:Name="SpriteSheetList" SelectionChanged="SpriteSheetList_SelectionChanged" ItemsSource="{Binding SpriteSheetPaths}" SelectedIndex="{Binding CurrentSpriteSheet, Mode=TwoWay}"/>
-                                <Button x:Name="TextureButton"  Click="MenuViewTexture_Click" Grid.Column="1" Content="..." VerticalContentAlignment="Top"/>
-                                <Popup x:Name="TextureManagerPopup" StaysOpen="False" Width="{Binding ActualWidth, ElementName=PopupHost}" Height="{Binding ActualHeight, ElementName=PopupHost}" VerticalOffset="{Binding ActualHeight, ElementName=PopupHost}" PlacementTarget="{Binding ElementName=PopupHost}" Placement="Top" IsOpen="False" LostFocus="TextureManagerPopup_LostFocus">
-                                    <StackPanel>
-                                        <local:TextureManager Width="{Binding ActualWidth, ElementName=PopupHost}" Height="{Binding ActualHeight, ElementName=PopupHost}" x:Name="TextureManagerMenu" Margin="0" Padding="0"/>
-                                    </StackPanel>
-                                </Popup>
-                            </Grid>
+                                <Grid Margin="0 0 0 5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="25"/>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
 
-                            <TextBlock Margin="0 5 0 0" Text="Hitbox" Foreground="{DynamicResource NormalText}"/>
-                            <Grid Height="22">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="20"/>
-                                </Grid.ColumnDefinitions>
-                                <ComboBox SelectionChanged="HitBoxComboBox_SelectionChanged" MouseDoubleClick="HitBoxComboBox_MouseDoubleClick" x:Name="HitBoxComboBox" ItemsSource="{Binding CollisionBoxesNames}" Visibility="{Binding HitboxV3Visibility}" SelectedIndex="{Binding SelectedFrameHitboxIndex, Mode=TwoWay}"/>
-                                <Button x:Name="HitboxButton"  Click="MenuViewHitbox_Click" Grid.Column="1" Content="..." VerticalContentAlignment="Top"/>
-                                <Popup x:Name="HitboxManagerPopup" PlacementTarget="{Binding ElementName=HitboxButton}" Placement="Left" HorizontalOffset="{Binding ActualWidth, ElementName=HitboxButton}" VerticalOffset="{Binding ActualHeight, ElementName=HitboxButton}" StaysOpen="False" IsOpen="False" LostFocus="HitboxManagerPopup_LostFocus">
-                                    <StackPanel>
-                                        <local:HitboxManager x:Name="HitboxManagerMenu" Margin="0" Padding="0"/>
+                                    <Grid Margin="3,3,3,3" Grid.ColumnSpan="5" Grid.RowSpan="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                            <RowDefinition Height="25"/>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+
+                                        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="65"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="25"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="Speed" Foreground="{DynamicResource NormalText}"/>
+                                            <xc:IntegerUpDown x:Name="SpeedNUD" Grid.Column="1" Margin="0,2" Minimum="0" Maximum="65535"/>
+                                        </Grid>
+                                        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="65"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="25"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="Loop Index" Foreground="{DynamicResource NormalText}"/>
+                                            <xc:IntegerUpDown x:Name="LoopIndexNUD" Grid.Column="2" Grid.Row="1" Margin="0,2" Minimum="0" Maximum="255"/>
+                                        </Grid>
+                                        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="65"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="25"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="PlayerID" Foreground="{DynamicResource NormalText}"/>
+                                            <xc:IntegerUpDown Margin="0,2" Grid.Column="1" x:Name="PlayerID_NUD"/>
+                                        </Grid>
+                                    </Grid>
+
+                                    <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="3" Text="Rotation Flags" Foreground="{DynamicResource NormalText}"/>
+                                    <ComboBox x:Name="FlagsSelector" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="5">
+                                        <TextBlock Text="No Rotation"/>
+                                        <TextBlock Text="Full engine rotation"/>
+                                        <TextBlock Text="45 Degree engine rotation"/>
+                                        <TextBlock Text="Static rotation using extra frames"/>
+                                        <TextBlock Text="1/2 Engine Rotation"/>
+                                        <TextBlock Text="90 Degree Engine Rotation"/>
+                                        <TextBlock Text="135/225 degree Rotation"/>
+                                        <TextBlock Text="Just 135 degree Rotation"/>
+                                    </ComboBox>
+
+                                </Grid>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="Sprite Properties">
+                            <StackPanel Background="Transparent">
+                                <Grid Margin="3">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="25"/>
+                                        <RowDefinition Height="25"/>
+                                        <RowDefinition Height="25"/>
+                                        <RowDefinition Height="25"/>
+                                        <RowDefinition Height="25"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Grid Grid.Row="0" Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="X" Foreground="{DynamicResource NormalText}"/>
+                                        <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" Margin="0,2" x:Name="FrameX_NUD" Grid.Column="1" Minimum="0" Maximum="32767"/>
+                                    </Grid>
+
+                                    <Grid Grid.Row="1" Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="Y" Foreground="{DynamicResource NormalText}"/>
+                                        <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" Margin="0,2" x:Name="FrameY_NUD" Grid.Column="1" Minimum="0" Maximum="32767"/>
+                                    </Grid>
+
+                                    <Grid Grid.Row="0" Grid.Column="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="Width" Foreground="{DynamicResource NormalText}"/>
+                                        <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" Margin="0,2" x:Name="FrameWidthNUD" Grid.Column="1" Minimum="0" Maximum="32767"/>
+                                    </Grid>
+
+                                    <Grid Grid.Row="1" Grid.Column="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="Height" Foreground="{DynamicResource NormalText}"/>
+                                        <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" Margin="0,2" x:Name="FrameHeightNUD"  Grid.Column="1" Minimum="0" Maximum="32767"/>
+                                    </Grid>
+
+                                    <Grid Grid.Row="2" Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="PivotX" Foreground="{DynamicResource NormalText}"/>
+                                        <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" Margin="0,2" x:Name="PivotX_NUD" Grid.Column="1" Grid.Row="5" Minimum="-32768" Maximum="32767"/>
+                                    </Grid>
+
+
+                                    <Grid Grid.Row="3" Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="PivotY" Foreground="{DynamicResource NormalText}"/>
+                                        <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" Margin="0,2" x:Name="PivotY_NUD" Grid.Column="1" Minimum="-32768" Maximum="32767"/>
+                                    </Grid>
+
+
+                                    <Grid Grid.Row="2" Grid.Column="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="FrameID" Foreground="{DynamicResource NormalText}"/>
+                                        <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" Margin="0,2" x:Name="FrameID_NUD" Grid.Column="1" Minimum="0" Maximum="65535"/>
+                                    </Grid>
+
+
+                                    <Grid Grid.Row="3" Grid.Column="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="Duration" Foreground="{DynamicResource NormalText}"/>
+                                        <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" Margin="0,2" x:Name="Delay_NUD" Grid.Column="1" Minimum="0" Maximum="65535"/>
+                                    </Grid>
+
+                                    <Grid Grid.Row="4" Grid.Column="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="HitboxID" Foreground="{DynamicResource NormalText}"/>
+                                        <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" Margin="0,2" x:Name="HitboxID_NUD" Grid.Column="1" Minimum="0" Maximum="65535"/>
+                                    </Grid>
+
+
+                                    <Grid Grid.Row="4" Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="Unknown" Foreground="{DynamicResource NormalText}"/>
+                                        <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" Margin="0,2" x:Name="UnknownNUD" Grid.Column="1" Minimum="0" Maximum="65535"/>
+                                    </Grid>
+                                    
+                                </Grid>
+                                
+                                <TextBlock Margin="5 5 5 0" Text="Texture" Foreground="{DynamicResource NormalText}"/>
+                                <Grid Height="22" Margin="5 0 5 5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox x:Name="SpriteSheetList" SelectionChanged="SpriteSheetList_SelectionChanged"/>
+                                    <Button x:Name="TextureButton"  Click="MenuViewTexture_Click" Grid.Column="1" Content="..." VerticalContentAlignment="Top"/>
+                                    <Popup x:Name="TextureManagerPopup" StaysOpen="False" Width="{Binding ActualWidth, ElementName=PopupHost}" Height="{Binding ActualHeight, ElementName=PopupHost}" VerticalOffset="{Binding ActualHeight, ElementName=PopupHost}" PlacementTarget="{Binding ElementName=PopupHost}" Placement="Top" IsOpen="False" LostFocus="TextureManagerPopup_LostFocus">
+                                        <StackPanel>
+                                            <local:TextureManager Width="{Binding ActualWidth, ElementName=PopupHost}" Height="{Binding ActualHeight, ElementName=PopupHost}" x:Name="TextureManagerMenu" Margin="0" Padding="0"/>
+                                        </StackPanel>
+                                    </Popup>
+                                </Grid>
+                                
+                                <Expander Header="Hitbox Properties" Margin="5,0">
+                                    <StackPanel Background="Transparent">
+                                        <Grid Height="22">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="20"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ComboBox SelectionChanged="HitBoxComboBox_SelectionChanged" MouseDoubleClick="HitBoxComboBox_MouseDoubleClick" x:Name="HitBoxComboBox"/>
+                                            <Button x:Name="HitboxButton"  Click="MenuViewHitbox_Click" Grid.Column="1" Content="..." VerticalContentAlignment="Top"/>
+                                            <Popup x:Name="HitboxManagerPopup" PlacementTarget="{Binding ElementName=HitboxButton}" Placement="Left" HorizontalOffset="{Binding ActualWidth, ElementName=HitboxButton}" VerticalOffset="{Binding ActualHeight, ElementName=HitboxButton}" StaysOpen="False" IsOpen="False" LostFocus="HitboxManagerPopup_LostFocus">
+                                                <StackPanel>
+                                                    <local:HitboxManager x:Name="HitboxManagerMenu" Margin="0" Padding="0"/>
+                                                </StackPanel>
+                                            </Popup>
+                                        </Grid>
+                                        <Grid Margin="3,3,3,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="25"/>
+                                                <RowDefinition Height="25"/>
+                                            </Grid.RowDefinitions>
+
+                                            <Grid Grid.Row="0" Grid.Column="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="50"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="25"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Text="Left" Foreground="{DynamicResource NormalText}"/>
+                                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxLeftNUD" Margin="0,2" Grid.Column="1" Grid.Row="1" Minimum="-32768" Maximum="32767"/>
+                                            </Grid>
+                                            <Grid Grid.Row="1" Grid.Column="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="50"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="25"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="Right" Foreground="{DynamicResource NormalText}"/>
+                                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxRightNUD" Margin="0,2" Grid.Column="1" Minimum="-32768" Maximum="32767"/>
+                                            </Grid>
+                                            <Grid Grid.Row="0" Grid.Column="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="50"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="25"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="Top" Foreground="{DynamicResource NormalText}"/>
+                                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxTopNUD" Margin="0,2" Grid.Column="1" Minimum="-32768" Maximum="32767"/>
+                                            </Grid>
+                                            <Grid Grid.Row="1" Grid.Column="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="50"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="25"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Margin="2,2" VerticalAlignment="Center" Grid.Column="0" Text="Bottom" Foreground="{DynamicResource NormalText}"/>
+                                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxBottomNUD" Margin="0,2" Grid.Column="1" Minimum="-32768" Maximum="32767"/>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
-                                </Popup>
-                            </Grid>
+                                </Expander>
+
+                            </StackPanel>
+                        </GroupBox>
+                        <Expander Header="Current Color Settings">
                             <Grid Height="22" Margin="0,5,0,-5">
                                 <StackPanel Background="Transparent" Orientation="Horizontal">
                                     <Grid>
@@ -568,102 +805,12 @@
                                     </Grid>
                                 </StackPanel>
                             </Grid>
-
-                            <ComboBox x:Name="HitBoxComboBox2" Margin="0,1" Visibility="Hidden"/>
-                            <Grid Margin="3,-9,3,3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="40"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="5"/>
-                                    <ColumnDefinition Width="40"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="5"/>
-                                    <RowDefinition Height="20"/>
-                                    <RowDefinition Height="5"/>
-                                    <RowDefinition Height="20"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Left" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxLeftNUD" Grid.Column="1" Grid.Row="1"
-                                    Minimum="-32768" Maximum="32767"
-                                    Value="{Binding SelectedHitbox_X, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="3" Grid.Row="1" Text="Right" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxRightNUD" Grid.Column="4" Grid.Row="1"
-                                    Minimum="-32768" Maximum="32767"
-                                    Value="{Binding SelectedHitbox_Y, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="0" Grid.Row="3" Text="Top" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxTopNUD" Grid.Column="1" Grid.Row="3"
-                                    Minimum="-32768" Maximum="32767"
-                                    Value="{Binding SelectedHitbox_Width, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="3" Grid.Row="3" Text="Bottom" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="HitboxBottomNUD" Grid.Column="4" Grid.Row="3"
-                                    Minimum="-32768" Maximum="32767"
-                                    Value="{Binding SelectedHitbox_Height, Mode=TwoWay}"/>
-                            </Grid>
-
-                            <TextBlock Margin="0 5 0 0" Foreground="{DynamicResource NormalText}"><Run Text="Sprite property"/><InlineUIContainer/></TextBlock>
-                            <Grid Margin="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="35"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="2"/>
-                                    <ColumnDefinition Width="50"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="5"/>
-                                    <RowDefinition Height="20"/>
-                                    <RowDefinition Height="5"/>
-                                    <RowDefinition Height="20"/>
-                                    <RowDefinition Height="5"/>
-                                    <RowDefinition Height="20"/>
-                                    <RowDefinition Height="5"/>
-                                    <RowDefinition Height="20"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Column="0" Grid.Row="1" Text="X" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="FrameLeftNUD" Grid.Column="1" Grid.Row="1"
-                                    Minimum="0" Maximum="32767"
-                                    Value="{Binding SelectedFrameLeft, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="3" Grid.Row="1" Text="Y" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="FrameTopNUD" Grid.Column="4" Grid.Row="1"
-                                    Minimum="0" Maximum="32767"
-                                    Value="{Binding SelectedFrameTop, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="0" Grid.Row="3" Text="Width" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="FrameWidthNUD" Grid.Column="1" Grid.Row="3"
-                                    Minimum="0" Maximum="32767"
-                                    Value="{Binding SelectedFrameWidth, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="3" Grid.Row="3" Text="Height" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="FrameHeightNUD"  Grid.Column="4" Grid.Row="3"
-                                    Minimum="0" Maximum="32767"
-                                    Value="{Binding SelectedFrameHeight, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="0" Grid.Row="5" Text="PivotX" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="PivotX_NUD" Grid.Column="1" Grid.Row="5"
-                                    Minimum="-32768" Maximum="32767"
-                                    Value="{Binding SelectedFramePivotX, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="3" Grid.Row="5" Text="PivotY" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="PivotY_NUD" Grid.Column="4" Grid.Row="5"
-                                    Minimum="-32768" Maximum="32767"
-                                    Value="{Binding SelectedFramePivotY, Mode=TwoWay}"/>
-                                <TextBlock x:Name="IDLabel" Grid.Column="0" Grid.Row="7" Text="ID" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="IdentificationNUD" Grid.Column="1" Grid.Row="7"
-                                    Minimum="0" Maximum="65535"
-                                    Value="{Binding SelectedFrameId, Mode=TwoWay}"/>
-                                <TextBlock Grid.Column="3" Grid.Row="7" Text="Duration" Foreground="{DynamicResource NormalText}"/>
-                                <xc:IntegerUpDown ValueChanged="NUD_ValueChanged" x:Name="DelayNUD" Grid.Column="4" Grid.Row="7"
-                                    Minimum="0" Maximum="65535"
-                                    Value="{Binding SelectedFrameDuration, Mode=TwoWay}"/>
-
-                            </Grid>
-                        </StackPanel>
-                    </GroupBox>
-
+                        </Expander>
+                    </StackPanel>
                 </StackPanel>
-            </DockPanel>
+            </ScrollViewer>
 
-            <StatusBar Grid.Row="1" Grid.ColumnSpan="5" Background="{DynamicResource StatusBarBackground}">
+            <StatusBar Grid.Row="1" Grid.ColumnSpan="4" Background="{DynamicResource StatusBarBackground}">
                 <StatusBarItem>
                     <StackPanel Background="{DynamicResource StatusBarBackground}">
                         <TextBlock x:Name="SpriteDirectoryLabel" Text="Sprite Directory: N/A"/>
