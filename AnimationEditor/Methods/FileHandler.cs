@@ -17,6 +17,7 @@ using AnimationEditor.Classes;
 using AnimationEditor.Methods;
 using AnimationEditor.Pages;
 using RecentFile = AnimationEditor.Classes.Settings.Instance.RecentFile;
+using Workspace = AnimationEditor.Classes.Settings.Instance.Workspace;
 
 namespace AnimationEditor.Methods
 {
@@ -24,6 +25,7 @@ namespace AnimationEditor.Methods
     {
         private MainWindow Instance;
         public System.Collections.Generic.IList<MenuItem> RecentItems;
+        public System.Collections.Generic.IList<MenuItem> WorkspaceItems;
 
 
         private String[] FilterOpen = new string[] 
@@ -39,22 +41,36 @@ namespace AnimationEditor.Methods
         {
             Instance = window;
             RecentItems = new List<MenuItem>();
+            WorkspaceItems = new List<MenuItem>();
         }
 
         #region Open File Methods
-        public void OpenFile()
+        public void OpenFile(Workspace workspace = null)
         {
             Instance.Interfacer.PreventIndexUpdate = true;
             UnloadAnimationData();
             var fd = new OpenFileDialog();
             fd.DefaultExt = "*.bin";
             fd.Filter = string.Join("", FilterOpen);
+            GenerateShortcuts();
+            fd.CustomPlaces.Add(new FileDialogCustomPlace(Services.PathService.GetShortcutsPath()));
+            if (workspace != null)
+            {
+                fd.InitialDirectory = workspace.Path;
+                fd.FilterIndex = GetFilterIndexFromTypeString(workspace.DefaultFormat);
+            }
             if (fd.ShowDialog() == true)
             {
                 AddRecentDataFolder(fd.FileName, fd.FileName, GetTypeStringFromFilterIndex(fd.FilterIndex));
                 LoadFile(fd);
             }
             Instance.Interfacer.PreventIndexUpdate = false;
+
+            if (workspace != null)
+            {
+                Instance.Interfacer.UpdateControls();
+                Instance.Interfacer.UpdateCanvasVisual();
+            }
         }
 
         public void OpenFile(string file, EngineType type = EngineType.Invalid)
@@ -133,6 +149,30 @@ namespace AnimationEditor.Methods
             return type;
         }
 
+        int GetFilterIndexFromTypeString(string type)
+        {
+            int index = 0;
+            switch (type)
+            {
+                case "RSDKv5":
+                    index = 1;
+                    break;
+                case "RSDKvB":
+                    index = 2;
+                    break;
+                case "RSDKv2":
+                    index = 3;
+                    break;
+                case "RSDKv1":
+                    index = 4;
+                    break;
+                case "RSDKvRS":
+                    index = 5;
+                    break;
+            }
+            return index;
+        }
+
         string GetTypeStringFromFilterIndex(int index)
         {
             string type = "?";
@@ -166,9 +206,12 @@ namespace AnimationEditor.Methods
 
         public void SaveFileAs()
         {
+
             var fd = new SaveFileDialog();
             fd.DefaultExt = "*.bin";
             fd.Filter = string.Join("", FilterOpen);
+            GenerateShortcuts();
+            fd.CustomPlaces.Add(new FileDialogCustomPlace(Services.PathService.GetShortcutsPath()));
             if (fd.ShowDialog() == true)
             {
                 UpdateRecentsDropDown(fd.FileName, fd.FileName, GetTypeStringFromFilterIndex(fd.FilterIndex));
@@ -386,6 +429,8 @@ namespace AnimationEditor.Methods
 
         #endregion
 
+        
+
         #region Recent Files (Lifted from Maniac Editor)
 
         public void UpdateRecentsDropDown(string name, string filepath, string format)
@@ -526,23 +571,23 @@ namespace AnimationEditor.Methods
             {
                 return "RSDKv1";
             }
-            else
-            {
-                /*if (Instance.AnimationType == EngineType.RSDKvB)
-                {
-                    return "RSDKvB";
-                }
-                else if (Instance.AnimationType == EngineType.RSDKv2)
-                {
-                    return "RSDKv2";
-                }
-                else if (Instance.AnimationType == EngineType.RSDKvRS)
-                {
-                    return "RSDKvRS";
-                }
-                else*/ return "?";
+            //else
+            //{
+                //if (Instance.AnimationType == EngineType.RSDKvB)
+                //{
+                //    return "RSDKvB";
+                //}
+                //else if (Instance.AnimationType == EngineType.RSDKv2)
+                //{
+                //    return "RSDKv2";
+                //}
+                //else if (Instance.AnimationType == EngineType.RSDKvRS)
+                //{
+                //    return "RSDKvRS";
+                //}
+                else return "?";
 
-            }
+            //}
         }
         private bool HeaderMatches(byte[] target, byte[] format) {
             for (int i = 0; i < 4; i++)
@@ -613,6 +658,158 @@ namespace AnimationEditor.Methods
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Write("Failed to add data folder to recent list: " + ex);
+            }
+        }
+
+        #endregion
+
+        #region Saved Workspaces
+
+        private bool IsWorkspaceOnRemoveMode { get; set; } = false;
+        public void WorkspaceFolderClicked(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as System.Windows.Controls.MenuItem;
+            Workspace directory = menuItem.Tag as Workspace;
+
+            if (IsWorkspaceOnRemoveMode)
+            {
+                AnimationEditor.Classes.Settings.Default.Workspaces.Remove(directory);
+                CleanUpWorkspaceList();
+                RefreshWorkspaces();
+            }
+            else
+            {
+                OpenFile(directory);
+            }
+
+            AnimationEditor.Classes.Settings.Save();
+        }
+        public void RefreshWorkspaces()
+        {
+            List<Workspace> recentDataDirectories = AnimationEditor.Classes.Settings.Default.Workspaces;
+            if (AnimationEditor.Classes.Settings.Default.Workspaces?.Count > 0)
+            {
+                Instance.NoRecentFiles2.Visibility = Visibility.Collapsed;
+                CleanUpWorkspaceList();
+
+                var startRecentItems = Instance.MenuFileOpenFromWorkspace.Items.IndexOf(Instance.NoRecentFiles2);
+
+                foreach (var dataDirectory in recentDataDirectories)
+                {
+                    WorkspaceItems.Add(CreateWorkSpaceMenuLink(dataDirectory));
+                }
+
+
+
+                foreach (MenuItem menuItem in WorkspaceItems.Reverse())
+                {
+                    Instance.MenuFileOpenFromWorkspace.Items.Insert(startRecentItems, menuItem);
+                }
+            }
+            else
+            {
+                Instance.NoRecentFiles2.Visibility = Visibility.Visible;
+            }
+        }
+        private MenuItem CreateWorkSpaceMenuLink(Workspace directory)
+        {
+            MenuItem newItem = new MenuItem();
+            newItem.Header = directory.Name;
+            newItem.InputGestureText = directory.DefaultFormat;
+            newItem.Tag = directory;
+            newItem.StaysOpenOnClick = IsWorkspaceOnRemoveMode;
+            newItem.Click += WorkspaceFolderClicked;
+            return newItem;
+        }
+        private void CleanUpWorkspaceList()
+        {
+            foreach (var menuItem in WorkspaceItems)
+            {
+                menuItem.Click -= WorkspaceFolderClicked;
+                Instance.MenuFileOpenFromWorkspace.Items.Remove(menuItem);
+            }
+
+            WorkspaceItems.Clear();
+        }
+        public void AddWorkspaceFolder(Workspace workspace)
+        {
+            try
+            {
+                if (AnimationEditor.Classes.Settings.Default.Workspaces == null)
+                {
+                    AnimationEditor.Classes.Settings.Default.Workspaces = new List<Workspace>();
+                }
+
+                AnimationEditor.Classes.Settings.Default.Workspaces.Insert(0, workspace);
+
+                AnimationEditor.Classes.Settings.Save();
+                AnimationEditor.Classes.Settings.Reload();
+
+                RefreshWorkspaces();
+
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Write("Failed to add data folder to recent list: " + ex);
+            }
+        }
+        public void SelectNewWorkspaceFolder()
+        {
+            GenerationsLib.Core.FolderSelectDialog fsd = new GenerationsLib.Core.FolderSelectDialog();
+            if (fsd.ShowDialog())
+            {
+                AddWorkspaceDialog awd = new AddWorkspaceDialog();
+                awd.Owner = Instance;
+                if (awd.ShowDialog() == true)
+                {
+                    Workspace workspace = new Workspace(awd.WorkspaceName, fsd.FileName, awd.SelectedFormat);
+                    AddWorkspaceFolder(workspace);
+                }
+
+            }
+        }
+        public void ToggleWorkspaceRemoveMode(bool isEnabled)
+        {
+            if (isEnabled)
+            {
+                IsWorkspaceOnRemoveMode = true;
+                Instance.MenuFileOpenFromWorkspaceAddWorkspace.IsEnabled = false;
+                var textblock = new TextBlock();
+                string text = "(Click the workspaces you want to remove)" + Environment.NewLine + "(Click Here to Exit Remove Mode)";
+                textblock.TextWrapping = TextWrapping.Wrap;
+                textblock.Text = text;
+                Instance.MenuFileOpenFromWorkspaceRemoveMode.Header = textblock;
+                foreach (var entry in WorkspaceItems)
+                {
+                    entry.StaysOpenOnClick = true;
+                }
+            }
+            else
+            {
+                IsWorkspaceOnRemoveMode = false;
+                Instance.MenuFileOpenFromWorkspaceAddWorkspace.IsEnabled = true;
+                Instance.MenuFileOpenFromWorkspaceRemoveMode.Header = "Remove Workspaces...";
+                foreach (var entry in WorkspaceItems)
+                {
+                    entry.StaysOpenOnClick = false;
+                }
+            }
+        }
+
+        public void GenerateShortcuts()
+        {
+            string directory = Services.PathService.GetShortcutsPath();
+            foreach (var entry in Directory.EnumerateFiles(directory))
+            {
+                File.Delete(entry);
+            }
+            foreach (var workspace in Classes.Settings.Default.Workspaces)
+            {
+                var wsh = new IWshRuntimeLibrary.IWshShell_Class();
+                IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(directory + string.Format("\\{0}.lnk", workspace.Name)) as IWshRuntimeLibrary.IWshShortcut;
+                shortcut.TargetPath = workspace.Path;
+                shortcut.Save();
             }
         }
 

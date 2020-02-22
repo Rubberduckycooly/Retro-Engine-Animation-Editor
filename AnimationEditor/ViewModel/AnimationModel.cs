@@ -16,6 +16,7 @@ using AnimationEditor.ViewModel;
 using AnimationEditor.Classes;
 using AnimationEditor.Methods;
 using System.ComponentModel;
+using GenerationsLib.Core;
 
 namespace AnimationEditor.ViewModel
 {
@@ -42,7 +43,7 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectAnimationEntryInformation) return SelectedAnimation.Frames.Count - 1;
+                if (isAnimationInfoSelected) return SelectedAnimation.Frames.Count - 1;
                 else return -1;
             }
         }
@@ -50,7 +51,7 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectAnimationEntryInformation) return LoadedAnimationFile.Animations.Count - 1;
+                if (isAnimationInfoSelected) return LoadedAnimationFile.Animations.Count - 1;
                 else return -1;
             }
         }
@@ -61,50 +62,36 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (LoadedAnimationFile != null) return LoadedAnimationFile.Animations;
+                if (isAnimationFileLoaded) return LoadedAnimationFile.Animations;
                 else return null;
             }
             set
             {
-                if (LoadedAnimationFile != null) LoadedAnimationFile.Animations = value;
+                if (isAnimationFileLoaded) LoadedAnimationFile.Animations = value;
             }
         }
         public EditorAnimation.EditorAnimationInfo SelectedAnimation
         {
             get
             {
-                try
-                {
-                    return LoadedAnimationFile.Animations[SelectedAnimationIndex];
-                }
-                catch
-                {
-                    return new EditorAnimation.EditorAnimationInfo(AnimationType, LoadedAnimationFile);
-                }
+                if (isAnimationFileLoaded && isAnimationIndexInRange()) return LoadedAnimationFile.Animations[SelectedAnimationIndex];
+                else return null;
             }
             set
             {
-                try
-                {
-                    LoadedAnimationFile.Animations[SelectedAnimationIndex] = value;
-                }
-                catch
-                {
-
-                }
-
+                if (isAnimationFileLoaded && isAnimationIndexInRange()) LoadedAnimationFile.Animations[SelectedAnimationIndex] = value;
             }
         }
         public List<EditorAnimation.EditorFrame> SelectedAnimationFrameSet
         {
             get
             {
-                if (CanCollectAnimationEntryInformation) return SelectedAnimation.Frames;
+                if (isAnimationInfoSelected) return SelectedAnimation.Frames;
                 else return null;
             }
             set
             {
-                if (CanCollectAnimationEntryInformation)
+                if (isAnimationInfoSelected)
                 {
                     SelectedAnimation.Frames = value;
                 }
@@ -114,38 +101,24 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                try
-                {
-                    return SelectedAnimation.Frames[SelectedFrameIndex];
-                }
-                catch
-                {
-                    return new EditorAnimation.EditorFrame();
-                }
+                if (isAnimationInfoSelected && isFrameIndexInRange()) return SelectedAnimation.Frames[SelectedFrameIndex];
+                else return null;
             }
             set 
             {
-                try
-                {
-                    SelectedAnimation.Frames[SelectedFrameIndex] = value;
-                }
-                catch
-                {
-
-                }
-
+                if (isAnimationInfoSelected && isFrameIndexInRange()) SelectedAnimation.Frames[SelectedFrameIndex] = value;
             }
         }
         public EditorAnimation.EditorHitbox SelectedHitbox
         {
             get
             {
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex];
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex];
                 else return null;
             }
             set
             {
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1) SelectedFrame.HitBoxes[SelectedFrameHitboxIndex] = value;
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1) SelectedFrame.HitBoxes[SelectedFrameHitboxIndex] = value;
                 else return;
             }
         }
@@ -158,7 +131,7 @@ namespace AnimationEditor.ViewModel
         public int SelectedFrameHitboxIndex { get; set; }
         public int GetCurrentFrameIndexForAllAnimations()
         {
-            if (CanCollectFrameInformation)
+            if (isAnimationFrameSelected)
             {
                 int frames = 0;
                 for (int i = 0; i < SelectedAnimationIndex; i++)
@@ -177,12 +150,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (LoadedAnimationFile != null) return LoadedAnimationFile.CollisionBoxes;
+                if (isAnimationFileLoaded) return LoadedAnimationFile.CollisionBoxes;
                 else return new List<string>();
             }
             set
             {
-                if (LoadedAnimationFile != null) LoadedAnimationFile.CollisionBoxes = value;
+                if (isAnimationFileLoaded) LoadedAnimationFile.CollisionBoxes = value;
                 else return;
             }
         }
@@ -190,7 +163,7 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (LoadedAnimationFile != null)
+                if (isAnimationFileLoaded)
                 {
                     List<string> output = new List<string>();
                     for (int i = 1; i <= LoadedAnimationFile.RetroCollisionBoxes.Count; i++)
@@ -206,12 +179,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (LoadedAnimationFile != null) return LoadedAnimationFile.RetroCollisionBoxes;
+                if (isAnimationFileLoaded) return LoadedAnimationFile.RetroCollisionBoxes;
                 else return new List<EditorAnimation.EditorRetroHitBox>();
             }
             set
             {
-                if (LoadedAnimationFile != null) LoadedAnimationFile.RetroCollisionBoxes = value;
+                if (isAnimationFileLoaded) LoadedAnimationFile.RetroCollisionBoxes = value;
                 else return;
             }
         }
@@ -219,7 +192,7 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation)
+                if (isAnimationFrameSelected)
                 {
                     if (LoadedAnimationFile.EngineType == EngineType.RSDKvRS)
                     {
@@ -230,7 +203,7 @@ namespace AnimationEditor.ViewModel
             }
             set
             {
-                if (CanCollectFrameInformation)
+                if (isAnimationFrameSelected)
                 {
                     if (LoadedAnimationFile.EngineType == EngineType.RSDKvRS)
                     {
@@ -244,7 +217,7 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectAnimationInformation)
+                if (isAnimationFileLoaded)
                 {
                     return LoadedAnimationFile.DreamcastVer;
                 }
@@ -252,7 +225,7 @@ namespace AnimationEditor.ViewModel
             }
             set
             {
-                if (CanCollectAnimationInformation)
+                if (isAnimationFileLoaded)
                 {
                     LoadedAnimationFile.DreamcastVer = value;
                 }
@@ -263,7 +236,7 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectAnimationInformation)
+                if (isAnimationFileLoaded)
                 {
                     return LoadedAnimationFile.Unknown;
                 }
@@ -271,7 +244,7 @@ namespace AnimationEditor.ViewModel
             }
             set
             {
-                if (CanCollectAnimationInformation)
+                if (isAnimationFileLoaded)
                 {
                     LoadedAnimationFile.Unknown = value;
                 }
@@ -287,7 +260,7 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (LoadedAnimationFile != null) return LoadedAnimationFile.SpriteSheets;
+                if (isAnimationFileLoaded) return LoadedAnimationFile.SpriteSheets;
                 else return null;
             }
         }
@@ -317,15 +290,29 @@ namespace AnimationEditor.ViewModel
         #endregion
 
         #region Current Status Variables
-        public bool CanCollectFrameInformation
+        public bool isAnimationFrameSelected
         {
-            get => CanCollectAnimationInformation && CanCollectAnimationEntryInformation && SelectedFrameIndex != -1 && SelectedAnimation.Frames.Count > 0;
+            get => isAnimationFileLoaded && isAnimationInfoSelected && SelectedFrame != null;
         }
-        public bool CanCollectAnimationEntryInformation
+        public bool isAnimationIndexInRange(int? index = null)
         {
-            get => CanCollectAnimationInformation && SelectedAnimationIndex != -1;
+            if (index == null) index = SelectedAnimationIndex;
+
+            if (index >= 0 && index < SelectedAnimationEntries.Count) return true;
+            else return false;
         }
-        public bool CanCollectAnimationInformation
+        public bool isFrameIndexInRange(int? index = null)
+        {
+            if (index == null) index = SelectedFrameIndex;
+
+            if (index >= 0 && index < SelectedAnimationFrameSet.Count) return true;
+            else return false;
+        }
+        public bool isAnimationInfoSelected
+        {
+            get => isAnimationFileLoaded && SelectedAnimation != null;
+        }
+        public bool isAnimationFileLoaded
         {
             get => LoadedAnimationFile != null;
         }
@@ -350,12 +337,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectAnimationEntryInformation) return SelectedAnimation.LoopIndex;
+                if (isAnimationInfoSelected) return SelectedAnimation.LoopIndex;
                 else return 0;
             }
             set
             {
-                if (CanCollectAnimationEntryInformation && value.HasValue) SelectedAnimation.LoopIndex = value.Value;
+                if (isAnimationInfoSelected && value.HasValue) SelectedAnimation.LoopIndex = value.Value;
                 else return;
             }
         }
@@ -363,12 +350,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectAnimationEntryInformation) return SelectedAnimation.SpeedMultiplyer;
+                if (isAnimationInfoSelected) return SelectedAnimation.SpeedMultiplyer;
                 else return 0;
             }
             set
             {
-                if (CanCollectAnimationEntryInformation && value.HasValue) SelectedAnimation.SpeedMultiplyer = value.Value;
+                if (isAnimationInfoSelected && value.HasValue) SelectedAnimation.SpeedMultiplyer = value.Value;
                 else return;
             }
         }
@@ -376,12 +363,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectAnimationEntryInformation) return SelectedAnimation.RotationFlags;
+                if (isAnimationInfoSelected) return SelectedAnimation.RotationFlags;
                 else return 0;
             }
             set
             {
-                if (CanCollectAnimationEntryInformation && value.HasValue) SelectedAnimation.RotationFlags = value.Value;
+                if (isAnimationInfoSelected && value.HasValue) SelectedAnimation.RotationFlags = value.Value;
                 else return;
             }
         }
@@ -396,12 +383,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation) return SelectedFrame.X;
+                if (isAnimationFrameSelected) return SelectedFrame.X;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.X = value.Value;
+                if (isAnimationFrameSelected && value.HasValue) SelectedFrame.X = value.Value;
                 else return;
             }
         }
@@ -409,12 +396,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation) return SelectedFrame.Y;
+                if (isAnimationFrameSelected) return SelectedFrame.Y;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.Y = value.Value;
+                if (isAnimationFrameSelected && value.HasValue) SelectedFrame.Y = value.Value;
                 else return;
             }
         }
@@ -422,12 +409,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation) return SelectedFrame.Height;
+                if (isAnimationFrameSelected) return SelectedFrame.Height;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.Height = value.Value;
+                if (isAnimationFrameSelected && value.HasValue) SelectedFrame.Height = value.Value;
                 else return;
             }
         }
@@ -435,12 +422,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation) return SelectedFrame.Width;
+                if (isAnimationFrameSelected) return SelectedFrame.Width;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.Width = value.Value;
+                if (isAnimationFrameSelected && value.HasValue) SelectedFrame.Width = value.Value;
                 else return;
             }
         }
@@ -448,12 +435,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation) return SelectedFrame.PivotX;
+                if (isAnimationFrameSelected) return SelectedFrame.PivotX;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.PivotX = value.Value;
+                if (isAnimationFrameSelected && value.HasValue) SelectedFrame.PivotX = value.Value;
                 else return;
             }
         }
@@ -461,12 +448,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation) return SelectedFrame.PivotY;
+                if (isAnimationFrameSelected) return SelectedFrame.PivotY;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.PivotY = value.Value;
+                if (isAnimationFrameSelected && value.HasValue) SelectedFrame.PivotY = value.Value;
                 else return;
             }
         }
@@ -477,7 +464,7 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation)
+                if (isAnimationFrameSelected)
                 {
                     return SelectedFrame.ID;
                 }
@@ -488,7 +475,7 @@ namespace AnimationEditor.ViewModel
             }
             set
             {
-                if (CanCollectFrameInformation)
+                if (isAnimationFrameSelected)
                 {
                     SelectedFrame.ID = value.Value;
                 }
@@ -502,12 +489,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation) return SelectedFrame.CollisionBox;
+                if (isAnimationFrameSelected) return SelectedFrame.CollisionBox;
                 else return 0x0;
             }
             set
             {
-                if (CanCollectFrameInformation) SelectedFrame.CollisionBox = value.Value;
+                if (isAnimationFrameSelected) SelectedFrame.CollisionBox = value.Value;
                 else return;
             }
         }
@@ -515,12 +502,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation) return SelectedFrame.Delay;
+                if (isAnimationFrameSelected) return SelectedFrame.Delay;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.Delay = value.Value;
+                if (isAnimationFrameSelected && value.HasValue) SelectedFrame.Delay = value.Value;
                 else return;
             }
         }
@@ -528,12 +515,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation) return SelectedFrame.SpriteSheet;
+                if (isAnimationFrameSelected) return SelectedFrame.SpriteSheet;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && value.HasValue) SelectedFrame.SpriteSheet = value.Value;
+                if (isAnimationFrameSelected && value.HasValue) SelectedFrame.SpriteSheet = value.Value;
                 else return;
             }
         }
@@ -598,12 +585,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Left;
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Left;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && value.HasValue)
                 {
                     EditorAnimation.EditorHitbox box = SelectedFrame.HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                     box.Left = value.Value;
@@ -616,12 +603,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Top;
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Top;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && value.HasValue)
                 {
                     EditorAnimation.EditorHitbox box = SelectedFrame.HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                     box.Top = value.Value;
@@ -634,12 +621,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Right;
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Right;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && value.HasValue)
                 {
                     EditorAnimation.EditorHitbox box = SelectedFrame.HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                     box.Right = value.Value;
@@ -652,12 +639,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Bottom;
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex].Bottom;
                 else return 0;
             }
             set
             {
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && value.HasValue)
                 {
                     EditorAnimation.EditorHitbox box = SelectedFrame.HitBoxes.ElementAt(SelectedFrameHitboxIndex);
                     box.Bottom = value.Value;
@@ -674,7 +661,7 @@ namespace AnimationEditor.ViewModel
             get
             {
                 int index = (int)CurrentFrame_CollisionBox;
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && RetroHitboxes.Count() - 1 >= index)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && RetroHitboxes.Count() - 1 >= index)
                 {
                     return RetroHitboxes[index].Hitboxes[SelectedFrameHitboxIndex].Left;
                 }
@@ -683,7 +670,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 int index = (int)CurrentFrame_CollisionBox;
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue && RetroHitboxes.Count() - 1 >= index)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && value.HasValue && RetroHitboxes.Count() - 1 >= index)
                 {
                     RetroHitboxes[index].Hitboxes[SelectedFrameHitboxIndex].Left = (sbyte)value.Value;
                 }
@@ -695,7 +682,7 @@ namespace AnimationEditor.ViewModel
             get
             {
                 int index = (int)CurrentFrame_CollisionBox;
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && RetroHitboxes.Count() - 1 >= index)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && RetroHitboxes.Count() - 1 >= index)
                 {
                     return RetroHitboxes[index].Hitboxes[SelectedFrameHitboxIndex].Top;
                 }
@@ -704,7 +691,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 int index = (int)CurrentFrame_CollisionBox;
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue && RetroHitboxes.Count() - 1 >= index)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && value.HasValue && RetroHitboxes.Count() - 1 >= index)
                 {
                     RetroHitboxes[index].Hitboxes[SelectedFrameHitboxIndex].Top = (sbyte)value.Value;
                 }
@@ -716,7 +703,7 @@ namespace AnimationEditor.ViewModel
             get
             {
                 int index = (int)CurrentFrame_CollisionBox;
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && RetroHitboxes.Count() - 1 >= index)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && RetroHitboxes.Count() - 1 >= index)
                 {
                     return RetroHitboxes[index].Hitboxes[SelectedFrameHitboxIndex].Right;
                 }
@@ -725,7 +712,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 int index = (int)CurrentFrame_CollisionBox;
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue && RetroHitboxes.Count() - 1 >= index)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && value.HasValue && RetroHitboxes.Count() - 1 >= index)
                 {
                     RetroHitboxes[index].Hitboxes[SelectedFrameHitboxIndex].Right = (sbyte)value.Value;
                 }
@@ -737,7 +724,7 @@ namespace AnimationEditor.ViewModel
             get
             {
                 int index = (int)CurrentFrame_CollisionBox;
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && RetroHitboxes.Count() - 1 >= index)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && RetroHitboxes.Count() - 1 >= index)
                 {
                     return RetroHitboxes[index].Hitboxes[SelectedFrameHitboxIndex].Bottom;
                 }
@@ -746,7 +733,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 int index = (int)CurrentFrame_CollisionBox;
-                if (CanCollectFrameInformation && SelectedFrameHitboxIndex != -1 && value.HasValue && RetroHitboxes.Count() - 1 >= index)
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && value.HasValue && RetroHitboxes.Count() - 1 >= index)
                 {
                     RetroHitboxes[index].Hitboxes[SelectedFrameHitboxIndex].Bottom = (sbyte)value.Value;
                 }
@@ -765,7 +752,7 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (CanCollectAnimationEntryInformation)
+                if (isAnimationInfoSelected)
                 {
                     _AnimationFrameListSource.Clear();
                     for (int i = 0; i < SelectedAnimation.Frames.Count; i++)
@@ -782,7 +769,7 @@ namespace AnimationEditor.ViewModel
         }
         public EditorAnimation.EditorFrame GetAnimationFrameForCropping(int index)
         {
-            if (CanCollectAnimationEntryInformation) return SelectedAnimation.Frames[index];
+            if (isAnimationInfoSelected) return SelectedAnimation.Frames.TryGetElement(index, null);
             else return null;
         }
         private Dictionary<Tuple<string, int>, BitmapSource> CroppedFrames { get; set; } = new Dictionary<Tuple<string, int>, BitmapSource>(1024);

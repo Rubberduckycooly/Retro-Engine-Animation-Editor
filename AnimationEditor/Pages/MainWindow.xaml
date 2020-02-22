@@ -13,14 +13,20 @@
     <DockPanel x:Name="MainEditor">
         <Menu DockPanel.Dock="Top" x:Name="MenuStrip" Background="{DynamicResource MenuBar}" Foreground="{DynamicResource NormalText}">
             <MenuItem Header="_File">
-                <MenuItem x:Name="MenuFileOpen" Header="_Open" Click="MenuFileOpen_Click"/>
+                <MenuItem x:Name="MenuFileOpen" Header="_Open..." Click="MenuFileOpen_Click"/>
+                <MenuItem x:Name="MenuFileOpenFromWorkspace" Header="_Open from Workspace..." SubmenuOpened="MenuFileOpenFromWorkspace_SubmenuOpened">
+                    <MenuItem Header="No Workspaces" IsEnabled="False" x:Name="NoRecentFiles2" Tag="0"/>
+                    <Separator></Separator>
+                    <MenuItem Header="Add Workspace..." IsEnabled="True" x:Name="MenuFileOpenFromWorkspaceAddWorkspace" Tag="0" Click="MenuFileOpenFromWorkspaceAddWorkspace_Click"/>
+                    <MenuItem Header="Remove Workspaces..." IsCheckable="True" StaysOpenOnClick="True" IsEnabled="True" x:Name="MenuFileOpenFromWorkspaceRemoveMode" Click="MenuFileOpenFromWorkspaceRemoveMode_Click" Tag="0"/>
+                </MenuItem>
                 <Separator/>
                 <MenuItem x:Name="MenuFileOpenRecently" Header="_Recently Opened..." SubmenuOpened="MenuFileOpenRecently_SubmenuOpened">
                     <MenuItem Header="No Recent Items" IsEnabled="False" x:Name="NoRecentFiles" Tag="0"/>
                 </MenuItem>
                 <Separator/>
                 <MenuItem x:Name="MenuFileSave" Header="_Save" Click="MenuFileSave_Click"/>
-                <MenuItem x:Name="MenuFileSaveAs" Header="Save _as" Click="MenuFileSaveAs_Click"/>
+                <MenuItem x:Name="MenuFileSaveAs" Header="Save _as..." Click="MenuFileSaveAs_Click"/>
                 <Separator/>
                 <MenuItem x:Name="MenuFileUnloadAnimation" Header="Unload _Animation" Click="MenuFileUnloadAnimation_Click"/>
                 <Separator/>

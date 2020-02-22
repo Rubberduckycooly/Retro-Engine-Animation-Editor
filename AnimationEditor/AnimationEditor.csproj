@@ -121,6 +121,9 @@
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\EditorAnimation.cs" />
+    <Compile Include="Pages\AddWorkspaceDialog.xaml.cs">
+      <DependentUpon>AddWorkspaceDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\HitboxManager.xaml.cs">
       <DependentUpon>HitboxManager.xaml</DependentUpon>
     </Compile>
@@ -130,6 +133,7 @@
     <Compile Include="Methods\FileHandler.cs" />
     <Compile Include="Input\InputController.cs" />
     <Compile Include="Methods\PlaybackService.cs" />
+    <Compile Include="Services\PathService.cs" />
     <Compile Include="Styles\SkinResourceDictionary.cs" />
     <Compile Include="Pages\TextureManager.xaml.cs">
       <DependentUpon>TextureManager.xaml</DependentUpon>
@@ -137,6 +141,10 @@
     <Compile Include="Input\UserInterfacer.cs" />
     <Compile Include="ViewModel\AnimationModel.cs" />
     <Page Include="Pages\AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\AddWorkspaceDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -230,6 +238,26 @@
       <Project>{2ba290f0-4e82-4b58-aab4-3c431ee4de62}</Project>
       <Name>RSDKrU</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="IWshRuntimeLibrary">
+      <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Shell32">
+      <Guid>{50A7E9B0-70EF-11D1-B75A-00A0C90564FE}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\SkiaSharp.1.68.1.1\build\net45\SkiaSharp.targets" Condition="Exists('..\packages\SkiaSharp.1.68.1.1\build\net45\SkiaSharp.targets')" />

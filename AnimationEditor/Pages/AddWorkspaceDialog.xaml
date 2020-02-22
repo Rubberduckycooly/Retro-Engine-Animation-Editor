@@ -1,0 +1,42 @@
+﻿<Window x:Class="AnimationEditor.Pages.AddWorkspaceDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AnimationEditor.Pages"
+        mc:Ignorable="d"
+        Title="Add Workspace..." Height="250" Width="256" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="35"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+        </Grid.RowDefinitions>
+        <GroupBox Header="Default Format">
+            <StackPanel VerticalAlignment="Center">
+                <RadioButton GroupName="DefaultFormat" Margin="0,5" Content="RSDKv5 - Sonic Mania" IsChecked="True" Checked="RadioButton_Checked" Tag="0"></RadioButton>
+                <RadioButton GroupName="DefaultFormat" Margin="0,5" Content="RSDKvB - Sonic 1/2 2013" Checked="RadioButton_Checked" Tag="1"></RadioButton>
+                <RadioButton GroupName="DefaultFormat" Margin="0,5" Content="RSDKv2 - Sonic CD 2011" Checked="RadioButton_Checked" Tag="2"></RadioButton>
+                <RadioButton GroupName="DefaultFormat" Margin="0,5" Content="RSDKv1 - Sonic Nexus" Checked="RadioButton_Checked" Tag="3"></RadioButton>
+                <RadioButton GroupName="DefaultFormat" Margin="0,5" Content="RSDKvRS - Retro Sonic" Checked="RadioButton_Checked" Tag="4"></RadioButton>
+            </StackPanel>
+        </GroupBox>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="1" Margin="5" x:Name="WorkspaceNameTextbox"></TextBox>
+            <Label Content="Name:" Margin="5" VerticalAlignment="Center"></Label>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="OK_Button" Content="OK" Margin="5" Grid.Column="1" Click="OK_Button_Click"></Button>
+            <Button x:Name="Cancel_Button" Content="Cancel" Margin="5" Grid.Column="0" Click="Cancel_Button_Click"></Button>
+        </Grid>
+
+    </Grid>
+</Window>

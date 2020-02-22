@@ -10,16 +10,28 @@ namespace AnimationEditor.Classes
 {
     public static class Settings
     {
-        private static string FilePath { get => GetFilePath(); }
+        private static string FilePath { get => AnimationEditor.Services.PathService.GetSettingsPath(); }
 
-        private static string GetFilePath()
-        {
-            return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + "\\settings.json";
-        }
         public class Instance
         {
             public List<RecentFile> RecentFiles { get; set; } = new List<RecentFile>();
+            public List<Workspace> Workspaces { get; set; } = new List<Workspace>();
 
+            public bool UseDarkTheme { get; set; } = false;
+
+            public class Workspace
+            {
+                public string Name { get; set; }
+                public string Path { get; set; }
+                public string DefaultFormat { get; set; }
+
+                public Workspace(string _name = "", string _path = "", string _defaultformat = "")
+                {
+                    Name = _name;
+                    Path = _path;
+                    DefaultFormat = _defaultformat;
+                }
+            }
             public class RecentFile
             {
                 public string Name { get; set; }

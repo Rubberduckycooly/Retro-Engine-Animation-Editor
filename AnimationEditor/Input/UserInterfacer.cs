@@ -157,7 +157,6 @@ namespace AnimationEditor
             if (justRefreshing)
             {
                 int lastSelectedFrameIndex = Instance.ViewModel.SelectedFrameIndex;
-                Instance.ViewModel.SelectedFrameIndex = -1;
                 Instance.FramesList.ItemsSource = null;
                 Instance.FramesList.ItemsSource = Instance.ViewModel.AnimationFrameListSource;
                 Instance.FramesList.SelectedIndex = lastSelectedFrameIndex;
@@ -191,8 +190,9 @@ namespace AnimationEditor
 
             ToggleFrameSpriteSheetEvents(true);
         }
-        public void UpdateCurrentFrameMaxMinProperties()
+        public void UpdateCurrentFrameMaxMinProperties(bool toggleEvents = true)
         {
+            if (toggleEvents) ToggleFrameNUDEvents(false);
             if (isAnimationLoaded)
             {
                 Instance.FrameWidthNUD.Minimum = 0;
@@ -222,12 +222,23 @@ namespace AnimationEditor
                     Instance.FrameY_NUD.Maximum = 0;
                 }
             }
+            if (toggleEvents) ToggleFrameNUDEvents(true);
         }
         public void UpdateCurrentFrameProperties()
         {
-
             ToggleFrameNUDEvents(false);
 
+            UpdateCurrentFrameGeneralProperties(false);
+            UpdateCurrentFrameHitboxProperties(false);
+            UpdateCurrentFrameMaxMinProperties(false);
+            UpdateSpritesheetProperties();
+
+            ToggleFrameNUDEvents(true);
+
+        }
+        public void UpdateCurrentFrameGeneralProperties(bool toggleEvents = true)
+        {
+            if (toggleEvents) ToggleFrameNUDEvents(false);
             Instance.FrameWidthNUD.Value = Instance.ViewModel.CurrentFrame_Width;
             Instance.FrameHeightNUD.Value = Instance.ViewModel.CurrentFrame_Height;
             Instance.FrameX_NUD.Value = Instance.ViewModel.CurrentFrame_X;
@@ -237,30 +248,27 @@ namespace AnimationEditor
             Instance.FrameID_NUD.Value = Instance.ViewModel.CurrentFrame_FrameID;
             Instance.Delay_NUD.Value = Instance.ViewModel.CurrentFrame_FrameDuration;
             Instance.FrameHitboxID_NUD.Value = Instance.ViewModel.CurrentFrame_CollisionBox;
-
-            ToggleFrameNUDEvents(true);
-
-            UpdateCurrentFrameHitboxProperties();
-
-            UpdateCurrentFrameMaxMinProperties();
-
-            UpdateSpritesheetProperties();
-
+            if (toggleEvents) ToggleFrameNUDEvents(true);
         }
-        public void UpdateCurrentFrameHitboxProperties()
+        public void UpdateCurrentFrameHitboxProperties(bool toggleEvents = true)
         {
-            ToggleFrameNUDEvents(false);
+            if (toggleEvents) ToggleFrameNUDEvents(false);
+            ToggleHitboxEvents(false);
+
             if (isHitboxesValid)
             {
                 Instance.HitBoxComboBox.ItemsSource = Instance.ViewModel.Hitboxes;
                 Instance.HitBoxComboBox.SelectedIndex = Instance.ViewModel.SelectedFrameHitboxIndex;
 
                 Instance.HitboxLeftNUD.Value = Instance.ViewModel.SelectedHitboxLeft;
-                Instance.HitboxRightNUD.Value = Instance.ViewModel.SelectedHitboxTop;
-                Instance.HitboxTopNUD.Value = Instance.ViewModel.SelectedHitboxRight;
+                Instance.HitboxRightNUD.Value = Instance.ViewModel.SelectedHitboxRight;
+                Instance.HitboxTopNUD.Value = Instance.ViewModel.SelectedHitboxTop;
                 Instance.HitboxBottomNUD.Value = Instance.ViewModel.SelectedHitboxBottom;
             }
-            ToggleFrameNUDEvents(true);
+
+
+            if (toggleEvents) ToggleFrameNUDEvents(true);
+            ToggleHitboxEvents(true);
         }
         public void FixAnimationProperties()
         {
@@ -344,7 +352,6 @@ namespace AnimationEditor
         #endregion
 
         #region Property Event Toggling
-
         public void ToggleFrameNUDEvents(bool isEnabled)
         {
             if (isEnabled)
@@ -380,6 +387,17 @@ namespace AnimationEditor
                 Instance.HitboxTopNUD.ValueChanged -= Instance.NUD_ValueChanged;
                 Instance.HitboxRightNUD.ValueChanged -= Instance.NUD_ValueChanged;
                 Instance.HitboxBottomNUD.ValueChanged -= Instance.NUD_ValueChanged;
+            }
+        }
+        public void ToggleHitboxEvents(bool isEnabled)
+        {
+            if (isEnabled)
+            {
+                Instance.HitBoxComboBox.SelectionChanged += Instance.HitBoxComboBox_SelectionChanged;
+            }
+            else
+            {
+                Instance.HitBoxComboBox.SelectionChanged -= Instance.HitBoxComboBox_SelectionChanged;
             }
         }
         public void ToggleFrameSpriteSheetEvents(bool isEnabled)
@@ -529,6 +547,17 @@ namespace AnimationEditor
             bool isLoaded = isAnimationLoaded;
             bool noPlayback = !isPlaybackEnabled;
 
+            if (isLoaded)
+            {
+                Instance.FramesList.Visibility = Visibility.Visible;
+                Instance.FakeScrollbar.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Instance.FramesList.Visibility = Visibility.Collapsed;
+                Instance.FakeScrollbar.Visibility = Visibility.Visible;
+            }
+
             Instance.ButtonPlay.IsEnabled = isFrameSelected;
             Instance.PlaybackOptionsButton.IsEnabled = isFrameSelected;
             Instance.HitboxButton.IsEnabled = isLoaded;
@@ -538,7 +567,6 @@ namespace AnimationEditor
             Instance.List.IsEnabled = noPlayback;
             Instance.FramesList.IsEnabled = noPlayback;
 
-            Instance.AnimationScroller.IsEnabled = noPlayback;
             Instance.MenuStrip.IsEnabled = noPlayback;
 
             if (isLoaded && isFrameSelected) Instance.CanvasView.Visibility = Visibility.Visible;

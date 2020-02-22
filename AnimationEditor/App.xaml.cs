@@ -20,7 +20,7 @@ namespace AnimationEditor
         public App()
         {
             AnimationEditor.Classes.Settings.Init();
-            if (AnimationEditor.Properties.Settings.Default.UseDarkTheme)
+            if (AnimationEditor.Classes.Settings.Default.UseDarkTheme)
             {
                 Skin = Skin.Dark;
             }

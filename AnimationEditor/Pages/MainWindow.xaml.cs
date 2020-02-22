@@ -166,6 +166,12 @@ namespace AnimationEditor.Pages
             Interfacer.RefreshUIThemes();
         }
 
+        private void MenuFileOpenFromWorkspace_SubmenuOpened(object sender, RoutedEventArgs e)
+        {
+            Handler.RefreshWorkspaces();
+            Interfacer.UpdateControls();
+        }
+
         #endregion
 
         #region Animation Info Items
@@ -445,6 +451,7 @@ namespace AnimationEditor.Pages
         #region Frame Property Controls
         public void NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
+            Console.WriteLine("NUD Event Fired!");
             if (isLoadedFully)
             {
                 Interfacer.UpdateFrameNUDValues(sender, e);
@@ -457,7 +464,7 @@ namespace AnimationEditor.Pages
             Interfacer.UpdateFrameSpriteSheetValues(sender, e);
             Interfacer.UpdateControls();
         }
-        private void HitBoxComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        public void HitBoxComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             Interfacer.UpdateFrameHitboxValues(sender, e);
             Interfacer.UpdateControls();
@@ -603,20 +610,20 @@ namespace AnimationEditor.Pages
         {
             if (MenuViewUseDarkTheme.IsChecked)
             {
-                Properties.Settings.Default.UseDarkTheme = true;
-                Properties.Settings.Default.Save();
+                Classes.Settings.Default.UseDarkTheme = true;
+                Classes.Settings.Save();
             }
             else
             {
-                Properties.Settings.Default.UseDarkTheme = false;
-                Properties.Settings.Default.Save();
+                Classes.Settings.Default.UseDarkTheme = false;
+                Classes.Settings.Save();
             }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             isLoadedFully = true;
-            if (Properties.Settings.Default.UseDarkTheme)
+            if (Classes.Settings.Default.UseDarkTheme)
             {
                 MenuViewUseDarkTheme.IsChecked = true;
             }
@@ -669,9 +676,19 @@ namespace AnimationEditor.Pages
 
 
 
+
+
         #endregion
 
+        private void MenuFileOpenFromWorkspaceAddWorkspace_Click(object sender, RoutedEventArgs e)
+        {
+            Handler.SelectNewWorkspaceFolder();
+        }
 
+        private void MenuFileOpenFromWorkspaceRemoveMode_Click(object sender, RoutedEventArgs e)
+        {
+            Handler.ToggleWorkspaceRemoveMode(MenuFileOpenFromWorkspaceRemoveMode.IsChecked);
+        }
     }
 
 

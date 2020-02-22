@@ -22,28 +22,5 @@ namespace AnimationEditor.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection RecentFiles {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["RecentFiles"]));
-            }
-            set {
-                this["RecentFiles"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UseDarkTheme {
-            get {
-                return ((bool)(this["UseDarkTheme"]));
-            }
-            set {
-                this["UseDarkTheme"] = value;
-            }
-        }
     }
 }
