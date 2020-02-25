@@ -799,17 +799,24 @@ namespace AnimationEditor.Methods
 
         public void GenerateShortcuts()
         {
-            string directory = Services.PathService.GetShortcutsPath();
-            foreach (var entry in Directory.EnumerateFiles(directory))
+            try
             {
-                File.Delete(entry);
+                string directory = Services.PathService.GetShortcutsPath();
+                foreach (var entry in Directory.EnumerateFiles(directory))
+                {
+                    File.Delete(entry);
+                }
+                foreach (var workspace in Classes.Settings.Default.Workspaces)
+                {
+                    var wsh = new IWshRuntimeLibrary.IWshShell_Class();
+                    IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(directory + string.Format("\\{0}.lnk", workspace.Name)) as IWshRuntimeLibrary.IWshShortcut;
+                    shortcut.TargetPath = workspace.Path;
+                    shortcut.Save();
+                }
             }
-            foreach (var workspace in Classes.Settings.Default.Workspaces)
+            catch (Exception ex)
             {
-                var wsh = new IWshRuntimeLibrary.IWshShell_Class();
-                IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(directory + string.Format("\\{0}.lnk", workspace.Name)) as IWshRuntimeLibrary.IWshShortcut;
-                shortcut.TargetPath = workspace.Path;
-                shortcut.Save();
+                Console.WriteLine(ex.Message);
             }
         }
 

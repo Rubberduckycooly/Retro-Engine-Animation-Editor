@@ -28,7 +28,16 @@ namespace AnimationEditor
             {
                 Skin = Skin.Light;
             }
+            InitializeComponent();
         }
+
+        public void Load()
+        {
+            Pages.MainWindow mainWindow = new Pages.MainWindow();
+            MainWindow = mainWindow;
+            MainWindow.ShowDialog();
+        }
+
         public static Skin Skin { get; set; }
 
         public static void ChangeSkin(Skin newSkin)

@@ -471,10 +471,6 @@ namespace AnimationEditor
             Instance.FrameY_NUD.IsEnabled = enabled;
             Instance.PivotX_NUD.IsEnabled = enabled;
             Instance.PivotY_NUD.IsEnabled = enabled;
-            Instance.FrameID_NUD.IsEnabled = enabled;
-            Instance.Delay_NUD.IsEnabled = enabled;
-            Instance.FrameHitboxID_NUD.IsEnabled = enabled;
-
 
             Instance.SpriteSheetList.IsEnabled = enabled;
             Instance.SpriteSheetList.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
@@ -506,7 +502,6 @@ namespace AnimationEditor
             Instance.ButtonAnimationUp.IsEnabled = isSelected && noPlayback;
             Instance.ButtonAnimationDown.IsEnabled = isSelected && noPlayback;
             Instance.AnimationScroller.IsEnabled = isLoaded && noPlayback;
-            Instance.ButtonAnimationRename.IsEnabled = isSelected && noPlayback;
 
             Instance.SpeedNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
             Instance.LoopIndexNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
@@ -514,9 +509,8 @@ namespace AnimationEditor
 
             Instance.SpeedNUD.IsEnabled = isSelected && noPlayback;
             Instance.LoopIndexNUD.IsEnabled = isSelected && noPlayback;
-            Instance.PlayerID_NUD.IsEnabled = isSelected && noPlayback;
 
-            Instance.FlagsSelector.IsEnabled = isSelected && isLoaded;
+
             Instance.FlagsSelector.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
             Instance.FlagsSelector.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
             Instance.FlagsSelector.IsHitTestVisible = (invalid ? false : true);
@@ -630,7 +624,7 @@ namespace AnimationEditor
             {
                 if (isEnabled)
                 {
-                    Instance.FrameID_NUD.IsEnabled = isAnimationLoaded;
+                    Instance.FrameID_NUD.IsEnabled = isAnimationLoaded && isFrameSelected;
                     Instance.FrameID_Label.IsEnabled = true;
                     Instance.FrameID_Section.Visibility = Visibility.Visible;
                 }
@@ -688,7 +682,8 @@ namespace AnimationEditor
             {
                 if (isEnabled)
                 {
-                    Instance.ButtonAnimationRename.IsEnabled = isAnimationLoaded && isEntrySelected;
+
+                    Instance.ButtonAnimationRename.IsEnabled = isAnimationLoaded && isEntrySelected && !isPlaybackEnabled;
                     Instance.ButtonAnimationRename.Visibility = Visibility.Visible;
                 }
                 else
