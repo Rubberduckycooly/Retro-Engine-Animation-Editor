@@ -142,12 +142,24 @@ namespace AnimationEditor
         #region Get Loaded Animation Properties
         public void UpdateLoadedAnimationProperties()
         {
-            Instance.List.InvalidateProperty(ListBox.ItemsSourceProperty);
+            ToggleListEvents(false);
+
+            int lastSelectedAnimationIndex = Instance.ViewModel.SelectedAnimationIndex;
+            Instance.List.ItemsSource = null;
             Instance.List.ItemsSource = Instance.ViewModel.SelectedAnimationEntries;
+            if (isAnimationLoaded) Instance.ViewModel.SelectedAnimationIndex = Instance.ViewModel.GetIndexWithinRange(Instance.ViewModel.SelectedAnimationEntries.Count, lastSelectedAnimationIndex);
+            else Instance.ViewModel.SelectedAnimationIndex = -1;
+
+            UpdateIndexes();
+            UpdateIndexStatusLabels();
+            UpdateAnimationInfoControls();
+
+            ToggleListEvents(true);
         }
-        public void UpdateSelectedSectionProperties(bool justRefreshing = false)
+        public void UpdateSelectedSectionProperties(bool justRefreshing = false, bool enforceZeroIndex = false)
         {
             ToggleAnimationInfoEvents(false);
+            ToggleListEvents(false);
 
             Instance.SpeedNUD.Value = Instance.ViewModel.Speed;
             Instance.LoopIndexNUD.Value = Instance.ViewModel.Loop;
@@ -161,13 +173,29 @@ namespace AnimationEditor
                 Instance.FramesList.ItemsSource = Instance.ViewModel.AnimationFrameListSource;
                 Instance.FramesList.SelectedIndex = lastSelectedFrameIndex;
             }
-            else
+            else if (isAnimationLoaded && isEntrySelected)
             {
-                Instance.ViewModel.SelectedFrameIndex = -1;
+                int lastSelectedFrameIndex = Instance.ViewModel.SelectedFrameIndex;
                 Instance.FramesList.ItemsSource = null;
                 Instance.FramesList.ItemsSource = Instance.ViewModel.AnimationFrameListSource;
+
+                int resultingIndex;
+                if (!enforceZeroIndex) resultingIndex = Instance.ViewModel.GetIndexWithinRange(Instance.ViewModel.SelectedAnimationFrameSet.Count, lastSelectedFrameIndex);
+                else resultingIndex = Instance.ViewModel.GetFirstIndex(Instance.ViewModel.SelectedAnimationFrameSet.Count);
+                Instance.ViewModel.SelectedFrameIndex = resultingIndex;
+            }
+            else
+            {
+                int lastSelectedFrameIndex = Instance.ViewModel.SelectedFrameIndex;
+                Instance.FramesList.ItemsSource = null;
+                Instance.FramesList.ItemsSource = Instance.ViewModel.AnimationFrameListSource;
+                Instance.FramesList.SelectedIndex = lastSelectedFrameIndex;
             }
 
+            UpdateIndexes();
+            UpdateCurrentFrameProperties();
+            UpdateIndexStatusLabels();
+            ToggleListEvents(true);
             ToggleAnimationInfoEvents(true);
         }
         public void UpdateLoadedAnimationTextureListProperties()
@@ -352,6 +380,21 @@ namespace AnimationEditor
         #endregion
 
         #region Property Event Toggling
+
+        public void ToggleListEvents(bool isEnabled)
+        {
+            if (isEnabled)
+            {
+                Instance.List.SelectionChanged += Instance.List_SelectionChanged;
+                Instance.FramesList.SelectionChanged += Instance.FramesList_SelectionChanged;
+            }
+            else
+            {
+                Instance.List.SelectionChanged -= Instance.List_SelectionChanged;
+                Instance.FramesList.SelectionChanged -= Instance.FramesList_SelectionChanged;
+            }
+        }
+
         public void ToggleFrameNUDEvents(bool isEnabled)
         {
             if (isEnabled)
@@ -440,8 +483,8 @@ namespace AnimationEditor
         #region Update Controls
         public void UpdateFrameListControls()
         {
-            bool invalid = !isFrameIndexValid;
             bool enabled = isFrameSelected;
+            bool invalid = !(isFrameSelected && isAnimationLoaded);
             bool noPlayback = !isPlaybackEnabled;
 
             Instance.ButtonFrameAdd.IsEnabled = isEntrySelected && noPlayback;
@@ -491,7 +534,7 @@ namespace AnimationEditor
         {
             bool isLoaded = isAnimationLoaded;
             bool isSelected = isEntrySelected;
-            bool invalid = !isEntryIndexValid;
+            bool invalid = !(isEntrySelected && isAnimationLoaded);
             bool noPlayback = !isPlaybackEnabled;
 
             Instance.ButtonAnimationAdd.IsEnabled = isLoaded && noPlayback;
@@ -517,8 +560,8 @@ namespace AnimationEditor
         }
         public void UpdateHitboxControls()
         {
-            bool invalid = !isFrameIndexValid;
             bool enabled = isFrameSelected;
+            bool invalid = !(isFrameSelected && isAnimationLoaded);
             bool indexNegative = Instance.HitBoxComboBox.SelectedIndex == -1;
 
             Instance.HitboxLeftNUD.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
@@ -535,6 +578,14 @@ namespace AnimationEditor
             Instance.HitBoxComboBox.BorderBrush = (invalid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
             Instance.HitBoxComboBox.Foreground = (invalid ? HideTextBrush : DefaultTextBrush);
             Instance.HitBoxComboBox.IsHitTestVisible = (invalid && !indexNegative ? false : true);
+        }
+        public void UpdateIndexStatusLabels()
+        {
+            Instance.SelectedAnimationIndexLabel.Text = Instance.ViewModel.SelectedAnimationIndex.ToString();
+            Instance.SelectedFrameIndexLabel.Text = Instance.ViewModel.SelectedFrameIndex.ToString();
+            Instance.FramesCountLabel.Text = Instance.ViewModel.FramesCount.ToString();
+            Instance.AnimationsCountLabel.Text = Instance.ViewModel.AnimationsCount.ToString();
+            Instance.AllFramesCountLabel.Text = Instance.ViewModel.GetCurrentFrameIndexForAllAnimations().ToString();
         }
         public void UpdateGeneralControls()
         {
@@ -572,18 +623,62 @@ namespace AnimationEditor
 
             Instance.SpriteDirectoryLabel.Text = string.Format("Sprite Directory: {0}", (Instance.ViewModel.SpriteDirectory != "" && Instance.ViewModel.SpriteDirectory != null ? Instance.ViewModel.SpriteDirectory : "N/A"));
             Instance.AnimationPathLabel.Text = string.Format("Animation Path: {0}", (Instance.ViewModel.AnimationFilepath != "" && Instance.ViewModel.AnimationFilepath != null ? Instance.ViewModel.AnimationFilepath : "N/A"));
-
-            Instance.SelectedAnimationIndexLabel.Text = Instance.ViewModel.SelectedAnimationIndex.ToString();
-            Instance.SelectedFrameIndexLabel.Text = Instance.ViewModel.SelectedFrameIndex.ToString();
-            Instance.FramesCountLabel.Text = Instance.ViewModel.FramesCount.ToString();
-            Instance.AnimationsCountLabel.Text = Instance.ViewModel.AnimationsCount.ToString();
-            Instance.AllFramesCountLabel.Text = Instance.ViewModel.GetCurrentFrameIndexForAllAnimations().ToString();
+            UpdateIndexStatusLabels();
         }
+
+        public void UpdateIndexes()
+        {
+            Instance.List.SelectedIndex = Instance.ViewModel.SelectedAnimationIndex;
+            Instance.FramesList.SelectedIndex = Instance.ViewModel.SelectedFrameIndex;
+        }
+
+        public void UnloadControls()
+        {
+            ToggleFrameNUDEvents(false);
+            ToggleHitboxEvents(false);
+
+            Instance.FrameWidthNUD.Value = null;
+            Instance.FrameHeightNUD.Value = null;
+            Instance.FrameX_NUD.Value = null;
+            Instance.FrameY_NUD.Value = null;
+            Instance.PivotX_NUD.Value = null;
+            Instance.PivotY_NUD.Value = null;
+            Instance.FrameID_NUD.Value = null;
+            Instance.Delay_NUD.Value = null;
+            Instance.FrameHitboxID_NUD.Value = null;
+            Instance.HitBoxComboBox.ItemsSource = null;
+            Instance.HitBoxComboBox.SelectedIndex = -1;
+            Instance.HitboxLeftNUD.Value = null;
+            Instance.HitboxRightNUD.Value = null;
+            Instance.HitboxTopNUD.Value = null;
+            Instance.HitboxBottomNUD.Value = null;
+
+            ToggleHitboxEvents(true);
+            ToggleFrameNUDEvents(true);
+
+            ToggleAnimationInfoEvents(false);
+            ToggleListEvents(false);
+
+            Instance.SpeedNUD.Value = Instance.ViewModel.Speed;
+            Instance.LoopIndexNUD.Value = Instance.ViewModel.Loop;
+            Instance.FlagsSelector.SelectedIndex = (Instance.ViewModel.Flags.HasValue ? Instance.ViewModel.Flags.Value : 0);
+            Instance.PlayerID_NUD.Value = Instance.ViewModel.PlayerType;
+            Instance.List.ItemsSource = null;
+            Instance.FramesList.ItemsSource = null;
+            Instance.List.SelectedIndex = -1;
+            Instance.FramesList.SelectedIndex = -1;
+
+            Instance.FlagsSelector.SelectedIndex = -1;
+            Instance.SpriteSheetList.ItemsSource = null;
+
+            ToggleListEvents(true);
+            ToggleAnimationInfoEvents(true);
+        }
+
         public void UpdateControls()
         {
             UpdateLoadedAnimationProperties();
 
-            UpdateAnimationInfoControls();
             UpdateFrameListControls();
             UpdateGeneralControls();
             UpdateTypeLimitations();
@@ -825,7 +920,11 @@ namespace AnimationEditor
                     else Instance.FramesList.SelectedIndex = (Instance.LoopIndexNUD.Value != null ? Instance.LoopIndexNUD.Value.Value : 0);
                 }
                 Instance.FramesList.ScrollIntoView(Instance.FramesList.SelectedItem);
-                if (updateUI) UpdateControls();
+                if (updateUI)
+                {
+                    UpdateSelectedSectionProperties();
+                    UpdateControls();
+                }
             }
         }
         #endregion

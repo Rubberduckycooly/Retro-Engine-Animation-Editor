@@ -26,6 +26,35 @@ namespace AnimationEditor.ViewModel
         public EditorAnimation LoadedAnimationFile { get; set; }
         #endregion
 
+        #region Methods
+
+        public int GetFirstIndex(int count)
+        {
+            if (count - 1 >= 0)
+            {
+                return 0;
+            }
+            else return -1;
+        }
+        public int GetIndexWithinRange(int count, int index)
+        {
+            if (count - 1 >= index && index >= 0)
+            {
+                return index;
+            }
+            else if (index >= count - 1)
+            {
+                return count - 1;
+            }
+            else if (count - 1 >= 0)
+            {
+                return 0;
+            }
+            else return -1;
+        }
+
+        #endregion
+
         #region IO Paths
         public string AnimationFilepath { get; set; }
         public string AnimationDirectory { get; set; }
@@ -835,38 +864,38 @@ namespace AnimationEditor.ViewModel
         public void ShiftFrameRight(int frameID)
         {
             int parentID = frameID + 1;
-            if (parentID < 0 || parentID > SelectedAnimation.Frames.Count()) return;
+            if (parentID < 0 || parentID > SelectedAnimation.Frames.Count() - 1) return;
             var targetFrame = SelectedAnimation.Frames[frameID];
             var parentFrame = SelectedAnimation.Frames[parentID];
 
             int parentIndex = SelectedAnimation.Frames.IndexOf(parentFrame);
-            int targetIndex = SelectedAnimation.Frames.IndexOf(parentFrame);
 
             SelectedAnimation.Frames.Remove(targetFrame);
             SelectedAnimation.Frames.Insert(parentIndex, targetFrame);
 
-
+            SelectedFrameIndex = SelectedAnimation.Frames.IndexOf(targetFrame);
         }
 
         public void ShiftFrameLeft(int frameID)
         {
             int parentID = frameID - 1;
-            if (parentID < 0 || parentID > SelectedAnimation.Frames.Count()) return;
+            if (parentID < 0 || parentID > SelectedAnimation.Frames.Count() - 1) return;
             var targetFrame = SelectedAnimation.Frames[frameID];
             var parentFrame = SelectedAnimation.Frames[parentID];
 
             int parentIndex = SelectedAnimation.Frames.IndexOf(parentFrame);
-            int targetIndex = SelectedAnimation.Frames.IndexOf(parentFrame);
 
             SelectedAnimation.Frames.Remove(targetFrame);
             SelectedAnimation.Frames.Insert(parentIndex, targetFrame);
+
+            SelectedFrameIndex = SelectedAnimation.Frames.IndexOf(targetFrame);
         }
 
         public void ShiftAnimationUp(int animID)
         {
             if (LoadedAnimationFile == null) return;
             int parentID = animID - 1;
-            if (parentID < 0 || parentID > LoadedAnimationFile.Animations.Count()) return;
+            if (parentID < 0 || parentID > LoadedAnimationFile.Animations.Count() - 1) return;
             var targetAnimation = LoadedAnimationFile.Animations[animID];
             var parentAnimation = LoadedAnimationFile.Animations[parentID];
 
@@ -874,13 +903,16 @@ namespace AnimationEditor.ViewModel
 
             LoadedAnimationFile.Animations.Remove(targetAnimation);
             LoadedAnimationFile.Animations.Insert(parentIndex, targetAnimation);
+
+
+            SelectedAnimationIndex = LoadedAnimationFile.Animations.IndexOf(targetAnimation);
         }
 
         public void ShiftAnimationDown(int animID)
         {
             if (LoadedAnimationFile == null) return;
             int parentID = animID + 1;
-            if (parentID < 0 || parentID > LoadedAnimationFile.Animations.Count()) return;
+            if (parentID < 0 || parentID > LoadedAnimationFile.Animations.Count() - 1) return;
             var targetAnimation = LoadedAnimationFile.Animations[animID];
             var parentAnimation = LoadedAnimationFile.Animations[parentID];
 
@@ -888,28 +920,30 @@ namespace AnimationEditor.ViewModel
 
             LoadedAnimationFile.Animations.Remove(targetAnimation);
             LoadedAnimationFile.Animations.Insert(parentIndex, targetAnimation);
+
+            SelectedAnimationIndex = LoadedAnimationFile.Animations.IndexOf(targetAnimation);
         }
 
         public void RemoveFrame(int frameID)
         {
-            if (frameID != -1) SelectedAnimation.Frames.RemoveAt(frameID);
+            if (GenerationsLib.Core.ListHelpers.IsInRange(SelectedAnimation.Frames, frameID)) SelectedAnimation.Frames.RemoveAt(frameID);
         }
 
         public void AddFrame(int frameID)
         {
             var frame = new EditorAnimation.EditorFrame(AnimationType, SelectedAnimation);
-            SelectedAnimation.Frames.Insert(frameID, frame);
+            if (GenerationsLib.Core.ListHelpers.IsInRange(SelectedAnimation.Frames, frameID)) SelectedAnimation.Frames.Insert(frameID, frame);
         }
 
         public void DuplicateFrame(int frameID)
-        { 
+        {           
             var frame = (EditorAnimation.EditorFrame)SelectedAnimation.Frames[frameID].Clone();
-            SelectedAnimation.Frames.Insert(frameID, frame);
+            if (GenerationsLib.Core.ListHelpers.IsInRange(SelectedAnimation.Frames, frameID)) SelectedAnimation.Frames.Insert(frameID, frame);
         }
 
         public void RemoveAnimation(int animID)
         {
-            LoadedAnimationFile.Animations.RemoveAt(animID);
+            if (GenerationsLib.Core.ListHelpers.IsInRange(LoadedAnimationFile.Animations, animID)) LoadedAnimationFile.Animations.RemoveAt(animID);
         }
 
         public void AddAnimation(int animID)
@@ -917,13 +951,13 @@ namespace AnimationEditor.ViewModel
             var animation = new EditorAnimation.EditorAnimationInfo(AnimationType, LoadedAnimationFile);
             animation.AnimName = "New Entry";
             animation.Frames = new List<EditorAnimation.EditorFrame>();
-            LoadedAnimationFile.Animations.Insert(animID, animation);
+            if (GenerationsLib.Core.ListHelpers.IsInRange(LoadedAnimationFile.Animations, animID)) LoadedAnimationFile.Animations.Insert(animID, animation);
         }
 
         public void DuplicateAnimation(int animID)
         {
             var animation = LoadedAnimationFile.Animations[animID];
-            LoadedAnimationFile.Animations.Insert(animID, animation);
+            if (GenerationsLib.Core.ListHelpers.IsInRange(LoadedAnimationFile.Animations, animID)) LoadedAnimationFile.Animations.Insert(animID, animation);
         }
 
 

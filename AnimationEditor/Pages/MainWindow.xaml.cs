@@ -132,6 +132,7 @@ namespace AnimationEditor.Pages
         {
             Handler.UnloadAnimationData();
             Interfacer.UpdateControls();
+            Interfacer.UnloadControls();
         }
 
         private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
@@ -194,18 +195,6 @@ namespace AnimationEditor.Pages
             Interfacer.UpdateControls();
         }
 
-        private void ButtonFrameLeft_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.ShiftFrameLeft(ViewModel.SelectedFrameIndex);
-            Interfacer.UpdateControls();
-        }
-
-        private void ButtonFrameRight_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.ShiftFrameRight(ViewModel.SelectedFrameIndex);
-            Interfacer.UpdateControls();
-        }
-
         private void ButtonAnimationDuplicate_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.DuplicateAnimation(ViewModel.SelectedAnimationIndex);
@@ -260,18 +249,35 @@ namespace AnimationEditor.Pages
         {
             ViewModel.AddFrame((ViewModel.SelectedFrameIndex != -1 ? ViewModel.SelectedFrameIndex : 0));
             Interfacer.UpdateControls();
+            Interfacer.UpdateSelectedSectionProperties();
         }
 
         private void ButtonFrameDupe_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.DuplicateFrame(ViewModel.SelectedFrameIndex);
             Interfacer.UpdateControls();
+            Interfacer.UpdateSelectedSectionProperties();
+        }
+
+        private void ButtonFrameLeft_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.ShiftFrameLeft(ViewModel.SelectedFrameIndex);
+            Interfacer.UpdateControls();
+            Interfacer.UpdateSelectedSectionProperties();
+        }
+
+        private void ButtonFrameRight_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.ShiftFrameRight(ViewModel.SelectedFrameIndex);
+            Interfacer.UpdateControls();
+            Interfacer.UpdateSelectedSectionProperties();
         }
 
         private void ButtonFrameRemove_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.RemoveFrame(ViewModel.SelectedFrameIndex);
             Interfacer.UpdateControls();
+            Interfacer.UpdateSelectedSectionProperties();
         }
 
         private void ButtonFrameImport_Context(object sender, RoutedEventArgs e)
@@ -288,12 +294,14 @@ namespace AnimationEditor.Pages
         {
             Handler.ImportFrame();
             Interfacer.UpdateControls();
+            Interfacer.UpdateSelectedSectionProperties();
         }
 
         private void ButtonFrameExport_Click(object sender, RoutedEventArgs e)
         {
             Handler.ExportFrame();
             Interfacer.UpdateControls();
+            Interfacer.UpdateSelectedSectionProperties();
         }
 
         private void ButtonZoomIn_Click(object sender, RoutedEventArgs e)
@@ -422,13 +430,13 @@ namespace AnimationEditor.Pages
         #endregion
 
         #region List Controls
-        private void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        public void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             ViewModel.SelectedAnimationIndex = List.SelectedIndex;
+            Interfacer.UpdateSelectedSectionProperties(false, true);
             Interfacer.UpdateControls();
-            Interfacer.UpdateSelectedSectionProperties();
         }
-        private void FramesList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        public void FramesList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             ViewModel.SelectedFrameIndex = FramesList.SelectedIndex;
             if (!Interfacer.isPlaybackEnabled)
