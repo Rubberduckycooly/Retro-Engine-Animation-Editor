@@ -65,7 +65,7 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
-                <RowDefinition Height="40"/>
+                <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Margin="40,0" x:Name="PopupHost"/>
@@ -840,8 +840,9 @@
             <StatusBar Grid.Row="1" Grid.Column="4" Background="{DynamicResource StatusBarBackground}">
                 <StatusBarItem>
                     <StackPanel Background="Transparent">
-                        <TextBlock Margin="5,0" Foreground="{DynamicResource NormalText}"><Run Text="Current animation "/><Run Text=" "/><Run x:Name="SelectedAnimationIndexLabel"/><Run Text=" "/><Run Text="- Total "/><Run Text=" "/><Run x:Name="AnimationsCountLabel"/></TextBlock>
-                        <TextBlock Margin="5,0" Foreground="{DynamicResource NormalText}"><Run Text="Current frame "/><Run Text=" "/><Run x:Name="SelectedFrameIndexLabel"/><Run Text=" "/><Run Text="- Total "/><Run Text=" "/><Run x:Name="FramesCountLabel"/><Run Text=" "/><Run Text="- All "/><Run Text=" "/><Run x:Name="AllFramesCountLabel"/></TextBlock>
+                        <TextBlock Margin="5,0" Foreground="{DynamicResource NormalText}"><Run Text="Current Animation "/><Run Text="- Current: "/><Run x:Name="SelectedAnimationIndexLabel"/><Run Text=" - Total: "/><Run x:Name="AnimationsCountLabel"/></TextBlock>
+                        <TextBlock Margin="5,0" Foreground="{DynamicResource NormalText}"><Run Text="Current Frame "/><Run Text="- Current: "/><Run x:Name="SelectedFrameIndexLabel"/><Run Text=" - Total: "/><Run x:Name="FramesCountLabel"/><Run Text=" "/></TextBlock>
+                        <TextBlock Margin="5,0" Foreground="{DynamicResource NormalText}"><Run Text="All Frames "/><Run Text="- Current: "/><Run x:Name="SelectedCombinedFrameIndexLabel"/><Run Text="- Total: "/><Run x:Name="AllFramesCountLabel"/></TextBlock> 
                     </StackPanel>
                 </StatusBarItem>
             </StatusBar>

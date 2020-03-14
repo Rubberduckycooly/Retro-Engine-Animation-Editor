@@ -142,12 +142,12 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex];
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes != null && SelectedFrame.HitBoxes.Count > 0) return SelectedFrame.HitBoxes[SelectedFrameHitboxIndex];
                 else return null;
             }
             set
             {
-                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1) SelectedFrame.HitBoxes[SelectedFrameHitboxIndex] = value;
+                if (isAnimationFrameSelected && SelectedFrameHitboxIndex != -1 && SelectedFrame.HitBoxes != null) SelectedFrame.HitBoxes[SelectedFrameHitboxIndex] = value;
                 else return;
             }
         }
@@ -158,6 +158,19 @@ namespace AnimationEditor.ViewModel
         public int SelectedFrameIndex { get; set; }
         public int SelectedAnimationIndex { get; set; }
         public int SelectedFrameHitboxIndex { get; set; }
+        public int GetTotalFrameCount()
+        {
+            int count = -1;
+            if (LoadedAnimationFile != null)
+            {
+                count = 0;
+                foreach (var entry in LoadedAnimationFile.Animations)
+                {
+                    count += entry.Frames.Count;
+                }
+            }
+            return count;
+        }
         public int GetCurrentFrameIndexForAllAnimations()
         {
             if (isAnimationFrameSelected)
@@ -932,7 +945,7 @@ namespace AnimationEditor.ViewModel
         public void AddFrame(int frameID)
         {
             var frame = new EditorAnimation.EditorFrame(AnimationType, SelectedAnimation);
-            if (GenerationsLib.Core.ListHelpers.IsInRange(SelectedAnimation.Frames, frameID)) SelectedAnimation.Frames.Insert(frameID, frame);
+            if (GenerationsLib.Core.ListHelpers.IsInRange(SelectedAnimation.Frames, frameID) || SelectedAnimation.Frames.Count == 0) SelectedAnimation.Frames.Insert(frameID, frame);
         }
 
         public void DuplicateFrame(int frameID)
@@ -951,7 +964,7 @@ namespace AnimationEditor.ViewModel
             var animation = new EditorAnimation.EditorAnimationInfo(AnimationType, LoadedAnimationFile);
             animation.AnimName = "New Entry";
             animation.Frames = new List<EditorAnimation.EditorFrame>();
-            if (GenerationsLib.Core.ListHelpers.IsInRange(LoadedAnimationFile.Animations, animID)) LoadedAnimationFile.Animations.Insert(animID, animation);
+            if (GenerationsLib.Core.ListHelpers.IsInRange(LoadedAnimationFile.Animations, animID) || LoadedAnimationFile.Animations.Count == 0) LoadedAnimationFile.Animations.Insert(animID, animation);
         }
 
         public void DuplicateAnimation(int animID)

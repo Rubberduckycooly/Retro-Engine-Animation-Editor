@@ -223,12 +223,37 @@ namespace AnimationEditor.Classes
             {
                 engineType = EngineType.Invalid;
                 Parent = null;
+                HitboxInitialization();
             }
 
             public EditorFrame(EngineType type, EditorAnimationInfo parent)
             {
                 engineType = type;
                 Parent = parent;
+                HitboxInitialization();
+            }
+
+
+            private void HitboxInitialization()
+            {
+                if (engineType == EngineType.RSDKv5)
+                {
+                    HitBoxes = new List<EditorHitbox>();
+                    for (int i = 0; i < Parent.Parent.CollisionBoxes.Count; i++)
+                    {
+                        HitBoxes.Add(new EditorHitbox());
+                    }
+                }
+                else if (engineType != EngineType.Invalid)
+                {
+                    //TODO : Validate this Works as the Default Hitbox Initalization for Older Versions
+                    HitBoxes = new List<EditorHitbox>();
+                    for (int i = 0; i < Parent.Parent.RetroCollisionBoxes.Count; i++)
+                    {
+                        HitBoxes.Add(new EditorHitbox());
+                    }
+                }
+
             }
 
             public void ImportFrom(EngineType type, string filepath)

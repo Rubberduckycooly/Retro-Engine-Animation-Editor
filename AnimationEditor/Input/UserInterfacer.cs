@@ -1,14 +1,11 @@
-﻿using AnimationEditor.ViewModel;
-using AnimationEditor.Classes;
+﻿using AnimationEditor.Classes;
 using AnimationEditor.Pages;
 using AnimationEditor.Services;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Collections.Generic;
 using NUD = Xceed.Wpf.Toolkit.IntegerUpDown;
 
 namespace AnimationEditor
@@ -68,9 +65,9 @@ namespace AnimationEditor
 
         #region Status
 
-        bool isEntrySelected 
+        bool isEntrySelected
         {
-           get => Instance.List.SelectedItem != null;
+            get => Instance.List.SelectedItem != null;
         }
         bool isEntryIndexValid
         {
@@ -95,7 +92,7 @@ namespace AnimationEditor
 
         bool isHitboxesValid
         {
-            get => Instance.ViewModel.Hitboxes != null && Instance.ViewModel.Hitboxes.Count != 0;
+            get => Instance.ViewModel.Hitboxes != null && Instance.ViewModel.SelectedHitbox != null && Instance.ViewModel.Hitboxes.Count != 0;
         }
         bool isCurrentSpriteSheetsValid
         {
@@ -140,6 +137,7 @@ namespace AnimationEditor
         #endregion
 
         #region Get Loaded Animation Properties
+
         public void UpdateLoadedAnimationProperties()
         {
             ToggleListEvents(false);
@@ -183,6 +181,7 @@ namespace AnimationEditor
                 if (!enforceZeroIndex) resultingIndex = Instance.ViewModel.GetIndexWithinRange(Instance.ViewModel.SelectedAnimationFrameSet.Count, lastSelectedFrameIndex);
                 else resultingIndex = Instance.ViewModel.GetFirstIndex(Instance.ViewModel.SelectedAnimationFrameSet.Count);
                 Instance.ViewModel.SelectedFrameIndex = resultingIndex;
+                if (Instance.FramesList.SelectedIndex != Instance.ViewModel.SelectedFrameIndex) Instance.FramesList.SelectedIndex = resultingIndex;
             }
             else
             {
@@ -209,6 +208,7 @@ namespace AnimationEditor
         #endregion
 
         #region Get Current Frame Properties
+
         private void UpdateSpritesheetProperties()
         {
             ToggleFrameSpriteSheetEvents(false);
@@ -585,7 +585,8 @@ namespace AnimationEditor
             Instance.SelectedFrameIndexLabel.Text = Instance.ViewModel.SelectedFrameIndex.ToString();
             Instance.FramesCountLabel.Text = Instance.ViewModel.FramesCount.ToString();
             Instance.AnimationsCountLabel.Text = Instance.ViewModel.AnimationsCount.ToString();
-            Instance.AllFramesCountLabel.Text = Instance.ViewModel.GetCurrentFrameIndexForAllAnimations().ToString();
+            Instance.SelectedCombinedFrameIndexLabel.Text = Instance.ViewModel.GetCurrentFrameIndexForAllAnimations().ToString();
+            Instance.AllFramesCountLabel.Text = Instance.ViewModel.GetTotalFrameCount().ToString();
         }
         public void UpdateGeneralControls()
         {
@@ -636,6 +637,8 @@ namespace AnimationEditor
         {
             ToggleFrameNUDEvents(false);
             ToggleHitboxEvents(false);
+            ToggleAnimationInfoEvents(false);
+            ToggleListEvents(false);
 
             Instance.FrameWidthNUD.Value = null;
             Instance.FrameHeightNUD.Value = null;
@@ -653,12 +656,6 @@ namespace AnimationEditor
             Instance.HitboxTopNUD.Value = null;
             Instance.HitboxBottomNUD.Value = null;
 
-            ToggleHitboxEvents(true);
-            ToggleFrameNUDEvents(true);
-
-            ToggleAnimationInfoEvents(false);
-            ToggleListEvents(false);
-
             Instance.SpeedNUD.Value = Instance.ViewModel.Speed;
             Instance.LoopIndexNUD.Value = Instance.ViewModel.Loop;
             Instance.FlagsSelector.SelectedIndex = (Instance.ViewModel.Flags.HasValue ? Instance.ViewModel.Flags.Value : 0);
@@ -670,9 +667,6 @@ namespace AnimationEditor
 
             Instance.FlagsSelector.SelectedIndex = -1;
             Instance.SpriteSheetList.ItemsSource = null;
-
-            ToggleListEvents(true);
-            ToggleAnimationInfoEvents(true);
         }
 
         public void UpdateControls()
@@ -934,7 +928,11 @@ namespace AnimationEditor
         #region Update Bitmaps
         public void UpdateSheetImage()
         {
-            if (Instance.ViewModel.SpriteSheets == null || Instance.ViewModel.SpriteSheets.Count == 0) return;
+            if (Instance.ViewModel.SpriteSheets == null || Instance.ViewModel.SpriteSheets.Count == 0)
+            {
+                CurrentSpriteSheet = null;
+                return;
+            }
 
 
             if (Instance.MenuViewTransparentSpriteSheets.IsChecked)
@@ -1075,11 +1073,17 @@ namespace AnimationEditor
         private void DrawSprite(SkiaSharp.SKCanvas canvas, float width_half, float height_half, float width, float height)
         {
             if (CurrentSpriteSheetFrame == null || CurrentSpriteSheet == null) return;
+
             int frame_x = (int)Instance.ViewModel.CurrentFrame_X;
             int frame_y = (int)Instance.ViewModel.CurrentFrame_Y;
 
             int frame_width = (int)Instance.ViewModel.CurrentFrame_Width;
             int frame_height = (int)Instance.ViewModel.CurrentFrame_Height;
+
+            if (frame_width == 0 || frame_height == 0)
+            {
+                return;
+            }
 
             int frame_center_x = (ForceCenterFrame ? frame_width / 2 : -(int)Instance.ViewModel.CurrentFrame_PivotX.Value);
             int frame_center_y = (ForceCenterFrame ? frame_height / 2 : -(int)Instance.ViewModel.CurrentFrame_PivotY.Value);

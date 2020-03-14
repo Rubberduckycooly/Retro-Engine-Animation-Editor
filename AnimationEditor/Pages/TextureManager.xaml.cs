@@ -113,6 +113,10 @@ namespace AnimationEditor.Pages
             ListTextures.ItemsSource = null;
             ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
+            ParentInstance.TextureManagerPopup.IsOpen = true;
+            ParentInstance.Interfacer.UpdateCurrentFrameProperties();
+            ParentInstance.Interfacer.UpdateSelectedSectionProperties(true);
+
 
         }
 
@@ -210,6 +214,7 @@ namespace AnimationEditor.Pages
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
             ParentInstance.TextureManagerPopup.IsOpen = true;
             ParentInstance.Interfacer.UpdateControls();
+            ParentInstance.Interfacer.UpdateLoadedAnimationTextureListProperties();
         }
 
         private void ListTextures_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

@@ -44,7 +44,29 @@ namespace AnimationEditor.Pages
             InitializeDesignTimeComponents();
             InitializeComponent();
             InitializeBaseComponents();
+            //AutomateMode();
         }
+
+        private void AutomateMode()
+        {
+            this.Loaded += ProceedToAutomate;
+        }
+
+        /*
+         * Tested Save/Load 1:1
+         * RSDKv5
+         * RSDKvB
+         */
+
+        private void ProceedToAutomate(object sender, RoutedEventArgs e)
+        {
+            string inputPath = @"D:\Users\CarJem\Documents\Mania Modding\retrun-1.51\retrun-1.51\Data1\Animations\Sonic.ani";
+            string outputPath = @"D:\Users\CarJem\Documents\Mania Modding\retrun-1.51\retrun-1.51\Data1\Animations\Sonic.ani";
+            Handler.LoadFile(inputPath, EngineType.RSDKvB);
+            Handler.SaveFileAs(outputPath, EngineType.RSDKvB);
+            this.DialogResult = true;
+        }
+
         private void InitializeDesignTimeComponents()
         {
             DefaultBorderBrush = (Brush)FindResource("ComboBoxBorder");
@@ -430,6 +452,9 @@ namespace AnimationEditor.Pages
         #endregion
 
         #region List Controls
+
+        private static bool AllowUpdate { get; set; } = true;
+
         public void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             ViewModel.SelectedAnimationIndex = List.SelectedIndex;

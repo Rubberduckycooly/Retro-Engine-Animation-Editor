@@ -217,9 +217,15 @@ namespace AnimationEditor.Methods
                 UpdateRecentsDropDown(fd.FileName, fd.FileName, GetTypeStringFromFilterIndex(fd.FilterIndex));
 
                 Instance.AnimationType = GetTypeFromFilterIndex(fd.FilterIndex);
-                Instance.ViewModel.LoadedAnimationFile.SaveTo(Instance.AnimationType, fd.FileName);
+                SaveFileAs(fd.FileName, GetTypeFromFilterIndex(fd.FilterIndex));
             }
         }
+
+        public void SaveFileAs(string path, EngineType type)
+        {
+            Instance.ViewModel.LoadedAnimationFile.SaveTo(type, path);
+        }
+
         #endregion
 
         #region Unloading / Loading Methods
@@ -230,6 +236,7 @@ namespace AnimationEditor.Methods
             Instance.FramesList.SelectedIndex = -1;
             InitlizeSpriteSheets(true);
             Instance.DataContext = new AnimationModel();
+            Instance.Interfacer = new UserInterfacer(Instance);
             InitlizeSpriteSheets();
             Instance.ViewModel.NullSpriteSheetList.Clear();
             Instance.Interfacer.IntilizePlayback(true);
