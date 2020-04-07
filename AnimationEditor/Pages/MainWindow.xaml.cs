@@ -25,8 +25,6 @@ namespace AnimationEditor.Pages
         public UserInterfacer Interfacer;
         public InputController InputControl;
         public FileHandler Handler;
-        public Brush DefaultBorderBrush;
-        public Brush DefaultTextBrush;
         public EngineType AnimationType { get => ViewModel.AnimationType; set => ViewModel.AnimationType = value; }
 
 
@@ -69,8 +67,7 @@ namespace AnimationEditor.Pages
 
         private void InitializeDesignTimeComponents()
         {
-            DefaultBorderBrush = (Brush)FindResource("ComboBoxBorder");
-            DefaultTextBrush = (Brush)FindResource("NormalText");
+
         }
         private void InitializeBaseComponents()
         {
@@ -173,20 +170,6 @@ namespace AnimationEditor.Pages
         {
             Interfacer.SetBackgroundColorToMatchSpriteSheet = MenuViewSetBackgroundToTransparentColor.IsChecked;
             Interfacer.UpdateCanvasVisual();
-        }
-
-        private void MenuViewUseDarkTheme_Checked(object sender, RoutedEventArgs e)
-        {
-            App.ChangeSkin(Skin.Dark);
-            this.Refresh();
-            Interfacer.RefreshUIThemes();
-        }
-
-        private void MenuViewUseDarkTheme_Unchecked(object sender, RoutedEventArgs e)
-        {
-            App.ChangeSkin(Skin.Light);
-            this.Refresh();
-            Interfacer.RefreshUIThemes();
         }
 
         private void MenuFileOpenFromWorkspace_SubmenuOpened(object sender, RoutedEventArgs e)
@@ -641,25 +624,13 @@ namespace AnimationEditor.Pages
         #region Window Controls
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (MenuViewUseDarkTheme.IsChecked)
-            {
-                Classes.Settings.Default.UseDarkTheme = true;
-                Classes.Settings.Save();
-            }
-            else
-            {
-                Classes.Settings.Default.UseDarkTheme = false;
-                Classes.Settings.Save();
-            }
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             isLoadedFully = true;
-            if (Classes.Settings.Default.UseDarkTheme)
-            {
-                MenuViewUseDarkTheme.IsChecked = true;
-            }
+            ThemeSelector.SelectedSkin = Settings.Default.CurrentTheme;
         }
         #endregion
 
@@ -721,6 +692,17 @@ namespace AnimationEditor.Pages
         private void MenuFileOpenFromWorkspaceRemoveMode_Click(object sender, RoutedEventArgs e)
         {
             Handler.ToggleWorkspaceRemoveMode(MenuFileOpenFromWorkspaceRemoveMode.IsChecked);
+        }
+
+        private void ThemeSelector_ThemeChanged(object sender, GenerationsLib.WPF.Themes.Skin e)
+        {
+            App.ChangeSkin(e);
+            Classes.Settings.Default.CurrentTheme = e;
+            Classes.Settings.Save();
+
+            this.Refresh();
+            Interfacer.RefreshUIThemes();
+            ThemeSelector.UpdateVisual();
         }
     }
 

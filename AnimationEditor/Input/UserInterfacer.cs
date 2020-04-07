@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using NUD = Xceed.Wpf.Toolkit.IntegerUpDown;
+using GenerationsLib.WPF;
 
 namespace AnimationEditor
 {
@@ -58,9 +59,28 @@ namespace AnimationEditor
         #endregion
 
         #region Brushes
-        private Brush DefaultBorderBrush;
-        private Brush DefaultTextBrush;
-        private Brush HideTextBrush;
+
+        private Brush DefaultBorderBrush
+        {
+            get
+            {
+                return ColorExt.GetSCBResource(Instance, "ComboBoxBorder");
+            }
+        }
+        private Brush DefaultTextBrush
+        {
+            get
+            {
+                return ColorExt.GetSCBResource(Instance, "NormalText");
+            }
+        }
+        private Brush HideTextBrush
+        {
+            get
+            {
+                return System.Windows.Media.Brushes.Transparent;
+            }
+        }
         #endregion
 
         #region Status
@@ -129,10 +149,6 @@ namespace AnimationEditor
         public UserInterfacer(MainWindow window)
         {
             Instance = window;
-
-            DefaultBorderBrush = Instance.DefaultBorderBrush;
-            DefaultTextBrush = Instance.DefaultTextBrush;
-            HideTextBrush = Brushes.Transparent;
         }
         #endregion
 
@@ -975,7 +991,7 @@ namespace AnimationEditor
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    System.Windows.MessageBox.Show(ex.Message);
                 }
 
             }

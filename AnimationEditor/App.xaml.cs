@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using AnimationEditor.Styles;
+using GenerationsLib.WPF.Themes;
 
 namespace AnimationEditor
 {
@@ -13,21 +13,12 @@ namespace AnimationEditor
     /// Interaction logic for App.xaml
     /// </summary>
 
-    public enum Skin { Light, Dark }
-
     public partial class App : Application
     {
         public App()
         {
             AnimationEditor.Classes.Settings.Init();
-            if (AnimationEditor.Classes.Settings.Default.UseDarkTheme)
-            {
-                Skin = Skin.Dark;
-            }
-            else
-            {
-                Skin = Skin.Light;
-            }
+            ChangeSkin(AnimationEditor.Classes.Settings.Default.CurrentTheme);
             InitializeComponent();
         }
 
@@ -38,34 +29,21 @@ namespace AnimationEditor
             MainWindow.ShowDialog();
         }
 
-        public static Skin Skin { get; set; }
-
-        public static void ChangeSkin(Skin newSkin)
+        public static Skin Skin
         {
-            Skin = newSkin;
-
-            foreach (ResourceDictionary dict in App.Current.Resources.MergedDictionaries)
+            get
             {
-
-                if (dict is SkinResourceDictionary skinDict)
-                    skinDict.UpdateSource();
-                else
-                    dict.Source = dict.Source;
+                return GenerationsLib.WPF.Themes.SkinResourceDictionary.CurrentTheme;
+            }
+            set
+            {
+                GenerationsLib.WPF.Themes.SkinResourceDictionary.CurrentTheme = Skin;
             }
         }
 
-        private void ApplyResources(string src)
+        public static void ChangeSkin(Skin newSkin)
         {
-            var dict = new ResourceDictionary() { Source = new Uri(src, UriKind.Relative) };
-            foreach (var mergeDict in dict.MergedDictionaries)
-            {
-                Resources.MergedDictionaries.Add(mergeDict);
-            }
-
-            foreach (var key in dict.Keys)
-            {
-                Resources[key] = dict[key];
-            }
+            GenerationsLib.WPF.Themes.SkinResourceDictionary.ChangeSkin(newSkin, App.Current.Resources.MergedDictionaries);
         }
     }
 }

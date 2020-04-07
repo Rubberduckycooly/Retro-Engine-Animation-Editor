@@ -1,0 +1,54 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:AnimationEditor.Styles">
+
+    <SolidColorBrush x:Key="AnimationEditor_IconBorder" Color="#FF3E3E3E"/>
+    <SolidColorBrush x:Key="AnimationEditor_IconInside" Color="#FFA8A8A8"/>
+    <SolidColorBrush x:Key="AnimationEditor_IconGreen" Color="#FF38A533"/>
+    <SolidColorBrush x:Key="AnimationEditor_IconBlue" Color="#FF004785"/>
+    <SolidColorBrush x:Key="AnimationEditor_IconBlue2" Color="#FF0086FF"/>
+    <SolidColorBrush x:Key="AnimationEditor_IconBlue3" Color="#FF1863A6"/>
+    <SolidColorBrush x:Key="AnimationEditor_IconRed" Color="#FFD92E0C"/>
+
+    <SolidColorBrush x:Key="Maniac_ExtraEditLayer_LabelText" Color="#2BBBFF"/>
+    <SolidColorBrush x:Key="Maniac_ExtraViewLayer_LabelText" Color="#000BFF"/>
+    <SolidColorBrush x:Key="Maniac_EditLayer_LabelText" Color="#E9FF00"/>
+
+    <SolidColorBrush x:Key="EditLayerSelectedColor" Color="Blue"/>
+    <SolidColorBrush x:Key="EditLayerSelectedColorBack" Color="#900000FF"/>
+    <SolidColorBrush x:Key="EditLayerASelectedColor" Color="#05FF00"/>
+    <SolidColorBrush x:Key="EditLayerASelectedColorBack" Color="#9090FF00"/>
+    <SolidColorBrush x:Key="EditLayerBSelectedColor" Color="#C900FF"/>
+    <SolidColorBrush x:Key="EditLayerBSelectedColorBack" Color="#90C900FF"/>
+
+    <SolidColorBrush x:Key="Maniac_OtherFilter" Color="Gold"/>
+    <SolidColorBrush x:Key="Maniac_BothFilter" Color="LightBlue"/>
+    <SolidColorBrush x:Key="Maniac_ManiaFilter" Color="#FF2B00"/>
+    <SolidColorBrush x:Key="Maniac_EncoreFilter" Color="LightGreen"/>
+    <SolidColorBrush x:Key="Maniac_PinballFilter" Color="Magenta"/>
+    <SolidColorBrush x:Key="Maniac_AllFilter" Color="Violet"/>
+    <SolidColorBrush x:Key="Maniac_NullFilter" Color="White"/>
+
+    <SolidColorBrush x:Key="Maniac_FolderIcon" Color="#FFE793"/>
+
+    <SolidColorBrush x:Key="TileManiac_CollisionColor" Color="#2BBBFF"/>
+    <SolidColorBrush x:Key="TileManiac_AntiCollisionColor" Color="Red"/>
+
+    <SolidColorBrush x:Key="LegacyThemeBrush1" Color="#FF282828"/>
+    <SolidColorBrush x:Key="LegacyThemeBrush2" Color="#323232"/>
+    <SolidColorBrush x:Key="LegacyThemeBrush3" Color="#464646"/>
+    <SolidColorBrush x:Key="LegacyThemeBrush4" Color="White"/>
+    <SolidColorBrush x:Key="LegacyThemeBrush5" Color="Gray"/>
+    <SolidColorBrush x:Key="LegacyThemeBrush6" Color="Blue"/>
+
+    <SolidColorBrush x:Key="LegacyThemeBrushText" Color="White"/>
+    <SolidColorBrush x:Key="LegacyThemeBrushBG" Color="Black"/>
+
+    <SolidColorBrush x:Key="Maniac_WarningTextColor" Color="Red"/>
+
+    <SolidColorBrush x:Key="Maniac_ObjectManager_RedTextColor" Color="Red"/>
+    <SolidColorBrush x:Key="Maniac_ObjectManager_GreenTextColor" Color="YellowGreen"/>
+
+    <SolidColorBrush x:Key="Maniac_LayerManager_RedButtonColor" Color="LightCoral"/>
+    <SolidColorBrush x:Key="Maniac_LayerManager_GreenButtonColor" Color="LightGreen"/>
+</ResourceDictionary>

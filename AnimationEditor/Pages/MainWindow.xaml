@@ -4,10 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"       
         xmlns:local="clr-namespace:AnimationEditor.Pages"
+        xmlns:genLib="clr-namespace:GenerationsLib.WPF.Controls;assembly=GenerationsLib.WPF"
         xmlns:Themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit"
         xmlns:render="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
         x:Class="AnimationEditor.Pages.MainWindow"
-        xmlns:genLib="clr-namespace:GenerationsLib.WPF;assembly=GenerationsLib.WPF"
     mc:Ignorable="d"
         Title="RSDK Animation Editor v2" MinHeight="550" Height="550" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="800" Width="800" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
     <DockPanel x:Name="MainEditor">
@@ -46,8 +46,12 @@
                 </MenuItem>
                 <MenuItem x:Name="MenuViewFrameBorder" IsCheckable="True" Header="View Frame Border" Click="MenuViewFrameBorder_Click"/>
                 <Separator/>
-                <MenuItem Header="Editor Settings">
-                    <MenuItem x:Name="MenuViewUseDarkTheme" IsCheckable="True" Unchecked="MenuViewUseDarkTheme_Unchecked" Checked="MenuViewUseDarkTheme_Checked" Header="Use Dark Theme"/>
+                <MenuItem x:Name="MenuViewUseDarkTheme">
+                    <MenuItem.Header>
+                        <StackPanel Width="250" Background="Transparent">
+                            <genLib:ThemeComboBox x:Name="ThemeSelector" ThemeChanged="ThemeSelector_ThemeChanged"></genLib:ThemeComboBox>
+                        </StackPanel>
+                    </MenuItem.Header>
                 </MenuItem>
 
             </MenuItem>
@@ -80,7 +84,7 @@
                                     <Label Content="Create an empty animation."/>
                                 </StackPanel>
                             </Button.ToolTip>
-                            <Image Width="16" Source="{StaticResource Add_16x}"/>
+                            <Image Width="16" Source="{DynamicResource Add_16x}"/>
                         </Button>
 
                         <Button x:Name="ButtonAnimationDuplicate" BorderThickness="1" Click="ButtonAnimationDuplicate_Click">
@@ -89,7 +93,7 @@
                                     <Label Content="Duplicate the selected animation."/>
                                 </StackPanel>
                             </Button.ToolTip>
-                            <Image Width="16" Source="{StaticResource Copy_16x}"/>
+                            <Image Width="16" Source="{DynamicResource Copy_16x}"/>
                         </Button>
 
                         <Button x:Name="ButtonAnimationRemove" BorderThickness="1" Click="ButtonAnimationRemove_Click">
@@ -98,7 +102,7 @@
                                     <Label Content="Remove the selected animation."/>
                                 </StackPanel>
                             </Button.ToolTip>
-                            <Image Width="16" Source="{StaticResource Remove_color_16x}"/>
+                            <Image Width="16" Source="{DynamicResource Remove_color_16x}"/>
                         </Button>
 
                         <Button x:Name="ButtonAnimationImport" BorderThickness="1" Click="ButtonAnimationImport_Context">
@@ -115,7 +119,7 @@
                                     <MenuItem x:Name="ImportAnimationImages" Header="Import Images to Animation..." IsEnabled="False" Visibility="Collapsed"/>
                                 </ContextMenu>
                             </Button.ContextMenu>
-                            <Image Width="16" Source="{StaticResource Import_16x}"/>
+                            <Image Width="16" Source="{DynamicResource Import_16x}"/>
                         </Button>
 
                         <Button x:Name="ButtonAnimationExport" BorderThickness="1" Width="20" Height="20" Click="ButtonAnimationExport_Context">
@@ -132,7 +136,7 @@
                                     <MenuItem x:Name="ExportAnimationImages" Header="Export Animation Frames to PNG..." Click="ExportAnimationImages_Click"/>
                                 </ContextMenu>
                             </Button.ContextMenu>
-                            <Image Source="{StaticResource Export_16x}" Height="16" Width="14" RenderTransformOrigin="0.5,0.5">
+                            <Image Source="{DynamicResource Export_16x}" Height="16" Width="14" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
                                         <ScaleTransform ScaleY="1" CenterX="1" CenterY="1"/>
@@ -148,7 +152,7 @@
                                     <Label Content="Shifts the Current Animation Up by one"/>
                                 </StackPanel>
                             </Button.ToolTip>
-                            <Image Source="{StaticResource Arrow}" Height="16" Width="16" RenderTransformOrigin="0.5,0.5">
+                            <Image Source="{DynamicResource Arrow}" Height="16" Width="16" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
                                         <ScaleTransform ScaleY="-1"/>
@@ -165,7 +169,7 @@
                                     <Label Content="Shifts the Current Animation Down by one"/>
                                 </StackPanel>
                             </Button.ToolTip>
-                            <Image Source="{StaticResource Arrow}" Height="16" Width="16" RenderTransformOrigin="0.5,0.5">
+                            <Image Source="{DynamicResource Arrow}" Height="16" Width="16" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
                                         <ScaleTransform ScaleY="-1"/>
@@ -182,7 +186,7 @@
                                     <Label Content="Rename the selected animation."/>
                                 </StackPanel>
                             </Button.ToolTip>
-                            <Image Width="16" Source="{StaticResource EditTitleString_16x}"/>
+                            <Image Width="16" Source="{DynamicResource EditTitleString_16x}"/>
                         </Button>
                     </ToolBarPanel>
                     <ListBox x:Name="List" Width="160" HorizontalAlignment="Left" DisplayMemberPath="AnimName" SelectionChanged="List_SelectionChanged"/>
@@ -218,7 +222,7 @@
                                     <Label Content="Play the current animation"/>
                                 </StackPanel>
                             </ToggleButton.ToolTip>
-                            <Image Width="16" Source="{StaticResource Run_16x}"/>
+                            <Image Width="16" Source="{DynamicResource Run_16x}"/>
                         </ToggleButton>
                         <Button  Content="..." Width="20" Height="20" x:Name="PlaybackOptionsButton" VerticalContentAlignment="Center" Click="PlaybackOptionsButton_Click">
                             <Button.ContextMenu>
@@ -273,7 +277,7 @@
                                     <Label Content="Zoom in"/>
                                 </StackPanel>
                             </Button.ToolTip>
-                            <Image Width="16" Source="{StaticResource ZoomIn_16x}"/>
+                            <Image Width="16" Source="{DynamicResource ZoomIn_16x}"/>
                         </Button>
                         <Button  x:Name="ButtonZoomOut" Click="ButtonZoomOut_Click">
                             <Button.ToolTip>
@@ -281,7 +285,7 @@
                                     <Label Content="Zoom out"/>
                                 </StackPanel>
                             </Button.ToolTip>
-                            <Image Width="16" Source="{StaticResource ZoomOut_16x}"/>
+                            <Image Width="16" Source="{DynamicResource ZoomOut_16x}"/>
                         </Button>
                         <ToggleButton  x:Name="ButtonShowCenter" Click="ButtonShowCenter_Click">
                             <ToggleButton.ToolTip>
@@ -289,7 +293,7 @@
                                     <Label Content="Show a guide to center a frame"/>
                                 </StackPanel>
                             </ToggleButton.ToolTip>
-                            <Image Width="16" Source="{StaticResource TableInsideBorder_16x}"/>
+                            <Image Width="16" Source="{DynamicResource TableInsideBorder_16x}"/>
                         </ToggleButton>
                         <ToggleButton  x:Name="ButtonShowFieldHitbox" Visibility="Visible" Click="ButtonShowFieldHitbox_Click">
                             <ToggleButton.ToolTip>
@@ -297,7 +301,7 @@
                                     <Label Content="Show the hitbox used for field collision"/>
                                 </StackPanel>
                             </ToggleButton.ToolTip>
-                            <Image Width="16" Source="{StaticResource AppearanceTabSolid_16x}"/>
+                            <Image Width="16" Source="{DynamicResource AppearanceTabSolid_16x}"/>
                         </ToggleButton>
                         <ToggleButton  x:Name="ButtonShowEntityHitbox" Visibility="Collapsed">
                             <ToggleButton.ToolTip>
@@ -305,28 +309,28 @@
                                     <Label Content="Show the hitbox used for entity collision"/>
                                 </StackPanel>
                             </ToggleButton.ToolTip>
-                            <Image Width="16" Source="{StaticResource AppearanceTabSwatch_16x}"/>
+                            <Image Width="16" Source="{DynamicResource AppearanceTabSwatch_16x}"/>
                         </ToggleButton>
 
-                        <Separator  Margin="3 0 3 0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                        <Separator  Margin="3 0 3 0" Style="{DynamicResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
                         <Button  x:Name="ButtonFrameAdd" Grid.Column="1" Click="ButtonFrameAdd_Click">
                             <Button.ToolTip>
                                 <Label Content="Create an empty frame"/>
                             </Button.ToolTip>
-                            <Image Source="{StaticResource Add_16x}" Width="16"/>
+                            <Image Source="{DynamicResource Add_16x}" Width="16"/>
                         </Button>
                         <Button x:Name="ButtonFrameDupe" Grid.Column="1" Click="ButtonFrameDupe_Click">
                             <Button.ToolTip>
                                 <Label Content="Duplicate selected frame"/>
                             </Button.ToolTip>
-                            <Image Source="{StaticResource Copy_16x}" Width="16"/>
+                            <Image Source="{DynamicResource Copy_16x}" Width="16"/>
                         </Button>
                         <Button x:Name="ButtonFrameRemove" Grid.Column="1" Click="ButtonFrameRemove_Click">
                             <Button.ToolTip>
                                 <Label Content="Delete the selected frame"/>
                             </Button.ToolTip>
-                            <Image Source="{StaticResource Remove_color_16x}" Width="16"/>
+                            <Image Source="{DynamicResource Remove_color_16x}" Width="16"/>
                         </Button>
                         <Button x:Name="ButtonFrameImport" Grid.Column="1" Click="ButtonFrameImport_Context">
                             <Button.ToolTip>
@@ -340,7 +344,7 @@
                                     <MenuItem x:Name="ImportFramesImages" Header="Import Image to Frame..." IsEnabled="False" Visibility="Collapsed"/>
                                 </ContextMenu>
                             </Button.ContextMenu>
-                            <Image Source="{StaticResource Import_16x}" Width="16"/>
+                            <Image Source="{DynamicResource Import_16x}" Width="16"/>
                         </Button>
                         <Button x:Name="ButtonFrameExport" Grid.Column="1" Height="20" Width="20" Click="ButtonFrameExport_Context">
                             <Button.ToolTip>
@@ -354,7 +358,7 @@
                                     <MenuItem x:Name="ExportFrameImage" Header="Export Frame to PNG..." IsEnabled="False"/>
                                 </ContextMenu>
                             </Button.ContextMenu>
-                            <Image Source="{StaticResource Export_16x}" Height="16" Width="14" RenderTransformOrigin="0.5,0.5">
+                            <Image Source="{DynamicResource Export_16x}" Height="16" Width="14" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
                                         <ScaleTransform ScaleY="1" CenterX="1" CenterY="1"/>
@@ -368,7 +372,7 @@
                             <Button.ToolTip>
                                 <Label Content="Shifts the Current Frame over to the left by one"/>
                             </Button.ToolTip>
-                            <Image Source="{StaticResource Arrow}" Height="16" Width="16" RenderTransformOrigin="0.5,0.5">
+                            <Image Source="{DynamicResource Arrow}" Height="16" Width="16" RenderTransformOrigin="0.5,0.5">
                                 <Image.RenderTransform>
                                     <TransformGroup>
                                         <ScaleTransform ScaleY="-1"/>
@@ -383,7 +387,7 @@
                             <Button.ToolTip>
                                 <Label Content="Shifts the Current Frame over to the right by one"/>
                             </Button.ToolTip>
-                            <Image Source="{StaticResource Arrow}" Height="16" Width="16">
+                            <Image Source="{DynamicResource Arrow}" Height="16" Width="16">
                                 <Image.RenderTransform>
                                     <TransformGroup>
                                         <ScaleTransform/>
@@ -431,7 +435,7 @@
                 </Border>
             </DockPanel>
 
-            <ScrollViewer genLib:DesignExtensions.VerticalScrollTo="1000" KeyboardNavigation.DirectionalNavigation="None" Grid.Column="4" Grid.RowSpan="1" x:Name="ControlPanelHost" Background="Transparent">
+            <ScrollViewer KeyboardNavigation.DirectionalNavigation="None" Grid.Column="4" Grid.RowSpan="1" x:Name="ControlPanelHost" Background="Transparent">
                 <StackPanel x:Name="ControlPanel" Margin="5,0" Background="Transparent">
                     <StackPanel Background="Transparent">
                         <GroupBox Header="Animation Entry Properties">
@@ -776,7 +780,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="20"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="HBLabel"  Text="Hitbox Color" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="HBLabel" Text="Hitbox Color" VerticalAlignment="Center"/>
                                     <xc:ColorPicker Grid.Column="1" SelectedColor="#FFE700FF" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Visible" x:Name="HitboxColorPicker" Foreground="#7FFF0000" Style="{DynamicResource ColorPicker1}"/>
                                     <Button Click="ColorLabels_Click" x:Name="ButtonHitboxColorReset" Content="X" Grid.Column="2"></Button>
                                 </Grid>
@@ -835,7 +839,7 @@
                     <TextBlock x:Name="SpriteDirectoryLabel" Text="Sprite Directory: N/A"/>
                     <TextBlock x:Name="AnimationPathLabel" Text="Animation Path: N/A"/>
                 </StackPanel>
-                <Separator Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Right" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                <Separator Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Right" Style="{DynamicResource {x:Static ToolBar.SeparatorStyleKey}}" />
             </Grid>
             <StatusBar Grid.Row="1" Grid.Column="4" Background="{DynamicResource StatusBarBackground}">
                 <StatusBarItem>

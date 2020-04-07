@@ -17,7 +17,7 @@ namespace AnimationEditor.Classes
             public List<RecentFile> RecentFiles { get; set; } = new List<RecentFile>();
             public List<Workspace> Workspaces { get; set; } = new List<Workspace>();
 
-            public bool UseDarkTheme { get; set; } = false;
+            public GenerationsLib.WPF.Themes.Skin CurrentTheme { get; set; } = GenerationsLib.WPF.Themes.Skin.Light;
 
             public class Workspace
             {
