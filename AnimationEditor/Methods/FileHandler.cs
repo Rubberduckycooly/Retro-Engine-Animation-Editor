@@ -111,7 +111,7 @@ namespace AnimationEditor.Methods
             }
             catch (Exception ex)
             {
-                RSDKrU.MessageBox.Show(ex.ToString());
+                GenerationsLib.WPF.MessageBox.Show(ex.ToString());
                 UnloadAnimationData();
             }
 
@@ -459,7 +459,7 @@ namespace AnimationEditor.Methods
             }
             else
             {
-                RSDKrU.MessageBox.Show($"The specified File {dataDirectory} is not valid.",
+                GenerationsLib.WPF.MessageBox.Show($"The specified File {dataDirectory} is not valid.",
                                 "Invalid Annimation File!",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
@@ -533,11 +533,11 @@ namespace AnimationEditor.Methods
 
             EngineType DetermineVersionManually()
             {
-                MessageBoxResult result = RSDKrU.MessageBox.ShowYesNoCancel("Which version is this animation file for?", "Help Me!", "RSDKv2/RSDKvB (CD/1/1)", "RSDKv1 (Sonic Nexus)", "RSDKvRS (Retro Sonic)");
+                MessageBoxResult result = GenerationsLib.WPF.MessageBox.ShowYesNoCancel("Which version is this animation file for?", "Help Me!", "RSDKv2/RSDKvB (CD/1/1)", "RSDKv1 (Sonic Nexus)", "RSDKvRS (Retro Sonic)");
                 switch (result)
                 {
                     case MessageBoxResult.Yes:
-                        MessageBoxResult result2 = RSDKrU.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
+                        MessageBoxResult result2 = GenerationsLib.WPF.MessageBox.ShowYesNo("Which version is this animation file for?", "Help Me!", "RSDKv2 (Sonic CD)", "RSDKvB (Sonic 1/2 2013)");
                         if (result2 == MessageBoxResult.Yes)
                             return EngineType.RSDKv2;
                         else return EngineType.RSDKvB;

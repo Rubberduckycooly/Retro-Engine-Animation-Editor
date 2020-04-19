@@ -239,7 +239,7 @@ namespace AnimationEditor.Pages
             if (ViewModel.SelectedAnimation != null)
             {
                 int tempIndex = ViewModel.SelectedAnimationIndex;
-                ViewModel.SelectedAnimationEntries[ViewModel.SelectedAnimationIndex].AnimName = RSDKrU.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Animation:", ViewModel.SelectedAnimation.AnimName);
+                ViewModel.SelectedAnimationEntries[ViewModel.SelectedAnimationIndex].AnimName = GenerationsLib.WPF.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Animation:", ViewModel.SelectedAnimation.AnimName);
                 List.ItemsSource = null;
                 Interfacer.UpdateControls();
                 List.SelectedIndex = tempIndex;
