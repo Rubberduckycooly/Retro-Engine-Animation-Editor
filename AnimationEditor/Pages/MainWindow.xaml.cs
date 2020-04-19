@@ -39,8 +39,8 @@ namespace AnimationEditor.Pages
         #region Init
         public MainWindow()
         {
-            InitializeDesignTimeComponents();
             InitializeComponent();
+            InitializeNonDesignTimeComponents();
             InitializeBaseComponents();
             //AutomateMode();
         }
@@ -65,9 +65,12 @@ namespace AnimationEditor.Pages
             this.DialogResult = true;
         }
 
-        private void InitializeDesignTimeComponents()
+        private void InitializeNonDesignTimeComponents()
         {
-
+            if (App.OpenedExternally)
+            {
+                ThemeSelector.Visibility = Visibility.Collapsed;
+            }
         }
         private void InitializeBaseComponents()
         {

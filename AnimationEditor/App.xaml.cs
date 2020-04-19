@@ -15,6 +15,7 @@ namespace AnimationEditor
 
     public partial class App : Application
     {
+        public static bool OpenedExternally { get; private set; } = false;
         public App()
         {
             AnimationEditor.Classes.Settings.Init();
@@ -27,6 +28,14 @@ namespace AnimationEditor
             Pages.MainWindow mainWindow = new Pages.MainWindow();
             MainWindow = mainWindow;
             MainWindow.ShowDialog();
+        }
+
+        public static void ExternalLaunch()
+        {
+            OpenedExternally = true;
+            AnimationEditor.Classes.Settings.Init();
+            Pages.MainWindow mainWindow = new Pages.MainWindow();
+            mainWindow.Show();
         }
 
         public static Skin Skin
