@@ -11,6 +11,7 @@ using AnimationEditor.Services;
 using AnimationEditor.Classes;
 using AnimationEditor.Methods;
 using AnimationEditor.Pages;
+using AnimationEditor.Extensions;
 
 namespace AnimationEditor.Pages
 {
@@ -21,15 +22,8 @@ namespace AnimationEditor.Pages
     {
         #region Definitions
         public AnimationModel ViewModel => (AnimationModel)this.DataContext;
-
-        public UserInterfacer Interfacer;
-        public InputController InputControl;
-        public FileHandler Handler;
         public EngineType AnimationType { get => ViewModel.AnimationType; set => ViewModel.AnimationType = value; }
-
-
         private bool PreventScrollChange { get; set; } = true;
-
         public bool isLoadedFully { get; set; } = false;
         public string WindowName { set { this.Title = value; } }
         public string DefaultWindowName { get { return $"RSDK Animation Editor v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}"; } }
@@ -60,8 +54,8 @@ namespace AnimationEditor.Pages
         {
             string inputPath = @"D:\Users\CarJem\Documents\Mania Modding\retrun-1.51\retrun-1.51\Data1\Animations\Sonic.ani";
             string outputPath = @"D:\Users\CarJem\Documents\Mania Modding\retrun-1.51\retrun-1.51\Data1\Animations\Sonic.ani";
-            Handler.LoadFile(inputPath, EngineType.RSDKvB);
-            Handler.SaveFileAs(outputPath, EngineType.RSDKvB);
+            GlobalService.FileHandler.LoadFile(inputPath, EngineType.RSDKvB);
+            GlobalService.FileHandler.SaveFileAs(outputPath, EngineType.RSDKvB);
             this.DialogResult = true;
         }
 
@@ -74,11 +68,16 @@ namespace AnimationEditor.Pages
         }
         private void InitializeBaseComponents()
         {
-            InputControl = new InputController(this);
+            GlobalService.InputControl = new InputController(this);
+            GlobalService.FileHandler = new FileService(this);
+            GlobalService.SpriteService = new SpriteService();
+            GlobalService.PropertyHandler = new PropertyService(this);
+            GlobalService.UIService = new UIService(this);
+
             DataContext = new AnimationModel();
             List.AllowDrop = true;
-            Interfacer = new UserInterfacer(this);
-            Handler = new FileHandler(this);
+
+
             PreventScrollChange = false;
             InitializeColorPickerEvents();
             WindowName = DefaultWindowName;
@@ -89,20 +88,20 @@ namespace AnimationEditor.Pages
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
         {
-            Handler.OpenFile();
-            Interfacer.UpdateControls();
+            GlobalService.FileHandler.OpenFile();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void MenuFileSave_Click(object sender, RoutedEventArgs e)
         {
-            Handler.SaveFile();
-            Interfacer.UpdateControls();
+            GlobalService.FileHandler.SaveFile();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void MenuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
-            Handler.SaveFileAs();
-            Interfacer.UpdateControls();
+            GlobalService.FileHandler.SaveFileAs();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void MenuFileExit_Click(object sender, RoutedEventArgs e)
@@ -110,11 +109,21 @@ namespace AnimationEditor.Pages
             Close();
         }
 
+        private void MenuFileOpenFromWorkspaceAddWorkspace_Click(object sender, RoutedEventArgs e)
+        {
+            GlobalService.FileHandler.SelectNewWorkspaceFolder();
+        }
+
+        private void MenuFileOpenFromWorkspaceRemoveMode_Click(object sender, RoutedEventArgs e)
+        {
+            GlobalService.FileHandler.ToggleWorkspaceRemoveMode(MenuFileOpenFromWorkspaceRemoveMode.IsChecked);
+        }
+
         private void MenuViewTexture_Click(object sender, RoutedEventArgs e)
         {
             TextureManagerMenu.Startup(this);
             TextureManagerPopup.IsOpen = true;
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
 
         }
 
@@ -122,7 +131,7 @@ namespace AnimationEditor.Pages
         {
             HitboxManagerMenu.Startup(this);
             HitboxManagerPopup.IsOpen = true;
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void MenuInfoAbout_Click(object sender, RoutedEventArgs e)
@@ -134,51 +143,51 @@ namespace AnimationEditor.Pages
 
         private void MenuRecentFile_Click(object sender, RoutedEventArgs e)
         {
-            Handler.RecentDataDirectoryClicked(sender, e);
-            Interfacer.UpdateControls();
+            GlobalService.FileHandler.RecentDataDirectoryClicked(sender, e);
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void MenuFileOpenRecently_SubmenuOpened(object sender, RoutedEventArgs e)
         {
-            Handler.RefreshDataDirectories();
-            Interfacer.UpdateControls();
+            GlobalService.FileHandler.RefreshDataDirectories();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void MenuViewTransparentSpriteSheets_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.ShowSolidImageBackground = MenuViewTransparentSpriteSheets.IsChecked;
-            Interfacer.UpdateCanvasVisual();
+            GlobalService.PropertyHandler.ShowSolidImageBackground = MenuViewTransparentSpriteSheets.IsChecked;
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
 
         private void MenuFileUnloadAnimation_Click(object sender, RoutedEventArgs e)
         {
-            Handler.UnloadAnimationData();
-            Interfacer.UpdateControls();
-            Interfacer.UnloadControls();
+            GlobalService.FileHandler.UnloadAnimationData();
+            GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.PropertyHandler.UnloadControls();
         }
 
         private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.ShowFullFrame = MenuViewFullSpriteSheets.IsChecked;
-            Interfacer.UpdateCanvasVisual();
+            GlobalService.PropertyHandler.ShowFullFrame = MenuViewFullSpriteSheets.IsChecked;
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
 
         private void MenuViewFrameBorder_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.ShowFrameBorder = MenuViewFrameBorder.IsChecked;
-            Interfacer.UpdateCanvasVisual();
+            GlobalService.PropertyHandler.ShowFrameBorder = MenuViewFrameBorder.IsChecked;
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
 
         private void MenuViewSetBackgroundToTransparentColor_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.SetBackgroundColorToMatchSpriteSheet = MenuViewSetBackgroundToTransparentColor.IsChecked;
-            Interfacer.UpdateCanvasVisual();
+            GlobalService.PropertyHandler.SetBackgroundColorToMatchSpriteSheet = MenuViewSetBackgroundToTransparentColor.IsChecked;
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
 
         private void MenuFileOpenFromWorkspace_SubmenuOpened(object sender, RoutedEventArgs e)
         {
-            Handler.RefreshWorkspaces();
-            Interfacer.UpdateControls();
+            GlobalService.FileHandler.RefreshWorkspaces();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         #endregion
@@ -188,37 +197,37 @@ namespace AnimationEditor.Pages
         private void ButtonAnimationAdd_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.AddAnimation(ViewModel.SelectedAnimationIndex);
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void ButtonAnimationUp_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftAnimationUp(ViewModel.SelectedAnimationIndex);
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void ButtonAnimationDown_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftAnimationDown(ViewModel.SelectedAnimationIndex);
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void ButtonAnimationDuplicate_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.DuplicateAnimation(ViewModel.SelectedAnimationIndex);
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void ButtonAnimationRemove_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.RemoveAnimation(ViewModel.SelectedAnimationIndex);
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void ButtonAnimationImport_Click(object sender, RoutedEventArgs e)
         {
-            Handler.ImportAnimation();
-            Interfacer.UpdateControls();
+            GlobalService.FileHandler.ImportAnimation();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void ButtonAnimationImport_Context(object sender, RoutedEventArgs e)
@@ -233,8 +242,8 @@ namespace AnimationEditor.Pages
 
         private void ButtonAnimationExport_Click(object sender, RoutedEventArgs e)
         {
-            Handler.ExportAnimation();
-            Interfacer.UpdateControls();
+            GlobalService.FileHandler.ExportAnimation();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void ButtonAnimationRename_Click(object sender, RoutedEventArgs e)
@@ -243,9 +252,9 @@ namespace AnimationEditor.Pages
             {
                 int tempIndex = ViewModel.SelectedAnimationIndex;
                 ViewModel.SelectedAnimationEntries[ViewModel.SelectedAnimationIndex].AnimName = GenerationsLib.WPF.TextPrompt2.ShowDialog("Change Name", "Enter a New Name for the Animation:", ViewModel.SelectedAnimation.AnimName);
-                List.ItemsSource = null;
-                Interfacer.UpdateControls();
-                List.SelectedIndex = tempIndex;
+                ViewModel.CallPropertyChanged(nameof(ViewModel.SelectedAnimationEntries));
+                GlobalService.PropertyHandler.UpdateControls();
+                ViewModel.SelectedAnimationIndex = tempIndex;
             }
         }
 
@@ -256,36 +265,36 @@ namespace AnimationEditor.Pages
         private void ButtonFrameAdd_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.AddFrame((ViewModel.SelectedFrameIndex != -1 ? ViewModel.SelectedFrameIndex : 0));
-            Interfacer.UpdateControls();
-            Interfacer.UpdateSelectedSectionProperties();
+            GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.PropertyHandler.InvalidateSelectionProperties();
         }
 
         private void ButtonFrameDupe_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.DuplicateFrame(ViewModel.SelectedFrameIndex);
-            Interfacer.UpdateControls();
-            Interfacer.UpdateSelectedSectionProperties();
+            GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.PropertyHandler.InvalidateSelectionProperties();
         }
 
         private void ButtonFrameLeft_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftFrameLeft(ViewModel.SelectedFrameIndex);
-            Interfacer.UpdateControls();
-            Interfacer.UpdateSelectedSectionProperties();
+            GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.PropertyHandler.InvalidateSelectionProperties();
         }
 
         private void ButtonFrameRight_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShiftFrameRight(ViewModel.SelectedFrameIndex);
-            Interfacer.UpdateControls();
-            Interfacer.UpdateSelectedSectionProperties();
+            GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.PropertyHandler.InvalidateSelectionProperties();
         }
 
         private void ButtonFrameRemove_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.RemoveFrame(ViewModel.SelectedFrameIndex);
-            Interfacer.UpdateControls();
-            Interfacer.UpdateSelectedSectionProperties();
+            GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.PropertyHandler.InvalidateSelectionProperties();
         }
 
         private void ButtonFrameImport_Context(object sender, RoutedEventArgs e)
@@ -300,16 +309,16 @@ namespace AnimationEditor.Pages
 
         private void ButtonFrameImport_Click(object sender, RoutedEventArgs e)
         {
-            Handler.ImportFrame();
-            Interfacer.UpdateControls();
-            Interfacer.UpdateSelectedSectionProperties();
+            GlobalService.FileHandler.ImportFrame();
+            GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.PropertyHandler.InvalidateSelectionProperties();
         }
 
         private void ButtonFrameExport_Click(object sender, RoutedEventArgs e)
         {
-            Handler.ExportFrame();
-            Interfacer.UpdateControls();
-            Interfacer.UpdateSelectedSectionProperties();
+            GlobalService.FileHandler.ExportFrame();
+            GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.PropertyHandler.InvalidateSelectionProperties();
         }
 
         private void ButtonZoomIn_Click(object sender, RoutedEventArgs e)
@@ -317,7 +326,7 @@ namespace AnimationEditor.Pages
             if (ViewModel.Zoom < 8)
             {
                 ViewModel.Zoom = ViewModel.Zoom + 1;
-                Interfacer.UpdateControls();
+                GlobalService.PropertyHandler.UpdateControls();
             }
         }
 
@@ -326,7 +335,7 @@ namespace AnimationEditor.Pages
             if (ViewModel.Zoom > 1)
             {
                 ViewModel.Zoom = ViewModel.Zoom - 1;
-                Interfacer.UpdateControls();
+                GlobalService.PropertyHandler.UpdateControls();
             }
 
         }
@@ -342,8 +351,8 @@ namespace AnimationEditor.Pages
             if (!PreventScrollChange)
             {
                 PreventScrollChange = true;
-                if (AnimationScroller.Value == 3) Interfacer.ScrollFrameIndex(false);
-                if (AnimationScroller.Value == 1) Interfacer.ScrollFrameIndex(true);
+                if (AnimationScroller.Value == 3) GlobalService.PropertyHandler.MoveToAdjacentFrameIndex(false);
+                if (AnimationScroller.Value == 1) GlobalService.PropertyHandler.MoveToAdjacentFrameIndex(true);
                 AnimationScroller.Value = 2;
                 PreventScrollChange = false;
             }
@@ -357,8 +366,8 @@ namespace AnimationEditor.Pages
 
         private void ButtonShowCenter_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.ShowAlignmentLines = ButtonShowCenter.IsChecked.Value;
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.ShowAlignmentLines = ButtonShowCenter.IsChecked.Value;
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void ButtonPlay_CheckChanged(object sender, RoutedEventArgs e)
@@ -366,7 +375,7 @@ namespace AnimationEditor.Pages
             if (ViewModel.LoadedAnimationFile != null && ViewModel.SelectedAnimation != null)
             {
                 bool enabled = ButtonPlay.IsChecked.Value && List.SelectedItem != null;
-                Interfacer.TogglePlayback(enabled);
+                GlobalService.UIService.TogglePlayback(enabled);
             }
         }
 
@@ -377,29 +386,29 @@ namespace AnimationEditor.Pages
 
         private void ForcePlaybackMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.isForcePlaybackOn = ForcePlaybackMenuItem.IsChecked;
+            GlobalService.PropertyHandler.isForcePlaybackOn = ForcePlaybackMenuItem.IsChecked;
         }
 
         private void ForcedPlaybackSpeedNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (Interfacer != null) Interfacer.ForcePlaybackSpeed = ForcedPlaybackSpeedNUD.Value.Value;
+            if (GlobalService.PropertyHandler != null) GlobalService.PropertyHandler.ForcePlaybackSpeed = ForcedPlaybackSpeedNUD.Value.Value;
         }
 
         private void ForcedPlaybackDurationNUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (Interfacer != null) Interfacer.ForcePlaybackDuration = ForcedPlaybackDurationNUD.Value.Value;
+            if (GlobalService.PropertyHandler != null) GlobalService.PropertyHandler.ForcePlaybackDuration = ForcedPlaybackDurationNUD.Value.Value;
         }
 
         private void ExportAnimationImages_Click(object sender, RoutedEventArgs e)
         {
-            Handler.ExportAnimationFramesToImages();
-            Interfacer.UpdateControls();
+            GlobalService.FileHandler.ExportAnimationFramesToImages();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void ButtonShowFieldHitbox_Click(object sender, RoutedEventArgs e)
         {
-            Interfacer.ShowHitBox = ButtonShowFieldHitbox.IsChecked.Value;
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.ShowHitBox = ButtonShowFieldHitbox.IsChecked.Value;
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void ButtonHelp_Click(object sender, RoutedEventArgs e)
@@ -413,7 +422,7 @@ namespace AnimationEditor.Pages
 
         private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -432,37 +441,32 @@ namespace AnimationEditor.Pages
                     ViewModel.Zoom = ViewModel.Zoom - 1;
                 }
             }
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         #endregion
 
         #region List Controls
 
-        private static bool AllowUpdate { get; set; } = true;
-
         public void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            ViewModel.SelectedAnimationIndex = List.SelectedIndex;
-            Interfacer.UpdateSelectedSectionProperties(false, true);
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.InvalidateSelectionProperties();
+            GlobalService.PropertyHandler.UpdateControls();
         }
         public void FramesList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            ViewModel.SelectedFrameIndex = FramesList.SelectedIndex;
-            if (!Interfacer.isPlaybackEnabled)
+            if (!GlobalService.PropertyHandler.isPlaybackEnabled)
             {
-                Interfacer.UpdateControls();
-                Interfacer.UpdateCurrentFrameProperties();
+                GlobalService.PropertyHandler.UpdateControls();
             }
         }
         private void FramesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
         private void FramesList_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         #endregion
@@ -470,28 +474,24 @@ namespace AnimationEditor.Pages
         #region Frame Property Controls
         public void NUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            Console.WriteLine("NUD Event Fired!");
             if (isLoadedFully)
             {
-                Interfacer.UpdateFrameNUDValues(sender, e);
-                Interfacer.UpdateControls();
-                Interfacer.UpdateCurrentFrameMaxMinProperties();
+                GlobalService.PropertyHandler.UpdateControls();
+                GlobalService.UIService.UpdateCurrentFrameValueLimits();
             }
         }
         public void SpriteSheetList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Interfacer.UpdateFrameSpriteSheetValues(sender, e);
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.InvalidateSprite();
+            GlobalService.PropertyHandler.UpdateControls();
         }
         public void HitBoxComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Interfacer.UpdateFrameHitboxValues(sender, e);
-            Interfacer.UpdateControls();
-            Interfacer.UpdateCurrentFrameHitboxProperties();
+            GlobalService.PropertyHandler.UpdateControls();
         }
         private void HitBoxComboBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
         #endregion
 
@@ -500,8 +500,7 @@ namespace AnimationEditor.Pages
         {
             if (isLoadedFully)
             {
-                Interfacer.UpdateAnimationInfoNUDValues(sender, e);
-                Interfacer.UpdateControls();
+                GlobalService.PropertyHandler.UpdateControls();
             }
         }
 
@@ -509,8 +508,7 @@ namespace AnimationEditor.Pages
         {
             if (isLoadedFully)
             {
-                Interfacer.UpdateAnimationInfoNUDValues(sender, e);
-                Interfacer.UpdateControls();
+                GlobalService.PropertyHandler.UpdateControls();
             }
         }
 
@@ -518,8 +516,7 @@ namespace AnimationEditor.Pages
         {
             if (isLoadedFully)
             {
-                Interfacer.UpdateAnimationInfoNUDValues(sender, e);
-                Interfacer.UpdateControls();
+                GlobalService.PropertyHandler.UpdateControls();
             }
         }
 
@@ -527,8 +524,7 @@ namespace AnimationEditor.Pages
         {
             if (isLoadedFully)
             {
-                Interfacer.UpdateAnimationInfoFlagValues(sender, e);
-                Interfacer.UpdateControls();
+                GlobalService.PropertyHandler.UpdateControls();
             }
         }
 
@@ -536,8 +532,7 @@ namespace AnimationEditor.Pages
         {
             if (isLoadedFully)
             {
-                Interfacer.UpdateAnimationInfoNUDValues(sender, e);
-                Interfacer.UpdateControls();
+                GlobalService.PropertyHandler.UpdateControls();
             }
         }
 
@@ -545,8 +540,7 @@ namespace AnimationEditor.Pages
         {
             if (isLoadedFully)
             {
-                Interfacer.UpdateAnimationInfoMiscValues(sender, e);
-                Interfacer.UpdateControls();
+                GlobalService.PropertyHandler.UpdateControls();
             }
         }
 
@@ -567,13 +561,13 @@ namespace AnimationEditor.Pages
         private void HitboxManagerPopup_LostFocus(object sender, RoutedEventArgs e)
         {
             //HitboxManagerPopup.IsOpen = false;
-            //Interfacer.UpdateUI();
+            //GlobalService.Interfacer.UpdateUI();
         }
 
         private void TextureManagerPopup_LostFocus(object sender, RoutedEventArgs e)
         {
             //TextureManagerPopup.IsOpen = false;
-            //Interfacer.UpdateUI();
+            //GlobalService.Interfacer.UpdateUI();
         }
 
         #endregion
@@ -602,25 +596,25 @@ namespace AnimationEditor.Pages
         {
             if (HitboxColorPicker.SelectedColor != null)
             {
-                Interfacer.HitboxBackground = HitboxColorPicker.SelectedColor.Value;
+                GlobalService.PropertyHandler.HitboxBackground = HitboxColorPicker.SelectedColor.Value;
             }
             if (AxisColorPicker.SelectedColor != null)
             {
-                Interfacer.AlignmentLinesColor = AxisColorPicker.SelectedColor.Value;
+                GlobalService.PropertyHandler.AlignmentLinesColor = AxisColorPicker.SelectedColor.Value;
             }
             if (BGColorPicker.SelectedColor != null)
             {
-                Interfacer.CanvasBackground = BGColorPicker.SelectedColor.Value;
+                GlobalService.PropertyHandler.CanvasBackground = BGColorPicker.SelectedColor.Value;
             }
             if (FrameBorderColorPicker.SelectedColor != null)
             {
-                Interfacer.FrameBorder = FrameBorderColorPicker.SelectedColor.Value;
+                GlobalService.PropertyHandler.FrameBorder = FrameBorderColorPicker.SelectedColor.Value;
             }
             if (FrameBackgroundColorPicker.SelectedColor != null)
             {
-                Interfacer.FrameBackground = FrameBackgroundColorPicker.SelectedColor.Value;
+                GlobalService.PropertyHandler.FrameBackground = FrameBackgroundColorPicker.SelectedColor.Value;
             }
-            Interfacer.UpdateCanvasVisual();
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
         #endregion
 
@@ -641,22 +635,22 @@ namespace AnimationEditor.Pages
 
         private void CanvasView_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!Interfacer.isPlaybackEnabled) InputControl.MouseMove(sender, e);
+            if (!GlobalService.PropertyHandler.isPlaybackEnabled) GlobalService.InputControl.MouseMove(sender, e);
         }
 
         private void CanvasView_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!Interfacer.isPlaybackEnabled) InputControl.MouseDown(sender, e);
+            if (!GlobalService.PropertyHandler.isPlaybackEnabled) GlobalService.InputControl.MouseDown(sender, e);
         }
 
         private void CanvasView_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (!Interfacer.isPlaybackEnabled) InputControl.MouseUp(sender, e);
+            if (!GlobalService.PropertyHandler.isPlaybackEnabled) GlobalService.InputControl.MouseUp(sender, e);
         }
 
         private void CanvasView_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!Interfacer.isPlaybackEnabled) InputControl.KeyDown(sender, e);
+            if (!GlobalService.PropertyHandler.isPlaybackEnabled) GlobalService.InputControl.KeyDown(sender, e);
         }
 
         private void CanvasView_KeyUp(object sender, KeyEventArgs e)
@@ -677,25 +671,12 @@ namespace AnimationEditor.Pages
         #region Rendering
         private void CanvasView_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs e)
         {
-            if (Interfacer != null) Interfacer.PaintSurface(sender, e);
+            if (GlobalService.PropertyHandler != null) GlobalService.PropertyHandler.PaintSurface(sender, e);
             
         }
-
-
-
-
-
         #endregion
 
-        private void MenuFileOpenFromWorkspaceAddWorkspace_Click(object sender, RoutedEventArgs e)
-        {
-            Handler.SelectNewWorkspaceFolder();
-        }
-
-        private void MenuFileOpenFromWorkspaceRemoveMode_Click(object sender, RoutedEventArgs e)
-        {
-            Handler.ToggleWorkspaceRemoveMode(MenuFileOpenFromWorkspaceRemoveMode.IsChecked);
-        }
+        #region Unsorted
 
         private void ThemeSelector_ThemeChanged(object sender, GenerationsLib.WPF.Themes.Skin e)
         {
@@ -704,9 +685,11 @@ namespace AnimationEditor.Pages
             Classes.Settings.Save();
 
             this.Refresh();
-            Interfacer.RefreshUIThemes();
+            GlobalService.PropertyHandler.RefreshUIThemes();
             ThemeSelector.UpdateVisual();
         }
+
+        #endregion
     }
 
 

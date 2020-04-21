@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Collections.Generic;
+using AnimationEditor.Services;
 
 namespace AnimationEditor.Pages
 {
@@ -109,13 +110,13 @@ namespace AnimationEditor.Pages
 
             InitializeVarriables();
             UpdateUI();
-            ParentInstance.Interfacer.UpdateLoadedAnimationTextureListProperties();
+            GlobalService.PropertyHandler.UpdateSpriteSheetProperties();
             ListTextures.ItemsSource = null;
             ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
             ParentInstance.TextureManagerPopup.IsOpen = true;
-            ParentInstance.Interfacer.UpdateCurrentFrameProperties();
-            ParentInstance.Interfacer.UpdateSelectedSectionProperties(true);
+            GlobalService.PropertyHandler.InvalidateSelectionProperties();
+            GlobalService.PropertyHandler.UpdateControls();
 
 
         }
@@ -136,7 +137,7 @@ namespace AnimationEditor.Pages
                     MessageBox.Show("You can not add a spritesheet outside of the parent folder of the animation, please use an spritesheet within " + string.Format("{0}", parentDirectory), "Unable to add Spritesheet", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                var image = ParentInstance.Handler.LoadAnimationTexture(selectedImage);
+                var image = GlobalService.FileHandler.LoadAnimationTexture(selectedImage);
                 bool widthPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Item1.Width));
                 bool heightPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Item1.Height));
                 if (!heightPowerOf2 || !widthPowerOf2)
@@ -151,13 +152,13 @@ namespace AnimationEditor.Pages
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.RemoveAt(index);
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Insert(index, modifiedPath);
 
-                var normalTexture = ParentInstance.Handler.LoadAnimationTexture(selectedImage, false);
-                var transparentTexture = ParentInstance.Handler.LoadAnimationTexture(selectedImage, true);
+                var normalTexture = GlobalService.FileHandler.LoadAnimationTexture(selectedImage, false);
+                var transparentTexture = GlobalService.FileHandler.LoadAnimationTexture(selectedImage, true);
 
 
 
                 ParentInstance.ViewModel.SpriteSheets.RemoveAt(index);
-                ParentInstance.ViewModel.SpriteSheets.Insert(index, new AnimationModel.Spritesheet(normalTexture.Item1, transparentTexture.Item1, transparentTexture.Item2));
+                ParentInstance.ViewModel.SpriteSheets.Insert(index, new Classes.Spritesheet(normalTexture.Item1, transparentTexture.Item1, transparentTexture.Item2));
             }
 
             InitializeVarriables();
@@ -166,7 +167,7 @@ namespace AnimationEditor.Pages
             ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
             ParentInstance.TextureManagerPopup.IsOpen = true;
-            ParentInstance.Interfacer.UpdateControls();
+            GlobalService.PropertyHandler.UpdateControls();
         }
 
         public void AddTexture()
@@ -186,8 +187,8 @@ namespace AnimationEditor.Pages
                     return;
                 }
 
-                var image = ParentInstance.Handler.LoadAnimationTexture(selectedImage);
-                var transparentimage = ParentInstance.Handler.LoadAnimationTexture(selectedImage, true);
+                var image = GlobalService.FileHandler.LoadAnimationTexture(selectedImage);
+                var transparentimage = GlobalService.FileHandler.LoadAnimationTexture(selectedImage, true);
 
 
                 bool widthPowerOf2 = IsPowerOfTwo(Convert.ToUInt16(image.Item1.Width));
@@ -202,7 +203,7 @@ namespace AnimationEditor.Pages
                 if (modifiedPath[0] == '/') modifiedPath = modifiedPath.Remove(0, 1);
 
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Add(modifiedPath);
-                var sheet = new AnimationModel.Spritesheet(image.Item1, transparentimage.Item1, transparentimage.Item2);
+                var sheet = new Classes.Spritesheet(image.Item1, transparentimage.Item1, transparentimage.Item2);
                 sheet.isReady = true;
                 ParentInstance.ViewModel.SpriteSheets.Add(sheet);
             }
@@ -213,8 +214,8 @@ namespace AnimationEditor.Pages
             ListTextures.ItemsSource = ParentInstance.ViewModel.SpriteSheetPaths;
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
             ParentInstance.TextureManagerPopup.IsOpen = true;
-            ParentInstance.Interfacer.UpdateControls();
-            ParentInstance.Interfacer.UpdateLoadedAnimationTextureListProperties();
+            GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.PropertyHandler.UpdateSpriteSheetProperties();
         }
 
         private void ListTextures_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

@@ -16,12 +16,13 @@ using GenerationsLib.Core;
 using AnimationEditor.Classes;
 using AnimationEditor.Methods;
 using AnimationEditor.Pages;
+using AnimationEditor.Services;
 using RecentFile = AnimationEditor.Classes.Settings.Instance.RecentFile;
 using Workspace = AnimationEditor.Classes.Settings.Instance.Workspace;
 
-namespace AnimationEditor.Methods
+namespace AnimationEditor.Services
 {
-    public class FileHandler
+    public class FileService
     {
         private MainWindow Instance;
         public System.Collections.Generic.IList<MenuItem> RecentItems;
@@ -37,7 +38,7 @@ namespace AnimationEditor.Methods
             "RSDKvRS (Retro-Sonic) Animation Files|*.ani" 
         };
 
-        public FileHandler(MainWindow window)
+        public FileService(MainWindow window)
         {
             Instance = window;
             RecentItems = new List<MenuItem>();
@@ -47,7 +48,7 @@ namespace AnimationEditor.Methods
         #region Open File Methods
         public void OpenFile(Workspace workspace = null)
         {
-            Instance.Interfacer.PreventIndexUpdate = true;
+            GlobalService.PropertyHandler.PreventIndexUpdate = true;
             UnloadAnimationData();
             var fd = new OpenFileDialog();
             fd.DefaultExt = "*.bin";
@@ -64,24 +65,24 @@ namespace AnimationEditor.Methods
                 AddRecentDataFolder(fd.FileName, fd.FileName, GetTypeStringFromFilterIndex(fd.FilterIndex));
                 LoadFile(fd);
             }
-            Instance.Interfacer.PreventIndexUpdate = false;
+            GlobalService.PropertyHandler.PreventIndexUpdate = false;
 
             if (workspace != null)
             {
-                Instance.Interfacer.UpdateControls();
-                Instance.Interfacer.UpdateCanvasVisual();
+                GlobalService.PropertyHandler.UpdateControls();
+                GlobalService.PropertyHandler.UpdateCanvasVisual();
             }
         }
 
         public void OpenFile(string file, EngineType type = EngineType.Invalid)
         {
-            Instance.Interfacer.PreventIndexUpdate = true;
+            GlobalService.PropertyHandler.PreventIndexUpdate = true;
             UnloadAnimationData();
             LoadFile(file, type);
             UpdateRecentsDropDown("","","");
-            Instance.Interfacer.PreventIndexUpdate = false;
-            Instance.Interfacer.UpdateControls();
-            Instance.Interfacer.UpdateCanvasVisual();
+            GlobalService.PropertyHandler.PreventIndexUpdate = false;
+            GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
         #endregion
 
@@ -236,10 +237,10 @@ namespace AnimationEditor.Methods
             Instance.FramesList.SelectedIndex = -1;
             InitlizeSpriteSheets(true);
             Instance.DataContext = new AnimationModel();
-            Instance.Interfacer = new UserInterfacer(Instance);
+            GlobalService.PropertyHandler = new PropertyService(Instance);
             InitlizeSpriteSheets();
             Instance.ViewModel.NullSpriteSheetList.Clear();
-            Instance.Interfacer.IntilizePlayback(true);
+            GlobalService.UIService.IntilizePlayback(true);
             Instance.WindowName = Instance.DefaultWindowName;
         }
 
@@ -268,7 +269,7 @@ namespace AnimationEditor.Methods
                 var color = img.Palette.Entries[0];
                 string hex = HexConverter(color);
                 img.MakeTransparent(color);
-                return new Tuple<BitmapImage, Color>((BitmapImage)BitmapConversion.ToWpfBitmap(img), (Color)ColorConverter.ConvertFromString(hex));
+                return new Tuple<BitmapImage, Color>((BitmapImage)Extensions.BitmapConversion.ToWpfBitmap(img), (Color)ColorConverter.ConvertFromString(hex));
             }
             else
             {
@@ -315,11 +316,11 @@ namespace AnimationEditor.Methods
                 {
                     var normalImage = LoadAnimationTexture(imagePath);
                     var transparentImage = LoadAnimationTexture(imagePath, true);
-                    Instance.ViewModel.SpriteSheets.Add(new AnimationModel.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
+                    Instance.ViewModel.SpriteSheets.Add(new Classes.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
                 }
                 else
                 {
-                    Instance.ViewModel.SpriteSheets.Add(new AnimationModel.Spritesheet(new BitmapImage(), new BitmapImage(), true));
+                    Instance.ViewModel.SpriteSheets.Add(new Classes.Spritesheet(new BitmapImage(), new BitmapImage(), true));
                     Instance.ViewModel.NullSpriteSheetList.Add(path);
                 }
 
@@ -337,7 +338,7 @@ namespace AnimationEditor.Methods
         {
             var normalImage = LoadAnimationTexture(imagePath);
             var transparentImage = LoadAnimationTexture(imagePath, true);
-            Instance.ViewModel.SpriteSheets.Add(new AnimationModel.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
+            Instance.ViewModel.SpriteSheets.Add(new Classes.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
         }
 
         public void InitlizeSpriteSheets(bool clearMode = false)
@@ -348,7 +349,7 @@ namespace AnimationEditor.Methods
             }
             else
             {
-                Instance.ViewModel.SpriteSheets = new System.Collections.Generic.List<AnimationModel.Spritesheet>();
+                Instance.ViewModel.SpriteSheets = new System.Collections.ObjectModel.ObservableCollection<Classes.Spritesheet>();
 
             }
         }
@@ -435,8 +436,6 @@ namespace AnimationEditor.Methods
 
 
         #endregion
-
-        
 
         #region Recent Files (Lifted from Maniac Editor)
 

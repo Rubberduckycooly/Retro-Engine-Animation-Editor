@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Media;
 using AnimationEditor.Pages;
 
-namespace AnimationEditor.Services
+namespace AnimationEditor.Methods
 {
     public class InputController
     {
@@ -213,7 +213,7 @@ namespace AnimationEditor.Services
 
             void AdjustNUDs(Xceed.Wpf.Toolkit.IntegerUpDown Y, Xceed.Wpf.Toolkit.IntegerUpDown X, bool NegX = false, bool NegY = false, bool XAllowed = false, bool YAllowed = false)
             {
-                Instance.Interfacer.UpdateCurrentFrameMaxMinProperties();
+                Services.GlobalService.UIService.UpdateCurrentFrameValueLimits();
                 if (dirY >= 1 || dirY <= -1)
                 {
                     int YResult = Y.Value.Value - (NegY ? -(int)distanceY : (int)distanceY);
@@ -228,7 +228,7 @@ namespace AnimationEditor.Services
                     AnchorPoint = e.GetPosition(Instance);
                     dirY = 0;
                 }
-                Instance.Interfacer.UpdateCurrentFrameMaxMinProperties();
+                Services.GlobalService.UIService.UpdateCurrentFrameValueLimits();
                 if (dirX >= 1 || dirX <= -1)
                 {
                     int XResult = X.Value.Value - (NegX ? -(int)distanceX : (int)distanceX);

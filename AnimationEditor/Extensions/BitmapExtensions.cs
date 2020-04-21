@@ -7,7 +7,7 @@ using System.Threading;
 using System;
 
 
-namespace AnimationEditor.Services
+namespace AnimationEditor.Extensions
 {
     public static class BitmapExtensions
     {

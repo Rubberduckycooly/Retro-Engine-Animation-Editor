@@ -35,10 +35,11 @@ using AnimationEditor.Classes;
 using AnimationEditor.Methods;
 using AnimationEditor.Pages;
 
-namespace AnimationEditor.Methods
+namespace AnimationEditor.Services
 {
     public class PlaybackService
     {
+        #region Classic
         private MainWindow ParentInstance;
 
         private bool isForcePlaybackOn
@@ -47,31 +48,29 @@ namespace AnimationEditor.Methods
             {
                 if (ParentInstance != null)
                 {
-                    return ParentInstance.Interfacer.isForcePlaybackOn;
+                    return GlobalService.PropertyHandler.isForcePlaybackOn;
                 }
                 else return false;
             }
         }
-
         private int ForcePlaybackSpeed
         {
             get
             {
                 if (ParentInstance != null)
                 {
-                    return ParentInstance.Interfacer.ForcePlaybackSpeed;
+                    return GlobalService.PropertyHandler.ForcePlaybackSpeed;
                 }
                 else return 128;
             }
         }
-
         private int ForcePlaybackDuration
         {
             get
             {
                 if (ParentInstance != null)
                 {
-                    return ParentInstance.Interfacer.ForcePlaybackDuration;
+                    return GlobalService.PropertyHandler.ForcePlaybackDuration;
                 }
                 else return 256;
             }
@@ -297,5 +296,6 @@ namespace AnimationEditor.Methods
             }
             return index;
         }
+        #endregion
     }
 }

@@ -20,10 +20,32 @@ using GenerationsLib.Core;
 
 namespace AnimationEditor.ViewModel
 {
-    public class AnimationModel
+    public class AnimationModel : Xe.Tools.Wpf.BaseNotifyPropertyChanged
     {
+        #region OnPropertyChanged Extension Methods
+
+        public void CallPropertyChanged(String entry)
+        {
+            OnPropertyChanged(entry);
+        }
+
+        #endregion
+
         #region Loaded Animation Data
-        public EditorAnimation LoadedAnimationFile { get; set; }
+        private EditorAnimation _LoadedAnimationFile;
+        public EditorAnimation LoadedAnimationFile
+        {
+            get
+            {
+                return _LoadedAnimationFile;
+            }
+            set
+            {
+                _LoadedAnimationFile = value;
+                GlobalService.SpriteService.SetAnimation(value);
+                OnPropertyChanged(nameof(LoadedAnimationFile));
+            }
+        }
         #endregion
 
         #region Methods
@@ -87,16 +109,17 @@ namespace AnimationEditor.ViewModel
         #endregion
 
         #region Selected Items
-        public List<EditorAnimation.EditorAnimationInfo> SelectedAnimationEntries
+        public ObservableCollection<EditorAnimation.EditorAnimationInfo> SelectedAnimationEntries
         {
             get
             {
-                if (isAnimationFileLoaded) return LoadedAnimationFile.Animations;
+                if (isAnimationFileLoaded) return new ObservableCollection<EditorAnimation.EditorAnimationInfo>(LoadedAnimationFile.Animations);
                 else return null;
             }
             set
             {
-                if (isAnimationFileLoaded) LoadedAnimationFile.Animations = value;
+                if (isAnimationFileLoaded) LoadedAnimationFile.Animations = value.ToList();
+                OnPropertyChanged(nameof(SelectedAnimationEntries));
             }
         }
         public EditorAnimation.EditorAnimationInfo SelectedAnimation
@@ -111,19 +134,20 @@ namespace AnimationEditor.ViewModel
                 if (isAnimationFileLoaded && isAnimationIndexInRange()) LoadedAnimationFile.Animations[SelectedAnimationIndex] = value;
             }
         }
-        public List<EditorAnimation.EditorFrame> SelectedAnimationFrameSet
+        public ObservableCollection<EditorAnimation.EditorFrame> SelectedAnimationFrameSet
         {
             get
             {
-                if (isAnimationInfoSelected) return SelectedAnimation.Frames;
+                if (isAnimationInfoSelected) return new ObservableCollection<EditorAnimation.EditorFrame>(SelectedAnimation.Frames);
                 else return null;
             }
             set
             {
                 if (isAnimationInfoSelected)
                 {
-                    SelectedAnimation.Frames = value;
+                    SelectedAnimation.Frames = value.ToList();
                 }
+                OnPropertyChanged(nameof(SelectedAnimationFrameSet));
             }
         }
         public EditorAnimation.EditorFrame SelectedFrame
@@ -155,9 +179,51 @@ namespace AnimationEditor.ViewModel
 
         #region Selected Indexes
 
-        public int SelectedFrameIndex { get; set; }
-        public int SelectedAnimationIndex { get; set; }
-        public int SelectedFrameHitboxIndex { get; set; }
+        public int _SelectedFrameIndex;
+        public int _SelectedAnimationIndex;
+        public int _SelectedFrameHitboxIndex;
+
+        public int SelectedFrameIndex
+        {
+            get
+            {
+                return _SelectedFrameIndex;
+            }
+            set
+            {
+                _SelectedFrameIndex = value;
+                OnPropertyChanged(nameof(SelectedFrameIndex));
+            }
+        }
+        public int SelectedAnimationIndex
+        {
+            get
+            {
+                return _SelectedAnimationIndex;
+            }
+            set
+            {
+                _SelectedAnimationIndex = value;
+                OnPropertyChanged(nameof(SelectedAnimationIndex));
+            }
+        }
+        public int SelectedFrameHitboxIndex
+        {
+            get
+            {
+                if (SelectedFrame != null) return _SelectedFrameHitboxIndex;
+                else return -1;
+            }
+            set
+            {
+                _SelectedFrameHitboxIndex = value;
+                OnPropertyChanged(nameof(SelectedFrameHitboxIndex));
+            }
+        }
+
+
+
+
         public int GetTotalFrameCount()
         {
             int count = -1;
@@ -188,17 +254,17 @@ namespace AnimationEditor.ViewModel
         #endregion
 
         #region Current Animation
-        public List<string> Hitboxes
+        public ObservableCollection<string> Hitboxes
         {
             get
             {
-                if (isAnimationFileLoaded) return LoadedAnimationFile.CollisionBoxes;
-                else return new List<string>();
+                if (isAnimationFileLoaded) return new ObservableCollection<string>(LoadedAnimationFile.CollisionBoxes);
+                else return new ObservableCollection<string>();
             }
             set
             {
-                if (isAnimationFileLoaded) LoadedAnimationFile.CollisionBoxes = value;
-                else return;
+                if (isAnimationFileLoaded) LoadedAnimationFile.CollisionBoxes = value.ToList();
+                OnPropertyChanged(nameof(Hitboxes));
             }
         }
         public List<string> RetroHitboxStrings
@@ -217,115 +283,17 @@ namespace AnimationEditor.ViewModel
                 else return new List<string>();
             }
         }
-        public List<EditorAnimation.EditorRetroHitBox> RetroHitboxes
+        public ObservableCollection<EditorAnimation.EditorRetroHitBox> RetroHitboxes
         {
             get
             {
-                if (isAnimationFileLoaded) return LoadedAnimationFile.RetroCollisionBoxes;
-                else return new List<EditorAnimation.EditorRetroHitBox>();
+                if (isAnimationFileLoaded) return new ObservableCollection<EditorAnimation.EditorRetroHitBox>(LoadedAnimationFile.RetroCollisionBoxes);
+                else return new ObservableCollection<EditorAnimation.EditorRetroHitBox>();
             }
             set
             {
-                if (isAnimationFileLoaded) LoadedAnimationFile.RetroCollisionBoxes = value;
-                else return;
-            }
-        }
-        public byte PlayerType
-        {
-            get
-            {
-                if (isAnimationFrameSelected)
-                {
-                    if (LoadedAnimationFile.EngineType == EngineType.RSDKvRS)
-                    {
-                        return LoadedAnimationFile.PlayerType;
-                    }
-                }
-                return 0x0;
-            }
-            set
-            {
-                if (isAnimationFrameSelected)
-                {
-                    if (LoadedAnimationFile.EngineType == EngineType.RSDKvRS)
-                    {
-                        LoadedAnimationFile.PlayerType = value;
-                    }
-                }
-                return;
-            }
-        }
-        public bool DreamcastVer
-        {
-            get
-            {
-                if (isAnimationFileLoaded)
-                {
-                    return LoadedAnimationFile.DreamcastVer;
-                }
-                return false;
-            }
-            set
-            {
-                if (isAnimationFileLoaded)
-                {
-                    LoadedAnimationFile.DreamcastVer = value;
-                }
-                return;
-            }
-        }
-        public byte Unknown
-        {
-            get
-            {
-                if (isAnimationFileLoaded)
-                {
-                    return LoadedAnimationFile.Unknown;
-                }
-                return 0;
-            }
-            set
-            {
-                if (isAnimationFileLoaded)
-                {
-                    LoadedAnimationFile.Unknown = value;
-                }
-                return;
-            }
-        }
-
-        #endregion
-
-        #region Current Spritesheets
-        public List<Spritesheet> SpriteSheets { get; set; } = new List<Spritesheet>();
-        public List<string> SpriteSheetPaths
-        {
-            get
-            {
-                if (isAnimationFileLoaded) return LoadedAnimationFile.SpriteSheets;
-                else return null;
-            }
-        }
-        public List<string> NullSpriteSheetList { get; set; } = new List<string>();
-        public class Spritesheet
-        {
-            public System.Windows.Media.Imaging.BitmapImage Image;
-            public System.Windows.Media.Imaging.BitmapImage TransparentImage;
-            public System.Windows.Media.Color TransparentColor = (System.Windows.Media.Color)ColorConverter.ConvertFromString("#303030");
-
-            public bool isReady = false;
-            public bool isInvalid = false;
-            public Spritesheet(System.Windows.Media.Imaging.BitmapImage _Image, System.Windows.Media.Imaging.BitmapImage _TransparentImage, System.Windows.Media.Color _TransparentColor)
-            {
-                Image = _Image;
-                TransparentImage = _TransparentImage;
-                TransparentColor = _TransparentColor;
-            }
-
-            public Spritesheet(System.Windows.Media.Imaging.BitmapImage _Image, System.Windows.Media.Imaging.BitmapImage _TransparentImage, bool _isInvalid)
-            {
-                Image = _Image;
-                isInvalid = _isInvalid;
+                if (isAnimationFileLoaded) LoadedAnimationFile.RetroCollisionBoxes = value.ToList();
+                OnPropertyChanged(nameof(RetroHitboxes));
             }
         }
 
@@ -362,9 +330,9 @@ namespace AnimationEditor.ViewModel
         {
             get
             {
-                if ((int)CurrentFrame_SpriteSheet < SpriteSheets.Count)
+                if ((int)CurrentFrame_SpriteSheet < Services.GlobalService.SpriteService.SpriteSheets.Count)
                 {
-                    if (SpriteSheets[(int)CurrentFrame_SpriteSheet].isReady) return true;
+                    if (Services.GlobalService.SpriteService.SpriteSheets[(int)CurrentFrame_SpriteSheet].isReady) return true;
                     else return false;
                 }
                 else return false;
@@ -385,7 +353,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationInfoSelected && value.HasValue) SelectedAnimation.LoopIndex = value.Value;
-                else return;
+                OnPropertyChanged(nameof(Loop));
             }
         }
         public short? Speed
@@ -398,7 +366,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationInfoSelected && value.HasValue) SelectedAnimation.SpeedMultiplyer = value.Value;
-                else return;
+                OnPropertyChanged(nameof(Speed));
             }
         }
         public byte? Flags
@@ -411,7 +379,71 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationInfoSelected && value.HasValue) SelectedAnimation.RotationFlags = value.Value;
-                else return;
+                OnPropertyChanged(nameof(Flags));
+            }
+        }
+
+        public byte PlayerType
+        {
+            get
+            {
+                if (isAnimationFrameSelected)
+                {
+                    if (LoadedAnimationFile.EngineType == EngineType.RSDKvRS)
+                    {
+                        return LoadedAnimationFile.PlayerType;
+                    }
+                }
+                return 0x0;
+            }
+            set
+            {
+                if (isAnimationFrameSelected)
+                {
+                    if (LoadedAnimationFile.EngineType == EngineType.RSDKvRS)
+                    {
+                        LoadedAnimationFile.PlayerType = value;
+                    }
+                }
+                OnPropertyChanged(nameof(PlayerType));
+            }
+        }
+        public bool DreamcastVer
+        {
+            get
+            {
+                if (isAnimationFileLoaded)
+                {
+                    return LoadedAnimationFile.DreamcastVer;
+                }
+                return false;
+            }
+            set
+            {
+                if (isAnimationFileLoaded)
+                {
+                    LoadedAnimationFile.DreamcastVer = value;
+                }
+                OnPropertyChanged(nameof(DreamcastVer));
+            }
+        }
+        public byte Unknown
+        {
+            get
+            {
+                if (isAnimationFileLoaded)
+                {
+                    return LoadedAnimationFile.Unknown;
+                }
+                return 0;
+            }
+            set
+            {
+                if (isAnimationFileLoaded)
+                {
+                    LoadedAnimationFile.Unknown = value;
+                }
+                OnPropertyChanged(nameof(Unknown));
             }
         }
 
@@ -431,7 +463,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationFrameSelected && value.HasValue) SelectedFrame.X = value.Value;
-                else return;
+                OnPropertyChanged(nameof(CurrentFrame_X));
             }
         }
         public short? CurrentFrame_Y
@@ -444,7 +476,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationFrameSelected && value.HasValue) SelectedFrame.Y = value.Value;
-                else return;
+                OnPropertyChanged(nameof(CurrentFrame_Y));
             }
         }
         public short? CurrentFrame_Height
@@ -457,7 +489,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationFrameSelected && value.HasValue) SelectedFrame.Height = value.Value;
-                else return;
+                OnPropertyChanged(nameof(CurrentFrame_Height));
             }
         }
         public short? CurrentFrame_Width
@@ -470,7 +502,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationFrameSelected && value.HasValue) SelectedFrame.Width = value.Value;
-                else return;
+                OnPropertyChanged(nameof(CurrentFrame_Width));
             }
         }
         public short? CurrentFrame_PivotX
@@ -483,7 +515,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationFrameSelected && value.HasValue) SelectedFrame.PivotX = value.Value;
-                else return;
+                OnPropertyChanged(nameof(CurrentFrame_PivotX));
             }
         }
         public short? CurrentFrame_PivotY
@@ -496,7 +528,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationFrameSelected && value.HasValue) SelectedFrame.PivotY = value.Value;
-                else return;
+                OnPropertyChanged(nameof(CurrentFrame_PivotY));
             }
         }
         #endregion
@@ -521,10 +553,7 @@ namespace AnimationEditor.ViewModel
                 {
                     SelectedFrame.ID = value.Value;
                 }
-                else
-                {
-                    return;
-                }
+                OnPropertyChanged(nameof(CurrentFrame_FrameID));
             }
         }
         public byte? CurrentFrame_CollisionBox
@@ -537,7 +566,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationFrameSelected) SelectedFrame.CollisionBox = value.Value;
-                else return;
+                OnPropertyChanged(nameof(CurrentFrame_CollisionBox));
             }
         }
         public short? CurrentFrame_FrameDuration
@@ -550,7 +579,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationFrameSelected && value.HasValue) SelectedFrame.Delay = value.Value;
-                else return;
+                OnPropertyChanged(nameof(CurrentFrame_FrameDuration));
             }
         }
         public byte? CurrentFrame_SpriteSheet
@@ -563,7 +592,7 @@ namespace AnimationEditor.ViewModel
             set
             {
                 if (isAnimationFrameSelected && value.HasValue) SelectedFrame.SpriteSheet = value.Value;
-                else return;
+                OnPropertyChanged(nameof(CurrentFrame_SpriteSheet));
             }
         }
         #endregion
@@ -788,25 +817,38 @@ namespace AnimationEditor.ViewModel
 
         #endregion
 
-        #region Cropped Frames (for Frame Viewer)
-        private List<System.Windows.Controls.Image> _AnimationFrameListSource { get; set; } = new List<System.Windows.Controls.Image>();
-        public List<System.Windows.Controls.Image> AnimationFrameListSource
+        #region Sprite Sheet Service
+
+        public ObservableCollection<Spritesheet> SpriteSheets
         {
             get
             {
-                if (isAnimationInfoSelected)
-                {
-                    _AnimationFrameListSource.Clear();
-                    for (int i = 0; i < SelectedAnimation.Frames.Count; i++)
-                    {
-                        System.Windows.Controls.Image frame = new System.Windows.Controls.Image();
-                        frame.Width = 45;
-                        frame.Height = 45;
-                        frame.Source = GetCroppedFrame(i);
-                        _AnimationFrameListSource.Add(frame);
-                    }
-                }
-                return _AnimationFrameListSource;
+                return Services.GlobalService.SpriteService.SpriteSheets;
+            }
+            set
+            {
+                Services.GlobalService.SpriteService.SpriteSheets = value;
+                OnPropertyChanged(nameof(SpriteSheets));
+            }
+        }
+        public List<string> SpriteSheetPaths
+        {
+            get
+            {
+                if (isAnimationFileLoaded) return LoadedAnimationFile.SpriteSheets;
+                else return null;
+            }
+        }
+        public ObservableCollection<string> NullSpriteSheetList
+        {
+            get
+            {
+                return Services.GlobalService.SpriteService.NullSpriteSheetList;
+            }
+            set
+            {
+                Services.GlobalService.SpriteService.NullSpriteSheetList = value;
+                OnPropertyChanged(nameof(NullSpriteSheetList));
             }
         }
         public EditorAnimation.EditorFrame GetAnimationFrameForCropping(int index)
@@ -814,163 +856,141 @@ namespace AnimationEditor.ViewModel
             if (isAnimationInfoSelected) return SelectedAnimation.Frames.TryGetElement(index, null);
             else return null;
         }
-        private Dictionary<Tuple<string, int>, BitmapSource> CroppedFrames { get; set; } = new Dictionary<Tuple<string, int>, BitmapSource>(1024);
-        public BitmapSource GetCroppedFrame(int texture, EditorAnimation.EditorFrame frame)
-        {
-            if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count || frame == null) return null;
-            var name = LoadedAnimationFile.SpriteSheets[texture];
-            var tuple = new Tuple<string, int>(name, frame.GetHashCode());
-            if (CroppedFrames.TryGetValue(tuple, out BitmapSource bitmap))
-                return bitmap;
-            var textureBitmap = SpriteSheets[texture];
-
-            if (NullSpriteSheetList.Contains(name))
-            {
-                bitmap = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgr24, null, new byte[3] { 0, 0, 0 }, 3);
-                return CroppedFrames[tuple] = bitmap;
-            }
-
-            if (frame.Width > 0 && frame.Height > 0 && textureBitmap != null && textureBitmap.isReady)
-            {
-                try
-                {
-                    bitmap = new CroppedBitmap(textureBitmap.Image,
-                    new System.Windows.Int32Rect()
-                    {
-                        X = frame.X,
-                        Y = frame.Y,
-                        Width = frame.Width,
-                        Height = frame.Height
-                    });
-                }
-                catch (ArgumentException)
-                {
-                }
-            }
-            else
-            {
-                bitmap = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgr24, null, new byte[3] { 0, 0, 0 }, 3);
-            }
-            return CroppedFrames[tuple] = bitmap;
-        }
-        public BitmapSource GetCroppedFrame(int index)
-        {
-            if (GetAnimationFrameForCropping(index) == null) return null;
-            return GetCroppedFrame(GetAnimationFrameForCropping(index).SpriteSheet, GetAnimationFrameForCropping(index));
-        }
-        public void InvalidateCroppedFrame(int texture, EditorAnimation.EditorFrame frame)
-        {
-            if (texture < 0 || texture >= LoadedAnimationFile.SpriteSheets.Count)
-                return;
-            var name = LoadedAnimationFile.SpriteSheets[texture];
-            CroppedFrames.Remove(new Tuple<string, int>(name, frame.GetHashCode()));
-        }
         public void InvalidateCroppedFrame(int index)
         {
-            if (GetAnimationFrameForCropping(index) == null) return;
-            InvalidateCroppedFrame(GetAnimationFrameForCropping(index).SpriteSheet, GetAnimationFrameForCropping(index));
+            var frame = GetAnimationFrameForCropping(index);
+            if (frame == null) return;
+            Services.GlobalService.SpriteService.InvalidateCroppedFrame(frame.SpriteSheet, frame);
         }
+
+        public BitmapSource GetCroppedFrame(int index)
+        {
+            var frame = GetAnimationFrameForCropping(index);
+            if (frame == null) return null;
+            return Services.GlobalService.SpriteService.GetCroppedFrame(frame.SpriteSheet, frame);
+        }
+
         #endregion
 
         #region Animation and Frame Management
 
         public void ShiftFrameRight(int frameID)
         {
+            var currentFrames = SelectedAnimationFrameSet;
             int parentID = frameID + 1;
-            if (parentID < 0 || parentID > SelectedAnimation.Frames.Count() - 1) return;
-            var targetFrame = SelectedAnimation.Frames[frameID];
-            var parentFrame = SelectedAnimation.Frames[parentID];
+            if (parentID < 0 || parentID > currentFrames.Count() - 1) return;
+            var targetFrame = currentFrames[frameID];
+            var parentFrame = currentFrames[parentID];
 
-            int parentIndex = SelectedAnimation.Frames.IndexOf(parentFrame);
+            int parentIndex = currentFrames.IndexOf(parentFrame);
 
-            SelectedAnimation.Frames.Remove(targetFrame);
-            SelectedAnimation.Frames.Insert(parentIndex, targetFrame);
+            currentFrames.Remove(targetFrame);
+            currentFrames.Insert(parentIndex, targetFrame);
 
-            SelectedFrameIndex = SelectedAnimation.Frames.IndexOf(targetFrame);
+            SelectedFrameIndex = currentFrames.IndexOf(targetFrame);
+            SelectedAnimationFrameSet = currentFrames;
         }
 
         public void ShiftFrameLeft(int frameID)
         {
+            var currentFrames = SelectedAnimationFrameSet;
             int parentID = frameID - 1;
-            if (parentID < 0 || parentID > SelectedAnimation.Frames.Count() - 1) return;
-            var targetFrame = SelectedAnimation.Frames[frameID];
-            var parentFrame = SelectedAnimation.Frames[parentID];
+            if (parentID < 0 || parentID > currentFrames.Count() - 1) return;
+            var targetFrame = currentFrames[frameID];
+            var parentFrame = currentFrames[parentID];
 
-            int parentIndex = SelectedAnimation.Frames.IndexOf(parentFrame);
+            int parentIndex = currentFrames.IndexOf(parentFrame);
 
-            SelectedAnimation.Frames.Remove(targetFrame);
-            SelectedAnimation.Frames.Insert(parentIndex, targetFrame);
+            currentFrames.Remove(targetFrame);
+            currentFrames.Insert(parentIndex, targetFrame);
 
-            SelectedFrameIndex = SelectedAnimation.Frames.IndexOf(targetFrame);
+            SelectedFrameIndex = currentFrames.IndexOf(targetFrame);
+            SelectedAnimationFrameSet = currentFrames;
         }
 
         public void ShiftAnimationUp(int animID)
         {
+            var currentAnimations = SelectedAnimationEntries;
             if (LoadedAnimationFile == null) return;
             int parentID = animID - 1;
-            if (parentID < 0 || parentID > LoadedAnimationFile.Animations.Count() - 1) return;
-            var targetAnimation = LoadedAnimationFile.Animations[animID];
-            var parentAnimation = LoadedAnimationFile.Animations[parentID];
+            if (parentID < 0 || parentID > currentAnimations.Count() - 1) return;
+            var targetAnimation = currentAnimations[animID];
+            var parentAnimation = currentAnimations[parentID];
 
-            int parentIndex = LoadedAnimationFile.Animations.IndexOf(parentAnimation);
+            int parentIndex = currentAnimations.IndexOf(parentAnimation);
 
-            LoadedAnimationFile.Animations.Remove(targetAnimation);
-            LoadedAnimationFile.Animations.Insert(parentIndex, targetAnimation);
+            currentAnimations.Remove(targetAnimation);
+            currentAnimations.Insert(parentIndex, targetAnimation);
 
 
             SelectedAnimationIndex = LoadedAnimationFile.Animations.IndexOf(targetAnimation);
+            SelectedAnimationEntries = currentAnimations;
         }
 
         public void ShiftAnimationDown(int animID)
         {
+            var currentAnimations = SelectedAnimationEntries;
             if (LoadedAnimationFile == null) return;
             int parentID = animID + 1;
-            if (parentID < 0 || parentID > LoadedAnimationFile.Animations.Count() - 1) return;
-            var targetAnimation = LoadedAnimationFile.Animations[animID];
-            var parentAnimation = LoadedAnimationFile.Animations[parentID];
+            if (parentID < 0 || parentID > currentAnimations.Count() - 1) return;
+            var targetAnimation = currentAnimations[animID];
+            var parentAnimation = currentAnimations[parentID];
 
-            int parentIndex = LoadedAnimationFile.Animations.IndexOf(parentAnimation);
+            int parentIndex = currentAnimations.IndexOf(parentAnimation);
 
-            LoadedAnimationFile.Animations.Remove(targetAnimation);
-            LoadedAnimationFile.Animations.Insert(parentIndex, targetAnimation);
+            currentAnimations.Remove(targetAnimation);
+            currentAnimations.Insert(parentIndex, targetAnimation);
 
-            SelectedAnimationIndex = LoadedAnimationFile.Animations.IndexOf(targetAnimation);
+            SelectedAnimationIndex = currentAnimations.IndexOf(targetAnimation);
+            SelectedAnimationEntries = currentAnimations;
         }
 
         public void RemoveFrame(int frameID)
         {
-            if (GenerationsLib.Core.ListHelpers.IsInRange(SelectedAnimation.Frames, frameID)) SelectedAnimation.Frames.RemoveAt(frameID);
+            var currentFrames = SelectedAnimationFrameSet;
+            if (GenerationsLib.Core.ListHelpers.IsInRange(currentFrames, frameID)) currentFrames.RemoveAt(frameID);
+            SelectedAnimationFrameSet = currentFrames;
         }
 
         public void AddFrame(int frameID)
         {
+            var currentFrames = SelectedAnimationFrameSet;
             var frame = new EditorAnimation.EditorFrame(AnimationType, SelectedAnimation);
-            if (GenerationsLib.Core.ListHelpers.IsInRange(SelectedAnimation.Frames, frameID) || SelectedAnimation.Frames.Count == 0) SelectedAnimation.Frames.Insert(frameID, frame);
+            if (GenerationsLib.Core.ListHelpers.IsInRange(currentFrames, frameID) || currentFrames.Count == 0) currentFrames.Insert(frameID, frame);
+            SelectedAnimationFrameSet = currentFrames;
         }
 
         public void DuplicateFrame(int frameID)
-        {           
-            var frame = (EditorAnimation.EditorFrame)SelectedAnimation.Frames[frameID].Clone();
-            if (GenerationsLib.Core.ListHelpers.IsInRange(SelectedAnimation.Frames, frameID)) SelectedAnimation.Frames.Insert(frameID, frame);
+        {
+            var currentFrames = SelectedAnimationFrameSet;
+            var frame = (EditorAnimation.EditorFrame)currentFrames[frameID].Clone();
+            if (GenerationsLib.Core.ListHelpers.IsInRange(currentFrames, frameID)) currentFrames.Insert(frameID, frame);
+            SelectedAnimationFrameSet = currentFrames;
         }
 
         public void RemoveAnimation(int animID)
         {
-            if (GenerationsLib.Core.ListHelpers.IsInRange(LoadedAnimationFile.Animations, animID)) LoadedAnimationFile.Animations.RemoveAt(animID);
+            var currentAnimations = SelectedAnimationEntries;
+            if (GenerationsLib.Core.ListHelpers.IsInRange(currentAnimations, animID)) currentAnimations.RemoveAt(animID);
+            SelectedAnimationEntries = currentAnimations;
         }
 
         public void AddAnimation(int animID)
         {
+            var currentAnimations = SelectedAnimationEntries;
             var animation = new EditorAnimation.EditorAnimationInfo(AnimationType, LoadedAnimationFile);
             animation.AnimName = "New Entry";
             animation.Frames = new List<EditorAnimation.EditorFrame>();
-            if (GenerationsLib.Core.ListHelpers.IsInRange(LoadedAnimationFile.Animations, animID) || LoadedAnimationFile.Animations.Count == 0) LoadedAnimationFile.Animations.Insert(animID, animation);
+            if (GenerationsLib.Core.ListHelpers.IsInRange(currentAnimations, animID) || currentAnimations.Count == 0) currentAnimations.Insert(animID, animation);
+            SelectedAnimationEntries = currentAnimations;
         }
 
         public void DuplicateAnimation(int animID)
         {
-            var animation = LoadedAnimationFile.Animations[animID];
-            if (GenerationsLib.Core.ListHelpers.IsInRange(LoadedAnimationFile.Animations, animID)) LoadedAnimationFile.Animations.Insert(animID, animation);
+            var currentAnimations = SelectedAnimationEntries;
+            var animation = currentAnimations[animID];
+            if (GenerationsLib.Core.ListHelpers.IsInRange(currentAnimations, animID)) currentAnimations.Insert(animID, animation);
+            SelectedAnimationEntries = currentAnimations;
         }
 
 

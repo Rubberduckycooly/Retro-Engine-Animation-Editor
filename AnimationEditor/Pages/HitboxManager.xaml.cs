@@ -27,7 +27,7 @@ namespace AnimationEditor.Pages
             {
                 if (ParentInstance != null && ParentInstance.AnimationType == Classes.EngineType.RSDKv5)
                 {
-                    return ParentInstance.ViewModel.Hitboxes;
+                    return ParentInstance.ViewModel.Hitboxes.ToList();
                 }
                 else
                 {
@@ -39,7 +39,7 @@ namespace AnimationEditor.Pages
             {
                 if (ParentInstance != null && ParentInstance.AnimationType == Classes.EngineType.RSDKv5)
                 {
-                    ParentInstance.ViewModel.Hitboxes = value;
+                    ParentInstance.ViewModel.Hitboxes = new System.Collections.ObjectModel.ObservableCollection<string>(value);
                 }
             }
         }

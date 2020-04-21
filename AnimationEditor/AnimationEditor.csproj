@@ -46,6 +46,17 @@
   <PropertyGroup>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Experiment|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
@@ -78,7 +89,9 @@
     </ApplicationDefinition>
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\SpriteSheets.cs" />
-    <Compile Include="Methods\ImportExportHandler.cs" />
+    <Compile Include="Methods\AnimationWriter.cs" />
+    <Compile Include="Services\UIService.cs" />
+    <Compile Include="Methods\AnimationReader.cs" />
     <Compile Include="Methods\ProgramBase.cs" />
     <Compile Include="Pages\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
@@ -90,18 +103,20 @@
     <Compile Include="Pages\HitboxManager.xaml.cs">
       <DependentUpon>HitboxManager.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Graphics\BitmapConversion.cs" />
+    <Compile Include="Extensions\BitmapConversion.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Services\BitmapExtensions.cs" />
-    <Compile Include="Services\Extensions.cs" />
-    <Compile Include="Methods\FileHandler.cs" />
-    <Compile Include="Input\InputController.cs" />
-    <Compile Include="Methods\PlaybackService.cs" />
+    <Compile Include="Extensions\BitmapExtensions.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Services\FileService.cs" />
+    <Compile Include="Methods\InputController.cs" />
+    <Compile Include="Services\PlaybackService.cs" />
+    <Compile Include="Services\GlobalService.cs" />
     <Compile Include="Services\PathService.cs" />
     <Compile Include="Pages\TextureManager.xaml.cs">
       <DependentUpon>TextureManager.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Input\UserInterfacer.cs" />
+    <Compile Include="Services\PropertyService.cs" />
+    <Compile Include="Services\SpriteService.cs" />
     <Compile Include="ViewModel\AnimationModel.cs" />
     <Page Include="Pages\AboutWindow.xaml">
       <SubType>Designer</SubType>
@@ -227,6 +242,10 @@
     <ProjectReference Include="..\..\RSDK-Reverse\RSDKvRS\RSDKvRS.csproj">
       <Project>{aae1bacd-fe6b-4cc6-ad2d-073315f45eaf}</Project>
       <Name>RSDKvRS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xe.Tools.Wpf\Xe.Tools.Wpf.csproj">
+      <Project>{02c46a71-d578-4aad-b7f2-dbfe550bbb57}</Project>
+      <Name>Xe.Tools.Wpf</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

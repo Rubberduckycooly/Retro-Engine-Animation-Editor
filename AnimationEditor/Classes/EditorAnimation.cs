@@ -68,12 +68,12 @@ namespace AnimationEditor.Classes
             {
                 engineType = type;
                 Frames.Clear();
-                AnimationEditor.Methods.ImportExportHandler.RSDKvU_Import_AnimEntry(this, filepath);
+                AnimationEditor.Methods.AnimationReader.RSDKvU_Import_AnimEntry(this, filepath);
             }
 
             public void ExportTo(EngineType type, string filepath)
             {
-                AnimationEditor.Methods.ImportExportHandler.RSDKvU_Export_AnimEntry(this, filepath);
+                AnimationEditor.Methods.AnimationWriter.RSDKvU_Export_AnimEntry(this, filepath);
             }
 
             public void SaveTo(EngineType type, object animSet)
@@ -81,19 +81,19 @@ namespace AnimationEditor.Classes
                 switch (engineType)
                 {
                     case EngineType.RSDKv5:
-                        AnimationEditor.Methods.ImportExportHandler.RSDKv5_Save_AnimEntry(this, (animSet as RSDKv5.Animation.AnimationEntry));
+                        AnimationEditor.Methods.AnimationWriter.RSDKv5_Save_AnimEntry(this, (animSet as RSDKv5.Animation.AnimationEntry));
                         break;
                     case EngineType.RSDKvB:
-                        AnimationEditor.Methods.ImportExportHandler.RSDKvB_Save_AnimEntry(this, (animSet as RSDKvB.Animation.AnimationEntry));
+                        AnimationEditor.Methods.AnimationWriter.RSDKvB_Save_AnimEntry(this, (animSet as RSDKvB.Animation.AnimationEntry));
                         break;
                     case EngineType.RSDKv2:
-                        AnimationEditor.Methods.ImportExportHandler.RSDKv2_Save_AnimEntry(this, (animSet as RSDKv2.Animation.AnimationEntry));
+                        AnimationEditor.Methods.AnimationWriter.RSDKv2_Save_AnimEntry(this, (animSet as RSDKv2.Animation.AnimationEntry));
                         break;
                     case EngineType.RSDKv1:
-                        AnimationEditor.Methods.ImportExportHandler.RSDKv1_Save_AnimEntry(this, (animSet as RSDKv1.Animation.AnimationEntry));
+                        AnimationEditor.Methods.AnimationWriter.RSDKv1_Save_AnimEntry(this, (animSet as RSDKv1.Animation.AnimationEntry));
                         break;
                     case EngineType.RSDKvRS:
-                        AnimationEditor.Methods.ImportExportHandler.RSDKvRS_Save_AnimEntry(this, (animSet as RSDKvRS.Animation.AnimationEntry));
+                        AnimationEditor.Methods.AnimationWriter.RSDKvRS_Save_AnimEntry(this, (animSet as RSDKvRS.Animation.AnimationEntry));
                         break;
                 }
             }
@@ -105,19 +105,19 @@ namespace AnimationEditor.Classes
                 switch (engineType)
                 {
                     case EngineType.RSDKv5:
-                        AnimationEditor.Methods.ImportExportHandler.RSDKv5_Load_AnimEntry(this, (animSet as RSDKv5.Animation.AnimationEntry));
+                        AnimationEditor.Methods.AnimationReader.RSDKv5_Load_AnimEntry(this, (animSet as RSDKv5.Animation.AnimationEntry));
                         break;
                     case EngineType.RSDKvB:
-                        AnimationEditor.Methods.ImportExportHandler.RSDKvB_Load_AnimEntry(this, (animSet as RSDKvB.Animation.AnimationEntry));
+                        AnimationEditor.Methods.AnimationReader.RSDKvB_Load_AnimEntry(this, (animSet as RSDKvB.Animation.AnimationEntry));
                         break;
                     case EngineType.RSDKv2:
-                        AnimationEditor.Methods.ImportExportHandler.RSDKv2_Load_AnimEntry(this, (animSet as RSDKv2.Animation.AnimationEntry));
+                        AnimationEditor.Methods.AnimationReader.RSDKv2_Load_AnimEntry(this, (animSet as RSDKv2.Animation.AnimationEntry));
                         break;
                     case EngineType.RSDKv1:
-                        AnimationEditor.Methods.ImportExportHandler.RSDKv1_Load_AnimEntry(this, (animSet as RSDKv1.Animation.AnimationEntry));
+                        AnimationEditor.Methods.AnimationReader.RSDKv1_Load_AnimEntry(this, (animSet as RSDKv1.Animation.AnimationEntry));
                         break;
                     case EngineType.RSDKvRS:
-                        AnimationEditor.Methods.ImportExportHandler.RSDKvRS_Load_AnimEntry(this, (animSet as RSDKvRS.Animation.AnimationEntry));
+                        AnimationEditor.Methods.AnimationReader.RSDKvRS_Load_AnimEntry(this, (animSet as RSDKvRS.Animation.AnimationEntry));
                         break;
                 }
             }
@@ -259,12 +259,24 @@ namespace AnimationEditor.Classes
             public void ImportFrom(EngineType type, string filepath)
             {
                 engineType = type;
-                AnimationEditor.Methods.ImportExportHandler.RSDKvU_Import_Frame(this, filepath);
+                AnimationEditor.Methods.AnimationReader.RSDKvU_Import_Frame(this, filepath);
             }
             public void ExportTo(EngineType type, string filepath)
             {
-                AnimationEditor.Methods.ImportExportHandler.RSDKvU_Export_Frame(this, filepath);
+                AnimationEditor.Methods.AnimationWriter.RSDKvU_Export_Frame(this, filepath);
             }
+
+            #region Frames
+
+            public System.Windows.Media.Imaging.BitmapSource Sprite
+            {
+                get
+                {
+                    return Services.GlobalService.SpriteService.GetCroppedFrame(this.SpriteSheet, this);
+                }
+            }
+
+            #endregion
 
         }
         [Serializable]
@@ -291,11 +303,11 @@ namespace AnimationEditor.Classes
             public void ImportFrom(EngineType type, string filepath)
             {
                 engineType = type;
-                AnimationEditor.Methods.ImportExportHandler.RSDKvU_Import_Hitbox(this, filepath);
+                AnimationEditor.Methods.AnimationReader.RSDKvU_Import_Hitbox(this, filepath);
             }
             public void ExportTo(EngineType type, string filepath)
             {
-                AnimationEditor.Methods.ImportExportHandler.RSDKvU_Export_Hitbox(this, filepath);
+                AnimationEditor.Methods.AnimationWriter.RSDKvU_Export_Hitbox(this, filepath);
             }
         }
         [Serializable]
@@ -404,19 +416,19 @@ namespace AnimationEditor.Classes
             switch (EngineType)
             {
                 case EngineType.RSDKv5:
-                    AnimationEditor.Methods.ImportExportHandler.RSDKv5_Load_Animation(this, filepath);
+                    AnimationEditor.Methods.AnimationReader.RSDKv5_Load_Animation(this, filepath);
                     break;
                 case EngineType.RSDKvB:
-                    AnimationEditor.Methods.ImportExportHandler.RSDKvB_Load_Animation(this, filepath);
+                    AnimationEditor.Methods.AnimationReader.RSDKvB_Load_Animation(this, filepath);
                     break;
                 case EngineType.RSDKv2:
-                    AnimationEditor.Methods.ImportExportHandler.RSDKv2_Load_Animation(this, filepath);
+                    AnimationEditor.Methods.AnimationReader.RSDKv2_Load_Animation(this, filepath);
                     break;
                 case EngineType.RSDKv1:
-                    AnimationEditor.Methods.ImportExportHandler.RSDKv1_Load_Animation(this, filepath);
+                    AnimationEditor.Methods.AnimationReader.RSDKv1_Load_Animation(this, filepath);
                     break;
                 case EngineType.RSDKvRS:
-                    AnimationEditor.Methods.ImportExportHandler.RSDKvRS_Load_Animation(this, filepath);
+                    AnimationEditor.Methods.AnimationReader.RSDKvRS_Load_Animation(this, filepath);
                     break;
             }
         }
@@ -426,19 +438,19 @@ namespace AnimationEditor.Classes
             switch (EngineType)
             {
                 case EngineType.RSDKv5:
-                    AnimationEditor.Methods.ImportExportHandler.RSDKv5_Save_Animation(this, filepath);
+                    AnimationEditor.Methods.AnimationWriter.RSDKv5_Save_Animation(this, filepath);
                     break;
                 case EngineType.RSDKvB:
-                    AnimationEditor.Methods.ImportExportHandler.RSDKvB_Save_Animation(this, filepath);
+                    AnimationEditor.Methods.AnimationWriter.RSDKvB_Save_Animation(this, filepath);
                     break;
                 case EngineType.RSDKv2:
-                    AnimationEditor.Methods.ImportExportHandler.RSDKv2_Save_Animation(this, filepath);
+                    AnimationEditor.Methods.AnimationWriter.RSDKv2_Save_Animation(this, filepath);
                     break;
                 case EngineType.RSDKv1:
-                    AnimationEditor.Methods.ImportExportHandler.RSDKv1_Save_Animation(this, filepath);
+                    AnimationEditor.Methods.AnimationWriter.RSDKv1_Save_Animation(this, filepath);
                     break;
                 case EngineType.RSDKvRS:
-                    AnimationEditor.Methods.ImportExportHandler.RSDKvRS_Save_Animation(this, filepath);
+                    AnimationEditor.Methods.AnimationWriter.RSDKvRS_Save_Animation(this, filepath);
                     break;
             }
         }
