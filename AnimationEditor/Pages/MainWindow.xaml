@@ -189,7 +189,7 @@
                             <Image Width="16" Source="{DynamicResource EditTitleString_16x}"/>
                         </Button>
                     </ToolBarPanel>
-                    <ListBox x:Name="List" ItemsSource="{Binding SelectedAnimationEntries}" SelectedIndex="{Binding SelectedAnimationIndex}" Width="160" HorizontalAlignment="Left" DisplayMemberPath="AnimName" SelectionChanged="List_SelectionChanged"/>
+                    <ListBox x:Name="List" ItemsSource="{Binding SelectedAnimationEntries}" SelectedIndex="{Binding SelectedAnimationIndex}"  Width="160" HorizontalAlignment="Left" DisplayMemberPath="AnimName" SelectionChanged="List_SelectionChanged"/>
                 </DockPanel>
             </DockPanel>
 
@@ -317,7 +317,7 @@
                             <Image Width="16" Source="{DynamicResource AppearanceTabSwatch_16x}"/>
                         </ToggleButton>
 
-                        <Separator  Margin="3 0 3 0" Style="{DynamicResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                        <Separator Margin="3 0 3 0" Style="{DynamicResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
                         <Button  x:Name="ButtonFrameAdd" Grid.Column="1" Click="ButtonFrameAdd_Click">
                             <Button.ToolTip>
@@ -433,9 +433,81 @@
                 <Border KeyboardNavigation.DirectionalNavigation="Contained" 
     KeyboardNavigation.TabNavigation="Contained">
                     <Grid x:Name="CanvasBackground" Background="#303030">
-                        <render:SKElement PaintSurface="CanvasView_PaintSurface" PreviewKeyDown="CanvasView_PreviewKeyDown" MouseMove="CanvasView_MouseMove" KeyUp="CanvasView_KeyUp" KeyDown="CanvasView_KeyDown" Focusable="True" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" x:Name="CanvasView" Margin="0 0 0 0" SizeChanged="Canvas_SizeChanged"
-                        RenderOptions.BitmapScalingMode="NearestNeighbor"
-                        ClipToBounds="True" MouseWheel="Canvas_MouseWheel"></render:SKElement>
+                        <Canvas Margin="0 0 0 0" 
+                                SizeChanged="Canvas_SizeChanged"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                ClipToBounds="True" 
+                                MouseWheel="Canvas_MouseWheel"
+                                PreviewKeyDown="CanvasView_PreviewKeyDown" 
+                                MouseMove="CanvasView_MouseMove" 
+                                KeyUp="CanvasView_KeyUp" 
+                                KeyDown="CanvasView_KeyDown" 
+                                Focusable="True" 
+                                MouseDown="CanvasView_MouseDown"
+                                MouseUp="CanvasView_MouseUp" 
+                                x:Name="CanvasView">
+                            <Image Source="{Binding Sprite}"
+                                   Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
+                                   Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
+                                   Canvas.Right="{Binding SpriteRight, Mode=OneWay}"
+                                   Canvas.Bottom="{Binding SpriteBottom, Mode=OneWay}"
+                                   RenderTransformOrigin="{Binding SpriteCenter, Mode=OneWay}">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleX="{Binding SpriteScaleX}" ScaleY="{Binding SpriteScaleY}"/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                                <Image.Clip>
+                                    <RectangleGeometry x:Name="Geomotry" Rect="{Binding SpriteFrame}"/>
+                                </Image.Clip>
+                            </Image>
+                            <Border Visibility="Hidden" BorderBrush="Black" x:Name="BorderMarker" BorderThickness="1.5" 
+                                    Canvas.Left="{Binding BorderLeft, Mode=OneWay}"
+                                    Canvas.Top="{Binding BorderTop, Mode=OneWay}"
+                                    Width="{Binding BorderWidth, Mode=OneWay}"
+                                    Height="{Binding BorderHeight, Mode=OneWay}"
+                                    RenderTransformOrigin="0.5,0.5">
+                                <Grid Visibility="Visible" x:Name="BorderMarkerBackground" Opacity="0.5" Background="Transparent" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" MouseMove="CanvasView_MouseMove">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" x:Name="ImageSection1"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" x:Name="ImageSection2"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" x:Name="ImageSection3"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" x:Name="ImageSection4"/>
+                                </Grid>
+                            </Border>
+                            <Border Visibility="Hidden" BorderBrush="#FFE700FF" x:Name="HitBoxViewer" BorderThickness="1.5" 
+                                    Canvas.Left="{Binding HitboxLeft, Mode=OneWay}"
+                                    Canvas.Top="{Binding HitboxTop, Mode=OneWay}"
+                                    Width="{Binding HitboxWidth, Mode=OneWay}"
+                                    Height="{Binding HitboxHeight, Mode=OneWay}"
+                                    RenderTransformOrigin="0.5,0.5">
+                                <Grid Visibility="Hidden" x:Name="HitBoxBackground" Opacity="0.5" Background="#FFE700FF" MouseDown="CanvasView_MouseDown" MouseUp="CanvasView_MouseUp" MouseMove="CanvasView_MouseMove">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="0" x:Name="HitboxSection1"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="0" Grid.Column="1" x:Name="HitboxSection2"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="0" x:Name="HitboxSection3"/>
+                                    <Grid Background="Black" Opacity="0.1" Grid.Row="1" Grid.Column="1" x:Name="HitboxSection4"/>
+                                </Grid>
+                            </Border>
+                        </Canvas>
+                        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="CenterAxis">
+                            <Grid Visibility="Hidden" Height="1" x:Name="AxisX" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Red"/>
+                            <Grid Visibility="Hidden" Width="1" x:Name="AxisY" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="Red"/>
+                        </Grid>
                     </Grid>
                 </Border>
             </DockPanel>
@@ -786,7 +858,7 @@
                                         <ColumnDefinition Width="20"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock x:Name="HBLabel" Text="Hitbox Color" VerticalAlignment="Center"/>
-                                    <xc:ColorPicker Grid.Column="1" SelectedColor="#FFE700FF" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Visible" x:Name="HitboxColorPicker" Foreground="#7FFF0000" Style="{DynamicResource ColorPicker1}"/>
+                                    <xc:ColorPicker Grid.Column="1" SelectedColor="#FFE700FF" ShowTabHeaders="False" Visibility="Visible" x:Name="HitboxColorPicker" Foreground="#7FFF0000"/>
                                     <Button Click="ColorLabels_Click" x:Name="ButtonHitboxColorReset" Content="X" Grid.Column="2"></Button>
                                 </Grid>
                                 <Grid Height="35" Margin="0,0,5,0">
@@ -796,7 +868,7 @@
                                         <ColumnDefinition Width="20"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock x:Name="AxisLabel" Text="Axis Color" VerticalAlignment="Center" Margin="0,3" Grid.RowSpan="2"/>
-                                    <xc:ColorPicker Grid.Column="1" SelectedColor="#FFFF0000" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Visible" x:Name="AxisColorPicker" Foreground="#7FFF0000" Style="{DynamicResource ColorPicker1}" Grid.RowSpan="2"/>
+                                    <xc:ColorPicker Grid.Column="1" SelectedColor="#FFFF0000" ShowTabHeaders="False" Visibility="Visible" x:Name="AxisColorPicker" Foreground="#7FFF0000" Grid.RowSpan="2"/>
                                     <Button Click="ColorLabels_Click" x:Name="ButtonAxisColorReset" Content="X" Grid.Column="2"></Button>
                                 </Grid>
                                 <Grid Height="35" Margin="0,0,5,0">
@@ -806,7 +878,7 @@
                                         <ColumnDefinition Width="20"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock x:Name="BGLabel" Text="BG Color" VerticalAlignment="Center"/>
-                                    <xc:ColorPicker Grid.Column="1" SelectedColor="#303030" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Visible" x:Name="BGColorPicker" Foreground="#7FFF0000" Style="{DynamicResource ColorPicker1}"/>
+                                    <xc:ColorPicker Grid.Column="1" SelectedColor="#303030" ShowTabHeaders="False" Visibility="Visible" x:Name="BGColorPicker" Foreground="#7FFF0000"/>
                                     <Button Click="ColorLabels_Click" x:Name="ButtonBGColorReset" Content="X" Grid.Column="2"></Button>
                                 </Grid>
                                 <Grid Height="35" Margin="0,0,5,0">
@@ -816,7 +888,7 @@
                                         <ColumnDefinition Width="20"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock x:Name="FrameBorderLabel" Text="Frame Border Color" TextWrapping="Wrap" VerticalAlignment="Center"/>
-                                    <xc:ColorPicker Grid.Column="1" SelectedColor="Black" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Visible" x:Name="FrameBorderColorPicker" Foreground="#7FFF0000" Style="{DynamicResource ColorPicker1}"/>
+                                    <xc:ColorPicker Grid.Column="1" SelectedColor="Black" ShowTabHeaders="False" Visibility="Visible" x:Name="FrameBorderColorPicker" Foreground="#7FFF0000"/>
                                     <Button Click="ColorLabels_Click" x:Name="ButtonFrameBorderColorReset" Content="X" Grid.Column="2"></Button>
                                 </Grid>
                                 <Grid Height="35" Margin="0,0,5,0">
@@ -826,7 +898,7 @@
                                         <ColumnDefinition Width="20"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock x:Name="FrameBackgroundLabel" Text="Frame BG Color" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,3" Grid.RowSpan="2"/>
-                                    <xc:ColorPicker Grid.Column="1" SelectedColor="Transparent" ShowStandardColors="False" ShowTabHeaders="False" Visibility="Visible" x:Name="FrameBackgroundColorPicker" Foreground="#7FFF0000" Style="{DynamicResource ColorPicker1}" Grid.RowSpan="2"/>
+                                    <xc:ColorPicker Grid.Column="1" SelectedColor="Transparent" ShowTabHeaders="False" Visibility="Visible" x:Name="FrameBackgroundColorPicker" Foreground="#7FFF0000" Grid.RowSpan="2"/>
                                     <Button Click="ColorLabels_Click" x:Name="ButtonFrameBGColorReset" Content="X" Grid.Column="2"></Button>
                                 </Grid>
                             </StackPanel>

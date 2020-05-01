@@ -71,6 +71,7 @@ namespace AnimationEditor.Services
             {
                 GlobalService.PropertyHandler.UpdateControls();
                 GlobalService.PropertyHandler.UpdateCanvasVisual();
+                Instance.InvalidateCanvasSize();
             }
         }
 
@@ -83,6 +84,7 @@ namespace AnimationEditor.Services
             GlobalService.PropertyHandler.PreventIndexUpdate = false;
             GlobalService.PropertyHandler.UpdateControls();
             GlobalService.PropertyHandler.UpdateCanvasVisual();
+            Instance.InvalidateCanvasSize();
         }
         #endregion
 
@@ -242,6 +244,7 @@ namespace AnimationEditor.Services
             Instance.ViewModel.NullSpriteSheetList.Clear();
             GlobalService.UIService.IntilizePlayback(true);
             Instance.WindowName = Instance.DefaultWindowName;
+            Instance.InvalidateCanvasSize();
         }
 
         public string GetImagePath(string path, string parentDirectory)

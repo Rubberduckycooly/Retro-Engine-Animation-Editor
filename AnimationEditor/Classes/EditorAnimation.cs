@@ -26,6 +26,13 @@ namespace AnimationEditor.Classes
         {
             public object Clone()
             {
+                List<EditorFrame> frames = new List<EditorFrame>();
+                foreach (var entry in this.Frames)
+                {
+                    frames.Add(entry.Clone() as EditorFrame);
+                }
+                EditorAnimationInfo item = this.MemberwiseClone() as EditorAnimationInfo;
+                item.Frames = frames;
                 return this.MemberwiseClone();
             }
 

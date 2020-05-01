@@ -156,7 +156,7 @@ namespace AnimationEditor.Pages
         private void MenuViewTransparentSpriteSheets_Click(object sender, RoutedEventArgs e)
         {
             GlobalService.PropertyHandler.ShowSolidImageBackground = MenuViewTransparentSpriteSheets.IsChecked;
-            GlobalService.PropertyHandler.UpdateCanvasVisual();
+GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
 
         private void MenuFileUnloadAnimation_Click(object sender, RoutedEventArgs e)
@@ -169,19 +169,19 @@ namespace AnimationEditor.Pages
         private void MenuViewFullSpriteSheets_Click(object sender, RoutedEventArgs e)
         {
             GlobalService.PropertyHandler.ShowFullFrame = MenuViewFullSpriteSheets.IsChecked;
-            GlobalService.PropertyHandler.UpdateCanvasVisual();
+GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
 
         private void MenuViewFrameBorder_Click(object sender, RoutedEventArgs e)
         {
             GlobalService.PropertyHandler.ShowFrameBorder = MenuViewFrameBorder.IsChecked;
-            GlobalService.PropertyHandler.UpdateCanvasVisual();
+GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
 
         private void MenuViewSetBackgroundToTransparentColor_Click(object sender, RoutedEventArgs e)
         {
             GlobalService.PropertyHandler.SetBackgroundColorToMatchSpriteSheet = MenuViewSetBackgroundToTransparentColor.IsChecked;
-            GlobalService.PropertyHandler.UpdateCanvasVisual();
+GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
 
         private void MenuFileOpenFromWorkspace_SubmenuOpened(object sender, RoutedEventArgs e)
@@ -420,27 +420,28 @@ namespace AnimationEditor.Pages
 
         #region Canvas Controls
 
+        public void InvalidateCanvasSize()
+        {
+            CanvasView.InvalidateVisual();
+            ViewModel.ViewWidth = CanvasView.Width;
+            ViewModel.ViewHeight = CanvasView.Height;
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
+            GlobalService.PropertyHandler.UpdateControls();
+            ViewModel.InvalidateCanvas();
+        }
+
         private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            ViewModel.ViewWidth = e.NewSize.Width;
+            ViewModel.ViewHeight = e.NewSize.Height;
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
             GlobalService.PropertyHandler.UpdateControls();
         }
 
         private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (e.Delta > 1)
-            {
-                if (ViewModel.Zoom < 8)
-                {
-                    ViewModel.Zoom = ViewModel.Zoom + 1;
-                }
-            }
-            else
-            {
-                if (ViewModel.Zoom > 1)
-                {
-                    ViewModel.Zoom = ViewModel.Zoom - 1;
-                }
-            }
+            ViewModel.Zoom += (e.Delta / 120) * 0.25;
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
             GlobalService.PropertyHandler.UpdateControls();
         }
 
@@ -450,15 +451,14 @@ namespace AnimationEditor.Pages
 
         public void List_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
             GlobalService.PropertyHandler.InvalidateSelectionProperties();
             GlobalService.PropertyHandler.UpdateControls();
         }
         public void FramesList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if (!GlobalService.PropertyHandler.isPlaybackEnabled)
-            {
-                GlobalService.PropertyHandler.UpdateControls();
-            }
+            GlobalService.PropertyHandler.UpdateCanvasVisual();
+            if (!GlobalService.PlaybackService?.IsRunning ?? true) GlobalService.PropertyHandler.UpdateControls();
         }
         private void FramesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -476,6 +476,8 @@ namespace AnimationEditor.Pages
         {
             if (isLoadedFully)
             {
+                GlobalService.PropertyHandler.UpdateCanvasVisual();
+                GlobalService.PropertyHandler.InvalidateSprite();
                 GlobalService.PropertyHandler.UpdateControls();
                 GlobalService.UIService.UpdateCurrentFrameValueLimits();
             }
@@ -614,7 +616,7 @@ namespace AnimationEditor.Pages
             {
                 GlobalService.PropertyHandler.FrameBackground = FrameBackgroundColorPicker.SelectedColor.Value;
             }
-            GlobalService.PropertyHandler.UpdateCanvasVisual();
+GlobalService.PropertyHandler.UpdateCanvasVisual();
         }
         #endregion
 
@@ -666,14 +668,6 @@ namespace AnimationEditor.Pages
             Keyboard.Focus(CanvasView);
         }
 
-        #endregion
-
-        #region Rendering
-        private void CanvasView_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs e)
-        {
-            if (GlobalService.PropertyHandler != null) GlobalService.PropertyHandler.PaintSurface(sender, e);
-            
-        }
         #endregion
 
         #region Unsorted

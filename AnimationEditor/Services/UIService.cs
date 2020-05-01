@@ -183,7 +183,7 @@ namespace AnimationEditor.Services
             Instance.HitboxBottomNUD.IsEnabled = isValid;
 
             Instance.HitBoxComboBox.IsEnabled = isValid;
-            Instance.HitBoxComboBox.IsHitTestVisible = (isValid ? false : true);
+            Instance.HitBoxComboBox.IsHitTestVisible = (isValid ? true : false);
         }
         public void UpdateGeneralControlsEnabledState()
         {
@@ -219,27 +219,10 @@ namespace AnimationEditor.Services
                 Instance.FrameX_NUD.Minimum = 0;
                 Instance.FrameY_NUD.Minimum = 0;
 
-                if (Instance.ViewModel.SpriteSheets != null && Instance.ViewModel.SpriteSheets.Count > 0 && Instance.ViewModel.isCurrentSpriteSheetValid)
-                {
-                    int SheetHeight = (int)Instance.ViewModel.SpriteSheets[(int)Instance.ViewModel.CurrentFrame_SpriteSheet].Image.Height;
-                    int SheetWidth = (int)Instance.ViewModel.SpriteSheets[(int)Instance.ViewModel.CurrentFrame_SpriteSheet].Image.Width;
-                    int FrameTop = (int)Instance.ViewModel.CurrentFrame_Y.Value;
-                    int FrameHeight = (int)Instance.ViewModel.CurrentFrame_Height.Value;
-                    int FrameWidth = (int)Instance.ViewModel.CurrentFrame_Width.Value;
-                    int FrameLeft = (int)Instance.ViewModel.CurrentFrame_X.Value;
-
-                    Instance.FrameWidthNUD.Maximum = (FrameLeft + FrameWidth < SheetWidth ? SheetWidth - FrameLeft : 0);
-                    Instance.FrameHeightNUD.Maximum = (FrameTop + FrameHeight < SheetHeight ? SheetHeight - FrameTop : 0);
-                    Instance.FrameX_NUD.Maximum = SheetWidth - FrameWidth;
-                    Instance.FrameY_NUD.Maximum = SheetHeight - FrameHeight;
-                }
-                else
-                {
-                    Instance.FrameWidthNUD.Maximum = 0;
-                    Instance.FrameHeightNUD.Maximum = 0;
-                    Instance.FrameX_NUD.Maximum = 0;
-                    Instance.FrameY_NUD.Maximum = 0;
-                }
+                Instance.FrameWidthNUD.Maximum = int.MaxValue;
+                Instance.FrameHeightNUD.Maximum = int.MaxValue;
+                Instance.FrameX_NUD.Maximum = int.MaxValue;
+                Instance.FrameY_NUD.Maximum = int.MaxValue;
             }
         }
 
@@ -277,14 +260,14 @@ namespace AnimationEditor.Services
         }
         public void UpdateHitboxValuesVisual()
         {
-            bool isValid = isFrameSelected;
+            bool isNotValid = !isFrameSelected;
 
-            Instance.HitboxLeftNUD.BorderBrush = (isValid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.HitboxTopNUD.BorderBrush = (isValid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.HitboxRightNUD.BorderBrush = (isValid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.HitboxBottomNUD.BorderBrush = (isValid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.HitBoxComboBox.BorderBrush = (isValid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
-            Instance.HitBoxComboBox.Foreground = (isValid ? HideTextBrush : DefaultTextBrush);
+            Instance.HitboxLeftNUD.BorderBrush = (isNotValid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.HitboxTopNUD.BorderBrush = (isNotValid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.HitboxRightNUD.BorderBrush = (isNotValid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.HitboxBottomNUD.BorderBrush = (isNotValid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.HitBoxComboBox.BorderBrush = (isNotValid ? System.Windows.Media.Brushes.Red : DefaultBorderBrush);
+            Instance.HitBoxComboBox.Foreground = (isNotValid ? HideTextBrush : DefaultTextBrush);
         }
         public void UpdateGeneralControlsVisual()
         {

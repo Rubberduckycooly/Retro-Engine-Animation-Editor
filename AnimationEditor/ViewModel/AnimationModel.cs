@@ -77,15 +77,128 @@ namespace AnimationEditor.ViewModel
 
         #endregion
 
+        #region Modes
+
+        private bool _ShowFrameBorder = false;
+        private bool _ShowSolidImageBackground = false;
+        private bool _SetBackgroundColorToMatchSpriteSheet = false;
+        private bool _ForceCenterFrame = false;
+        private bool _ShowHitBox = false;
+        private bool _ShowAlignmentLines = false;
+        private bool _ShowFullFrame = false;
+        private bool _isPlaybackEnabled = false;
+
+        public bool ShowFrameBorder
+        {
+            get
+            {
+                return _ShowFrameBorder;
+            }
+            set
+            {
+                _ShowFrameBorder = value;
+                InvalidateCanvas();
+                OnPropertyChanged(nameof(ShowFrameBorder));
+            }
+        }
+        public bool ShowSolidImageBackground
+        {
+            get
+            {
+                return _ShowSolidImageBackground;
+            }
+            set
+            {
+                _ShowSolidImageBackground = value;
+                InvalidateCanvas();
+                OnPropertyChanged(nameof(ShowSolidImageBackground));
+            }
+        }
+        public bool SetBackgroundColorToMatchSpriteSheet
+        {
+            get
+            {
+                return _SetBackgroundColorToMatchSpriteSheet;
+            }
+            set
+            {
+                _SetBackgroundColorToMatchSpriteSheet = value;
+                InvalidateCanvas();
+                OnPropertyChanged(nameof(SetBackgroundColorToMatchSpriteSheet));
+            }
+        }
+        public bool ForceCenterFrame
+        {
+            get
+            {
+                return _ForceCenterFrame;
+            }
+            set
+            {
+                _ForceCenterFrame = value;
+                InvalidateCanvas();
+                OnPropertyChanged(nameof(ForceCenterFrame));
+            }
+        }
+        public bool ShowHitBox
+        {
+            get
+            {
+                return _ShowHitBox;
+            }
+            set
+            {
+                _ShowHitBox = value;
+                InvalidateCanvas();
+                OnPropertyChanged(nameof(ShowHitBox));
+            }
+        }
+        public bool ShowAlignmentLines
+        {
+            get
+            {
+                return _ShowAlignmentLines;
+            }
+            set
+            {
+                _ShowAlignmentLines = value;
+                InvalidateCanvas();
+                OnPropertyChanged(nameof(ShowAlignmentLines));
+            }
+        }
+        public bool ShowFullFrame
+        {
+            get
+            {
+                return _ShowFullFrame;
+            }
+            set
+            {
+                _ShowFullFrame = value;
+                InvalidateCanvas();
+                OnPropertyChanged(nameof(ShowFullFrame));
+            }
+        }
+        public bool isPlaybackEnabled
+        {
+            get
+            {
+                return _isPlaybackEnabled;
+            }
+            set
+            {
+                _isPlaybackEnabled = value;
+                InvalidateCanvas();
+                OnPropertyChanged(nameof(isPlaybackEnabled));
+            }
+        }
+
+        #endregion
+
         #region IO Paths
         public string AnimationFilepath { get; set; }
         public string AnimationDirectory { get; set; }
         public string SpriteDirectory { get; set; }
-        #endregion
-
-        #region Modes/States
-        public double Zoom { get; set; } = 1;
-
         #endregion
 
         #region Details
@@ -157,9 +270,10 @@ namespace AnimationEditor.ViewModel
                 if (isAnimationInfoSelected && isFrameIndexInRange()) return SelectedAnimation.Frames[SelectedFrameIndex];
                 else return null;
             }
-            set 
+            set
             {
                 if (isAnimationInfoSelected && isFrameIndexInRange()) SelectedAnimation.Frames[SelectedFrameIndex] = value;
+                OnPropertyChanged(nameof(SelectedFrame));
             }
         }
         public EditorAnimation.EditorHitbox SelectedHitbox
@@ -862,12 +976,16 @@ namespace AnimationEditor.ViewModel
             if (frame == null) return;
             Services.GlobalService.SpriteService.InvalidateCroppedFrame(frame.SpriteSheet, frame);
         }
-
         public BitmapSource GetCroppedFrame(int index)
         {
             var frame = GetAnimationFrameForCropping(index);
             if (frame == null) return null;
             return Services.GlobalService.SpriteService.GetCroppedFrame(frame.SpriteSheet, frame);
+        }
+
+        public bool IsCurrentSpriteSheetValid()
+        {
+            return (SpriteSheets != null && !NullSpriteSheetList.Contains(SpriteSheetPaths[(int)CurrentFrame_SpriteSheet.Value]) && SpriteSheets[(int)CurrentFrame_SpriteSheet.Value].isReady);
         }
 
         #endregion
@@ -988,11 +1106,441 @@ namespace AnimationEditor.ViewModel
         public void DuplicateAnimation(int animID)
         {
             var currentAnimations = SelectedAnimationEntries;
-            var animation = currentAnimations[animID];
+            var animation = (EditorAnimation.EditorAnimationInfo)currentAnimations[animID].Clone();
             if (GenerationsLib.Core.ListHelpers.IsInRange(currentAnimations, animID)) currentAnimations.Insert(animID, animation);
             SelectedAnimationEntries = currentAnimations;
         }
 
+
+        #endregion
+
+        #region Canvas View Properties
+
+        #region Scale, View, and Zoom
+        public BitmapSource Sprite
+        {
+            get
+            {
+                if (ShowFullFrame)
+                {
+                    var sheet = GlobalService.SpriteService.SpriteSheets[(int)CurrentFrame_SpriteSheet];
+                    if (sheet.isReady) return (!ShowSolidImageBackground ? sheet.Image : sheet.TransparentImage);
+                    else return null;
+                }
+                else return GlobalService.SpriteService.GetCroppedFrame((int)CurrentFrame_SpriteSheet, SelectedFrame, ShowSolidImageBackground);
+
+            }
+        }
+
+        private double _ViewWidth, _ViewHeight, _Zoom = 1.0;
+        public double ViewWidth
+        {
+            get => _ViewWidth;
+            set
+            {
+                _ViewWidth = value;
+                OnPropertyChanged(nameof(ViewWidth));
+
+                OnPropertyChanged(nameof(SpriteLeft));
+                OnPropertyChanged(nameof(SpriteTop));
+                OnPropertyChanged(nameof(SpriteRight));
+                OnPropertyChanged(nameof(SpriteBottom));
+
+                OnPropertyChanged(nameof(SpriteCenter));
+
+                OnPropertyChanged(nameof(BorderLeft));
+                OnPropertyChanged(nameof(BorderTop));
+                OnPropertyChanged(nameof(BorderWidth));
+                OnPropertyChanged(nameof(BorderHeight));
+
+                OnPropertyChanged(nameof(HitboxLeft));
+                OnPropertyChanged(nameof(HitboxTop));
+                OnPropertyChanged(nameof(HitboxWidth));
+                OnPropertyChanged(nameof(HitboxHeight));
+            }
+        }
+        public double ViewHeight
+        {
+            get => _ViewHeight;
+            set
+            {
+                _ViewHeight = value;
+                OnPropertyChanged(nameof(ViewHeight));
+
+                OnPropertyChanged(nameof(SpriteLeft));
+                OnPropertyChanged(nameof(SpriteTop));
+                OnPropertyChanged(nameof(SpriteRight));
+                OnPropertyChanged(nameof(SpriteBottom));
+
+                OnPropertyChanged(nameof(SpriteCenter));
+
+                OnPropertyChanged(nameof(BorderLeft));
+                OnPropertyChanged(nameof(BorderTop));
+                OnPropertyChanged(nameof(BorderWidth));
+                OnPropertyChanged(nameof(BorderHeight));
+
+                OnPropertyChanged(nameof(HitboxLeft));
+                OnPropertyChanged(nameof(HitboxTop));
+                OnPropertyChanged(nameof(HitboxWidth));
+                OnPropertyChanged(nameof(HitboxHeight));
+            }
+        }
+        public double Zoom
+        {
+            get => _Zoom;
+            set
+            {
+                _Zoom = Math.Max(Math.Min(value, 16), 0.25);
+                OnPropertyChanged();
+                InvalidateCanvas();
+            }
+        }
+        public double SpriteScaleX => Zoom;
+        public double SpriteScaleY => Zoom;
+
+        #endregion
+
+        #region Global Points
+
+        public Point SpriteCenter
+        {
+            get
+            {
+                if (ShowFullFrame) return GetFullSpriteCenter();
+                else return GetNormalSpriteCenter();
+            }
+        }
+        public double SpriteLeft
+        {
+            get
+            {
+                if (ShowFullFrame) return GetFullSpriteLeft();
+                else return GetNormalSpriteLeft();
+            }
+        }
+        public double SpriteTop
+        {
+            get
+            {
+                if (ShowFullFrame) return GetFullSpriteTop();
+                else return GetNormalSpriteTop();
+            }
+        }
+        public double SpriteRight
+        {
+            get
+            {
+                if (ShowFullFrame) return GetFullSpriteRight();
+                else return GetNormalSpriteRight();
+            }
+        }
+        public double SpriteBottom
+        {
+            get
+            {
+                if (ShowFullFrame) return GetFullSpriteBottom();
+                else return GetNormalSpriteBottom();
+            }
+        }
+
+
+        public double HitboxLeft
+        {
+            get
+            {
+                return GetHitboxLeft();
+            }
+
+        }
+        public double HitboxTop
+        {
+            get
+            {
+                return GetHitboxTop();
+            }
+
+        }
+        public double HitboxWidth
+        {
+            get
+            {
+                return GetHitboxWidth();
+            }
+
+        }
+        public double HitboxHeight
+        {
+            get
+            {
+                return GetHitboxHeight();
+            }
+
+        }
+
+        public double BorderLeft
+        {
+            get
+            {
+                return GetBorderLeft();
+            }
+
+        }
+        public double BorderTop
+        {
+            get
+            {
+                return GetBorderTop();
+            }
+
+        }
+        public double BorderWidth
+        {
+            get
+            {
+                return GetBorderWidth();
+            }
+
+        }
+        public double BorderHeight
+        {
+            get
+            {
+                return GetBorderHeight();
+            }
+
+        }
+
+        #endregion
+
+        #region Normal Frame Points
+
+        public Point GetNormalSpriteCenter()
+        {
+            if (ForceCenterFrame)
+            {
+                var frame = SelectedFrame;
+                if (frame != null)
+                {
+                    int forcedPivotX = (frame.Width / 2);
+                    int forcedPivotY = (frame.Height / 2);
+                    return new Point((double)-forcedPivotX / frame.Width, (double)-forcedPivotY / frame.Height);
+                }
+                else return new Point(0.5, 0.5);
+            }
+            else
+            {
+                var frame = SelectedFrame;
+                if (frame != null) return new Point((double)-frame.PivotX / frame.Width, (double)-frame.PivotY / frame.Height);
+                else return new Point(0.5, 0.5);
+            }
+        }
+        public double GetNormalSpriteLeft()
+        {
+            if (ForceCenterFrame)
+            {
+                int ForcedPivotX = (SelectedFrame?.Width ?? 1 / 2);
+                return ViewWidth / 2.0 + ForcedPivotX;
+            }
+            else return ViewWidth / 2.0 + SelectedFrame?.PivotX ?? 0;
+        }
+        public double GetNormalSpriteTop()
+        {
+            if (ForceCenterFrame)
+            {
+                int ForcedPivotY = (SelectedFrame?.Height ?? 1 / 2);
+                return ViewHeight / 2.0 + ForcedPivotY;
+            }
+            else return ViewHeight / 2.0 + SelectedFrame?.PivotY ?? 0;
+        }
+        public double GetNormalSpriteRight()
+        {
+            return SpriteLeft + SelectedFrame?.Width ?? 0;
+        }
+        public double GetNormalSpriteBottom()
+        {
+            return SpriteTop + SelectedFrame?.Height ?? 0;
+        }
+        #endregion
+
+        #region Full Frame Points
+
+        public Point GetFullSpriteCenter()
+        {
+            return new Point(0, 0);
+        }
+        public double GetFullSpriteTop()
+        {
+            if (ForceCenterFrame)
+            {
+                double Center = ViewHeight / 2.0;
+                double FrameTop = CurrentFrame_Y ?? 0;
+                double FrameCenterY = CurrentFrame_Height ?? 1 / 2;
+                return (Center - FrameTop * Zoom) + FrameCenterY * Zoom;
+            }
+            else
+            {
+                double Center = ViewHeight / 2.0;
+                double FrameTop = CurrentFrame_Y ?? 0;
+                double FrameCenterY = CurrentFrame_PivotY ?? 0;
+                return (Center - FrameTop * Zoom) + FrameCenterY * Zoom;
+            }
+
+        }
+
+        public double GetFullSpriteLeft()
+        {
+            if (ForceCenterFrame)
+            {
+                double Center = ViewWidth / 2.0;
+                double FrameLeft = CurrentFrame_X ?? 0;
+                double FrameCenterX = CurrentFrame_Width ?? 1 / 2;
+                return (Center - FrameLeft * Zoom) + FrameCenterX * Zoom;
+            }
+            else
+            {
+                double Center = ViewWidth / 2.0;
+                double FrameLeft = CurrentFrame_X ?? 0;
+                double FrameCenterX = CurrentFrame_PivotX ?? 0;
+                return (Center - FrameLeft * Zoom) + FrameCenterX * Zoom;
+            }
+        }
+        public double GetFullSpriteRight()
+        {
+            return 0;
+        }
+        public double GetFullSpriteBottom()
+        {
+            return 0;
+        }
+
+        #endregion
+
+        #region Frame Bounds
+
+        public Rect SpriteFrame
+        {
+            get
+            {
+                if (IsCurrentSpriteSheetValid())
+                {
+                    if (ShowFullFrame) return GetFullBounds();
+                    else return GetClippedBounds();
+                }
+                else return GetFallbackBounds();
+            }
+            set
+            {
+
+            }
+        }
+        public Rect GetFullBounds()
+        {
+            int index = (int)CurrentFrame_SpriteSheet.Value;
+            return new Rect(0, 0, SpriteSheets?[index].Image?.Width ?? 0, SpriteSheets?[index].Image?.Height ?? 0);
+        }
+        public Rect GetClippedBounds()
+        {
+            return new Rect(0, 0, CurrentFrame_Width ?? 0, CurrentFrame_Height ?? 0);
+        }
+        public Rect GetFallbackBounds()
+        {
+            return new Rect(0, 0, 0.5, 0.5);
+        }
+
+        #endregion
+
+        #region Border Points
+
+        public double GetBorderTop()
+        {
+            double Center = ViewHeight / 2.0;
+            double FrameCenterY = CurrentFrame_PivotY ?? 0;
+            return Center + FrameCenterY * Zoom;
+        }
+
+        public double GetBorderLeft()
+        {
+            double Center = ViewWidth / 2.0;
+            double FrameCenterX = CurrentFrame_PivotX ?? 0;
+            return Center + FrameCenterX * Zoom;
+        }
+
+        public double GetBorderWidth()
+        {
+            double FrameWidth = CurrentFrame_Width ?? 0;
+            return FrameWidth * Zoom;
+        }
+
+        public double GetBorderHeight()
+        {
+            double FrameHeight = CurrentFrame_Height ?? 0;
+            return FrameHeight * Zoom;
+        }
+
+        #endregion
+
+        #region Hitbox Points
+
+        public double GetHitboxTop()
+        {
+            double Center = ViewHeight / 2.0;
+            double HitBoxTop = SelectedHitbox?.Top ?? 0;
+            return Center + HitBoxTop * Zoom;
+        }
+
+        public double GetHitboxLeft()
+        {
+            double Center = ViewWidth / 2.0;
+            double HitboxLeft = SelectedHitbox?.Left ?? 0;
+            return Center + HitboxLeft * Zoom;
+        }
+
+        public double GetHitboxHeight()
+        {
+            double Center = ViewHeight / 2.0;
+            double HitBoxTop = SelectedHitbox?.Top ?? 0;
+            double HitBoxBottom = SelectedHitbox?.Bottom ?? 0;
+            double HitboxHeight = (HitBoxBottom - HitBoxTop);
+            return HitboxHeight * Zoom;
+        }
+
+        public double GetHitboxWidth()
+        {
+            double Center = ViewWidth / 2.0;
+            double HitboxLeft = SelectedHitbox?.Left ?? 0;
+            double HitboxRight = SelectedHitbox?.Right ?? 0;
+            double HitboxWidth = (HitboxRight - HitboxLeft);
+            return HitboxWidth * Zoom;
+        }
+
+        #endregion
+
+        public void InvalidateCanvas()
+        {
+            OnPropertyChanged(nameof(Sprite));
+
+            OnPropertyChanged(nameof(SpriteLeft));
+            OnPropertyChanged(nameof(SpriteTop));
+            OnPropertyChanged(nameof(SpriteRight));
+            OnPropertyChanged(nameof(SpriteBottom));
+
+            OnPropertyChanged(nameof(SpriteCenter));
+
+            OnPropertyChanged(nameof(SpriteScaleX));
+            OnPropertyChanged(nameof(SpriteScaleY));
+
+            OnPropertyChanged(nameof(SpriteFrame));
+
+            OnPropertyChanged(nameof(BorderLeft));
+            OnPropertyChanged(nameof(BorderTop));
+            OnPropertyChanged(nameof(BorderWidth));
+            OnPropertyChanged(nameof(BorderHeight));
+
+            OnPropertyChanged(nameof(HitboxLeft));
+            OnPropertyChanged(nameof(HitboxTop));
+            OnPropertyChanged(nameof(HitboxWidth));
+            OnPropertyChanged(nameof(HitboxHeight));
+        }
 
         #endregion
     }
