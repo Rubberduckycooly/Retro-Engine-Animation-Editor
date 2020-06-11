@@ -215,31 +215,31 @@
     <Resource Include="Resources\MainIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\GenerationsLib\GenerationsLib.Core\GenerationsLib.Core.csproj">
+    <ProjectReference Include="..\GenerationsLib\GenerationsLib.Core\GenerationsLib.Core.csproj">
       <Project>{51ca42a9-58f0-4f3d-a250-bc22d8a8540e}</Project>
       <Name>GenerationsLib.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\GenerationsLib\GenerationsLib.WPF\GenerationsLib.WPF.csproj">
+    <ProjectReference Include="..\GenerationsLib\GenerationsLib.WPF\GenerationsLib.WPF.csproj">
       <Project>{335800a2-f482-4ae6-9017-57d7c3c52110}</Project>
       <Name>GenerationsLib.WPF</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\RSDK-Reverse\RSDKv1\RSDKv1.csproj">
+    <ProjectReference Include="..\RSDK-Reverse\RSDKv1\RSDKv1.csproj">
       <Project>{e089db56-f8d4-434e-a9a8-c7efcc3278d8}</Project>
       <Name>RSDKv1</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\RSDK-Reverse\RSDKv2\RSDKv2.csproj">
+    <ProjectReference Include="..\RSDK-Reverse\RSDKv2\RSDKv2.csproj">
       <Project>{b41a3858-7e66-4755-9f50-94ea021155b6}</Project>
       <Name>RSDKv2</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\RSDK-Reverse\RSDKv5\RSDKv5.csproj">
+    <ProjectReference Include="..\RSDK-Reverse\RSDKv5\RSDKv5.csproj">
       <Project>{cf5496f8-002b-408f-9b3d-67c88f610283}</Project>
       <Name>RSDKv5</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\RSDK-Reverse\RSDKvB\RSDKvB.csproj">
+    <ProjectReference Include="..\RSDK-Reverse\RSDKvB\RSDKvB.csproj">
       <Project>{1a58ba31-c9e1-4d18-876e-ec73799e7a9f}</Project>
       <Name>RSDKvB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\RSDK-Reverse\RSDKvRS\RSDKvRS.csproj">
+    <ProjectReference Include="..\RSDK-Reverse\RSDKvRS\RSDKvRS.csproj">
       <Project>{aae1bacd-fe6b-4cc6-ad2d-073315f45eaf}</Project>
       <Name>RSDKvRS</Name>
     </ProjectReference>
@@ -268,7 +268,11 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit">
+      <Version>3.8.1</Version>
+    </PackageReference>
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Properties\PostBuild\Installer\InstallerBanner.bmp" />
   </ItemGroup>

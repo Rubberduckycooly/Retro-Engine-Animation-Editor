@@ -6,7 +6,6 @@
         xmlns:local="clr-namespace:AnimationEditor.Pages"
         xmlns:genLib="clr-namespace:GenerationsLib.WPF.Controls;assembly=GenerationsLib.WPF"
         xmlns:Themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit"
-        xmlns:render="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
         x:Class="AnimationEditor.Pages.MainWindow"
     mc:Ignorable="d"
         Title="RSDK Animation Editor v2" MinHeight="550" Height="550" Closing="Window_Closing" Loaded="Window_Loaded" MinWidth="800" Width="800" Background="{DynamicResource NormalBackground2}" WindowStyle="SingleBorderWindow">
