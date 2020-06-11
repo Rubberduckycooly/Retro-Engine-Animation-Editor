@@ -272,6 +272,12 @@
     <PackageReference Include="Extended.Wpf.Toolkit">
       <Version>3.8.1</Version>
     </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Properties\PostBuild\Installer\InstallerBanner.bmp" />

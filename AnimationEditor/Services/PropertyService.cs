@@ -30,8 +30,6 @@ namespace AnimationEditor.Services
         #endregion
 
         #region Bitmaps
-        public SkiaSharp.SKBitmap CurrentSpriteSheet;
-        public SkiaSharp.SKBitmap CurrentSpriteSheetFrame;
         public string CurrentSpriteSheetName;
 
         #endregion
