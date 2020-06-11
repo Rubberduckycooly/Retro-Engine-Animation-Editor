@@ -199,7 +199,7 @@
                             <ColumnDefinition Width="9*"/>
                             <ColumnDefinition Width="311*"/>
                         </Grid.ColumnDefinitions>
-                        <ListBox x:Name="FramesList" ScrollViewer.HorizontalScrollBarVisibility="Visible" ItemsSource="{Binding SelectedAnimationFrameSet}" SelectedIndex="{Binding SelectedFrameIndex}" VerticalAlignment="Stretch" SelectionChanged="FramesList_SelectionChanged" MouseDoubleClick="FramesList_MouseDoubleClick" ScrollBar.Scroll="FramesList_Scroll" Grid.ColumnSpan="2">
+                        <ListBox x:Name="FramesList" ScrollViewer.HorizontalScrollBarVisibility="Visible" ItemsSource="{Binding SelectedAnimationFrameSet}" SelectedItem="{Binding SelectedFrame}" SelectedIndex="{Binding SelectedFrameIndex}" VerticalAlignment="Stretch" SelectionChanged="FramesList_SelectionChanged" MouseDoubleClick="FramesList_MouseDoubleClick" ScrollBar.Scroll="FramesList_Scroll" Grid.ColumnSpan="2">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
@@ -445,7 +445,7 @@
                                 MouseDown="CanvasView_MouseDown"
                                 MouseUp="CanvasView_MouseUp" 
                                 x:Name="CanvasView">
-                            <Image Source="{Binding Sprite}"
+                            <Image x:Name="CanvasImage" Source="{Binding Sprite}"
                                    Canvas.Left="{Binding SpriteLeft, Mode=OneWay}"
                                    Canvas.Top="{Binding SpriteTop, Mode=OneWay}"
                                    Canvas.Right="{Binding SpriteRight, Mode=OneWay}"

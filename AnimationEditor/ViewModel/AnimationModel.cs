@@ -1149,6 +1149,8 @@ namespace AnimationEditor.ViewModel
                 OnPropertyChanged(nameof(SpriteBottom));
 
                 OnPropertyChanged(nameof(SpriteCenter));
+                OnPropertyChanged(nameof(SpriteCenterX));
+                OnPropertyChanged(nameof(SpriteCenterY));
 
                 OnPropertyChanged(nameof(BorderLeft));
                 OnPropertyChanged(nameof(BorderTop));
@@ -1175,6 +1177,8 @@ namespace AnimationEditor.ViewModel
                 OnPropertyChanged(nameof(SpriteBottom));
 
                 OnPropertyChanged(nameof(SpriteCenter));
+                OnPropertyChanged(nameof(SpriteCenterX));
+                OnPropertyChanged(nameof(SpriteCenterY));
 
                 OnPropertyChanged(nameof(BorderLeft));
                 OnPropertyChanged(nameof(BorderTop));
@@ -1212,6 +1216,25 @@ namespace AnimationEditor.ViewModel
                 else return GetNormalSpriteCenter();
             }
         }
+
+        public double SpriteCenterX
+        {
+            get
+            {
+                if (ShowFullFrame) return GetFullSpriteCenter().X;
+                else return GetNormalSpriteCenter().X;
+            }
+        }
+
+        public double SpriteCenterY
+        {
+            get
+            {
+                if (ShowFullFrame) return GetFullSpriteCenter().Y;
+                else return GetNormalSpriteCenter().Y;
+            }
+        }
+
         public double SpriteLeft
         {
             get
@@ -1527,6 +1550,8 @@ namespace AnimationEditor.ViewModel
             OnPropertyChanged(nameof(SpriteBottom));
 
             OnPropertyChanged(nameof(SpriteCenter));
+            OnPropertyChanged(nameof(SpriteCenterX));
+            OnPropertyChanged(nameof(SpriteCenterY));
 
             OnPropertyChanged(nameof(SpriteScaleX));
             OnPropertyChanged(nameof(SpriteScaleY));

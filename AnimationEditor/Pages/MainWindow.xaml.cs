@@ -422,12 +422,12 @@ GlobalService.PropertyHandler.UpdateCanvasVisual();
 
         public void InvalidateCanvasSize()
         {
-            CanvasView.InvalidateVisual();
-            ViewModel.ViewWidth = CanvasView.Width;
-            ViewModel.ViewHeight = CanvasView.Height;
+            ViewModel.ViewWidth = 0;
+            ViewModel.ViewHeight = 0;
+            ViewModel.ViewWidth = CanvasView.ActualWidth;
+            ViewModel.ViewHeight = CanvasView.ActualHeight;
             GlobalService.PropertyHandler.UpdateCanvasVisual();
             GlobalService.PropertyHandler.UpdateControls();
-            ViewModel.InvalidateCanvas();
         }
 
         private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
