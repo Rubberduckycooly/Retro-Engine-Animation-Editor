@@ -985,7 +985,9 @@ namespace AnimationEditor.ViewModel
 
         public bool IsCurrentSpriteSheetValid()
         {
-            return (SpriteSheets != null && !NullSpriteSheetList.Contains(SpriteSheetPaths[(int)CurrentFrame_SpriteSheet.Value]) && SpriteSheets[(int)CurrentFrame_SpriteSheet.Value].isReady);
+            bool statusA = SpriteSheetPaths != null && SpriteSheetPaths.Count - 1 >= (int)CurrentFrame_SpriteSheet.Value && !NullSpriteSheetList.Contains(SpriteSheetPaths[(int)CurrentFrame_SpriteSheet.Value]);
+            bool statusB = SpriteSheets != null && SpriteSheets.Count - 1 >= (int)CurrentFrame_SpriteSheet.Value && SpriteSheets[(int)CurrentFrame_SpriteSheet.Value].isReady;
+            return statusA && statusB;
         }
 
         #endregion
