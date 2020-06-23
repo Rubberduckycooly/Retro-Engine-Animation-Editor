@@ -84,17 +84,42 @@ namespace AnimationEditor.Services
                 try
                 {
                     var desiredType = (isTransparent ? textureBitmap.TransparentImage : textureBitmap.Image);
-                    bitmap = new CroppedBitmap(desiredType,
-                    new System.Windows.Int32Rect()
+                    
+                    
+                    int max_width = desiredType.PixelWidth;
+                    int max_height = desiredType.PixelHeight;
+
+                    int ofb_width = max_width - frame.X + frame.Width;
+                    int ofb_height = max_height - frame.Y + frame.Height;
+
+                    int image_width = (frame.X + frame.Width > max_width ? frame.Width + ofb_width : frame.Width);
+                    int image_height = (frame.Y + frame.Height > max_height ? frame.Height + ofb_height : frame.Height);
+
+                    bool oversized_X = frame.X + frame.Width > max_width;
+                    bool oversized_Y = frame.Y + frame.Height > max_height;
+
+                    if (oversized_X || oversized_Y)
                     {
-                        X = frame.X,
-                        Y = frame.Y,
-                        Width = frame.Width,
-                        Height = frame.Height
-                    });
+                        bitmap = BitmapSource.Create(1, 1, frame.Height, frame.Width, PixelFormats.Bgr24, null, new byte[3] { 0, 0, 0 }, 3);
+                    }
+                    else
+                    {
+                        bitmap = new CroppedBitmap(desiredType,
+                        new System.Windows.Int32Rect()
+                        {
+                            X = frame.X,
+                            Y = frame.Y,
+                            Width = frame.Width,
+                            Height = frame.Height
+                        });
+                    }
+                    
+
+
                 }
                 catch (ArgumentException)
                 {
+                    bitmap = BitmapSource.Create(1, 1, frame.Height, frame.Width, PixelFormats.Bgr24, null, new byte[3] { 0, 0, 0 }, 3);
                 }
             }
             else
