@@ -25,7 +25,7 @@
                 </MenuItem>
                 <Separator/>
                 <MenuItem x:Name="MenuFileSave" Header="_Save" Click="MenuFileSave_Click"/>
-                <MenuItem x:Name="MenuFileSaveAs" Header="Save _as..." Click="MenuFileSaveAs_Click"/>
+                <MenuItem x:Name="MenuFileSaveAs" Header="Save _Copy..." Click="MenuFileSaveAs_Click"/>
                 <Separator/>
                 <MenuItem x:Name="MenuFileUnloadAnimation" Header="Unload _Animation" Click="MenuFileUnloadAnimation_Click"/>
                 <Separator/>

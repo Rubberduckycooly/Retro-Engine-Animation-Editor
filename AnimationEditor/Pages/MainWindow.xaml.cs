@@ -454,6 +454,8 @@ GlobalService.PropertyHandler.UpdateCanvasVisual();
             GlobalService.PropertyHandler.UpdateCanvasVisual();
             GlobalService.PropertyHandler.InvalidateSelectionProperties();
             GlobalService.PropertyHandler.UpdateControls();
+
+            if (ViewModel != null && ViewModel.SelectedAnimation != null && ViewModel.SelectedAnimation.Frames != null && ViewModel.SelectedAnimation.Frames.Count >= 1) ViewModel.SelectedFrameIndex = 0;
         }
         public void FramesList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
