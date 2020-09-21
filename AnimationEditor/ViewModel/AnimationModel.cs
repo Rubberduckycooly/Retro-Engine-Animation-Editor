@@ -939,13 +939,8 @@ namespace AnimationEditor.ViewModel
             {
                 return Services.GlobalService.SpriteService.SpriteSheets;
             }
-            set
-            {
-                Services.GlobalService.SpriteService.SpriteSheets = value;
-                OnPropertyChanged(nameof(SpriteSheets));
-            }
         }
-        public List<string> SpriteSheetPaths
+        public ObservableCollection<string> SpriteSheetPaths
         {
             get
             {
@@ -958,11 +953,6 @@ namespace AnimationEditor.ViewModel
             get
             {
                 return Services.GlobalService.SpriteService.NullSpriteSheetList;
-            }
-            set
-            {
-                Services.GlobalService.SpriteService.NullSpriteSheetList = value;
-                OnPropertyChanged(nameof(NullSpriteSheetList));
             }
         }
         public EditorAnimation.EditorFrame GetAnimationFrameForCropping(int index)
@@ -1007,7 +997,7 @@ namespace AnimationEditor.ViewModel
             currentFrames.Remove(targetFrame);
             currentFrames.Insert(parentIndex, targetFrame);
 
-            SelectedFrameIndex = currentFrames.IndexOf(targetFrame);
+            SelectedFrameIndex = SelectedAnimationFrameSet.IndexOf(targetFrame);
             SelectedAnimationFrameSet = currentFrames;
         }
 
@@ -1024,7 +1014,7 @@ namespace AnimationEditor.ViewModel
             currentFrames.Remove(targetFrame);
             currentFrames.Insert(parentIndex, targetFrame);
 
-            SelectedFrameIndex = currentFrames.IndexOf(targetFrame);
+            SelectedFrameIndex = SelectedAnimationFrameSet.IndexOf(targetFrame);
             SelectedAnimationFrameSet = currentFrames;
         }
 
@@ -1061,7 +1051,7 @@ namespace AnimationEditor.ViewModel
             currentAnimations.Remove(targetAnimation);
             currentAnimations.Insert(parentIndex, targetAnimation);
 
-            SelectedAnimationIndex = currentAnimations.IndexOf(targetAnimation);
+            SelectedAnimationIndex = LoadedAnimationFile.Animations.IndexOf(targetAnimation);
             SelectedAnimationEntries = currentAnimations;
         }
 

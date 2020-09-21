@@ -241,7 +241,7 @@ namespace AnimationEditor.Services
             Instance.DataContext = new AnimationModel();
             GlobalService.PropertyHandler = new PropertyService(Instance);
             InitlizeSpriteSheets();
-            Instance.ViewModel.NullSpriteSheetList.Clear();
+            Services.GlobalService.SpriteService.NullSpriteSheetList.Clear();
             GlobalService.UIService.IntilizePlayback(true);
             Instance.WindowName = Instance.DefaultWindowName;
             Instance.InvalidateCanvasSize();
@@ -272,17 +272,21 @@ namespace AnimationEditor.Services
                 var color = img.Palette.Entries[0];
                 string hex = HexConverter(color);
                 img.MakeTransparent(color);
-                return new Tuple<BitmapImage, Color>((BitmapImage)Extensions.BitmapConversion.ToWpfBitmap(img), (Color)ColorConverter.ConvertFromString(hex));
+                var finalResult = (BitmapImage)Extensions.BitmapConversion.ToWpfBitmap((System.Drawing.Bitmap)img.Clone());
+                img.Dispose();
+                return new Tuple<BitmapImage, Color>(finalResult, (Color)ColorConverter.ConvertFromString(hex));
             }
             else
             {
                 FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-
                 var img = new System.Windows.Media.Imaging.BitmapImage();
                 img.BeginInit();
                 img.StreamSource = fileStream;
+                img.CacheOption = BitmapCacheOption.OnLoad;
                 img.EndInit();
-                return new Tuple<BitmapImage, Color>(img, Colors.Black);
+                var finalResult = (BitmapImage)img.Clone();
+                fileStream.Close();
+                return new Tuple<BitmapImage, Color>(finalResult, Colors.Black);
             }
 
         }
@@ -294,7 +298,7 @@ namespace AnimationEditor.Services
 
         public void LoadAnimationTextures(string filename)
         {
-            if (Instance.ViewModel.SpriteSheets == null) InitlizeSpriteSheets(true);
+            if (Services.GlobalService.SpriteService.SpriteSheets == null) InitlizeSpriteSheets(true);
             foreach (string path in Instance.ViewModel.SpriteSheetPaths)
             {
                 string animationDirectory = Path.GetDirectoryName(filename);
@@ -319,18 +323,18 @@ namespace AnimationEditor.Services
                 {
                     var normalImage = LoadAnimationTexture(imagePath);
                     var transparentImage = LoadAnimationTexture(imagePath, true);
-                    Instance.ViewModel.SpriteSheets.Add(new Classes.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
+                    Services.GlobalService.SpriteService.SpriteSheets.Add(new Classes.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
                 }
                 else
                 {
-                    Instance.ViewModel.SpriteSheets.Add(new Classes.Spritesheet(new BitmapImage(), new BitmapImage(), true));
-                    Instance.ViewModel.NullSpriteSheetList.Add(path);
+                    Services.GlobalService.SpriteService.SpriteSheets.Add(new Classes.Spritesheet(new BitmapImage(), new BitmapImage(), true));
+                    Services.GlobalService.SpriteService.NullSpriteSheetList.Add(path);
                 }
 
             }
 
 
-            foreach(var spritesheet in Instance.ViewModel.SpriteSheets)
+            foreach(var spritesheet in Services.GlobalService.SpriteService.SpriteSheets)
             {
                 if (!spritesheet.isInvalid) spritesheet.isReady = true;
             }
@@ -341,21 +345,27 @@ namespace AnimationEditor.Services
         {
             var normalImage = LoadAnimationTexture(imagePath);
             var transparentImage = LoadAnimationTexture(imagePath, true);
-            Instance.ViewModel.SpriteSheets.Add(new Classes.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
+            Services.GlobalService.SpriteService.SpriteSheets.Add(new Classes.Spritesheet(normalImage.Item1, transparentImage.Item1, transparentImage.Item2));
         }
 
         public void InitlizeSpriteSheets(bool clearMode = false)
         {
             if (clearMode)
             {
-                if (Instance.ViewModel.SpriteSheets != null) Instance.ViewModel.SpriteSheets.Clear();
+                if (Services.GlobalService.SpriteService.SpriteSheets != null) Services.GlobalService.SpriteService.SpriteSheets.Clear();
             }
             else
             {
-                Instance.ViewModel.SpriteSheets = new System.Collections.ObjectModel.ObservableCollection<Classes.Spritesheet>();
+                Services.GlobalService.SpriteService.SpriteSheets = new System.Collections.ObjectModel.ObservableCollection<Classes.Spritesheet>();
 
             }
         }
+
+        public void ReloadAnimationTextures()
+        {
+            LoadAnimationTextures(Instance.ViewModel.AnimationFilepath);
+        }
+
         #endregion
 
         #region Import / Export Methods

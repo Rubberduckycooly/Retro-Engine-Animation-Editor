@@ -341,18 +341,18 @@ namespace AnimationEditor.Methods
 
         public static void RSDKv5_Load_AnimHeader(EditorAnimation BridgeHost, RSDKv5.Animation animsetv5)
         {
-            BridgeHost.SpriteSheets = animsetv5.SpriteSheets;
+            BridgeHost.SpriteSheets = new System.Collections.ObjectModel.ObservableCollection<string>(animsetv5.SpriteSheets);
             BridgeHost.TotalFrameCount = animsetv5.TotalFrameCount;
             BridgeHost.CollisionBoxes = animsetv5.CollisionBoxes;
         }
         public static void RSDKvB_Load_AnimHeader(EditorAnimation BridgeHost, RSDKvB.Animation animsetvB)
         {
-            BridgeHost.SpriteSheets = animsetvB.SpriteSheets;
+            BridgeHost.SpriteSheets = new System.Collections.ObjectModel.ObservableCollection<string>(animsetvB.SpriteSheets);
             BridgeHost.CollisionBoxes = GetV3HitboxList();
         }
         public static void RSDKv2_Load_AnimHeader(EditorAnimation BridgeHost, RSDKv2.Animation animsetv2)
         {
-            BridgeHost.SpriteSheets = animsetv2.SpriteSheets;
+            BridgeHost.SpriteSheets = new System.Collections.ObjectModel.ObservableCollection<string>(animsetv2.SpriteSheets);
             BridgeHost.CollisionBoxes = GetV3HitboxList();
         }
         public static void RSDKv1_Load_AnimHeader(EditorAnimation BridgeHost, RSDKv1.Animation animsetv1)

@@ -9,9 +9,9 @@ rmdir "%TargetDir%Lib\ " /s /q
 SET COPYCMD=/Y
 
 :: Move the Binaries
-move  "%TargetDir%*.dll" "%TargetDir%/Lib"
-move  "%TargetDir%*.pdb" "%TargetDir%/Lib"
-move  "%TargetDir%*.pdb" "%TargetDir%/Lib"
+move  "%TargetDir%*.dll" "%TargetDir%Lib"
+move  "%TargetDir%*.pdb" "%TargetDir%Lib"
+move  "%TargetDir%*.pdb" "%TargetDir%Lib"
 
 robocopy  "%TargetDir%cs-CZ" "%TargetDir%Lib/cs-CZ" /S /Move /is
 robocopy  "%TargetDir%de" "%TargetDir%Lib/de" /S /Move /is

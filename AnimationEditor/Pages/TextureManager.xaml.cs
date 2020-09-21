@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Collections.Generic;
 using AnimationEditor.Services;
+using System.Collections.ObjectModel;
 
 namespace AnimationEditor.Pages
 {
@@ -18,7 +19,7 @@ namespace AnimationEditor.Pages
     {
         private MainWindow ParentInstance;
         private List<BitmapImage> SpriteSheets;
-        private List<string> Textures { get; set; }
+        private ObservableCollection<string> Textures { get; set; }
         private int SelectedTextureIndex { get; set; }
         private int SelectedValue { get; set; }
         private BitmapImage CurrentTexture { get; set; }
@@ -63,7 +64,7 @@ namespace AnimationEditor.Pages
 
         public void InitializeVarriables()
         {
-            Textures = new List<string>();
+            Textures = new ObservableCollection<string>();
             SpriteSheets = new List<BitmapImage>();
             CurrentTexture = new BitmapImage();
             Textures = ParentInstance.ViewModel.SpriteSheetPaths;
@@ -72,7 +73,7 @@ namespace AnimationEditor.Pages
 
         public void UpdateUI()
         {
-            CurrentTexture = ParentInstance.ViewModel.SpriteSheets[SelectedTextureIndex].Image;
+            CurrentTexture = Services.GlobalService.SpriteService.SpriteSheets[SelectedTextureIndex].Image;
             if (CurrentTexture != null && !ParentInstance.ViewModel.NullSpriteSheetList.Contains(ParentInstance.ViewModel.SpriteSheetPaths[SelectedTextureIndex]))
             {
                 SizeText.Text = string.Format("Size: {0} x {1}", CurrentTexture.Width, CurrentTexture.Height);
@@ -89,8 +90,8 @@ namespace AnimationEditor.Pages
 
         public void RemoveTexture(int index)
         {
-            ParentInstance.ViewModel.SpriteSheetPaths.RemoveAt(index);
-            ParentInstance.ViewModel.SpriteSheets.RemoveAt(index);
+            ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.RemoveAt(index);
+            Services.GlobalService.SpriteService.SpriteSheets.RemoveAt(index);
 
             SelectedTextureIndex = 0;
             if (ParentInstance.ViewModel.CurrentFrame_SpriteSheet == index) ParentInstance.ViewModel.CurrentFrame_SpriteSheet = 0;
@@ -100,13 +101,18 @@ namespace AnimationEditor.Pages
             {
                 foreach (var frame in list.Frames)
                 {
-                    if (frame.SpriteSheet == index)
+                    if (frame.SpriteSheet > index && frame != ParentInstance.ViewModel.SelectedFrame)
+                    {
+                        frame.SpriteSheet = (byte)(frame.SpriteSheet - 1);
+                        GlobalService.SpriteService.InvalidateCroppedFrame(frame.SpriteSheet, frame);
+                    }
+                    else if (frame.SpriteSheet == index)
                     {
                         frame.SpriteSheet = 0;
+                        GlobalService.SpriteService.InvalidateCroppedFrame(frame.SpriteSheet, frame);
                     }
                 }
             }
-
 
             InitializeVarriables();
             UpdateUI();
@@ -117,8 +123,8 @@ namespace AnimationEditor.Pages
             ParentInstance.TextureManagerPopup.IsOpen = true;
             GlobalService.PropertyHandler.InvalidateSelectionProperties();
             GlobalService.PropertyHandler.UpdateControls();
-
-
+            GlobalService.FileHandler.ReloadAnimationTextures();
+            GlobalService.SpriteService.InvalidateAllFrames();
         }
 
         public void ReplaceTexture(int index)
@@ -149,7 +155,7 @@ namespace AnimationEditor.Pages
                 string modifiedPath = selectedImage.Replace(parentDirectory, "").Replace("\\", "/");
                 if (modifiedPath[0] == '/') modifiedPath = modifiedPath.Remove(0, 1);
 
-                ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.RemoveAt(index);
+                Services.GlobalService.SpriteService.SpriteSheets.RemoveAt(index);
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Insert(index, modifiedPath);
 
                 var normalTexture = GlobalService.FileHandler.LoadAnimationTexture(selectedImage, false);
@@ -157,8 +163,8 @@ namespace AnimationEditor.Pages
 
 
 
-                ParentInstance.ViewModel.SpriteSheets.RemoveAt(index);
-                ParentInstance.ViewModel.SpriteSheets.Insert(index, new Classes.Spritesheet(normalTexture.Item1, transparentTexture.Item1, transparentTexture.Item2));
+                Services.GlobalService.SpriteService.SpriteSheets.RemoveAt(index);
+                Services.GlobalService.SpriteService.SpriteSheets.Insert(index, new Classes.Spritesheet(normalTexture.Item1, transparentTexture.Item1, transparentTexture.Item2));
             }
 
             InitializeVarriables();
@@ -168,8 +174,9 @@ namespace AnimationEditor.Pages
             ListTextures.SelectedItem = ParentInstance.ViewModel.SpriteSheetPaths[0];
             ParentInstance.TextureManagerPopup.IsOpen = true;
             GlobalService.PropertyHandler.UpdateControls();
+            GlobalService.FileHandler.ReloadAnimationTextures();
+            GlobalService.SpriteService.InvalidateAllFrames();
         }
-
         public void AddTexture()
         {
             string parentDirectory = ParentInstance.ViewModel.SpriteDirectory;
@@ -205,7 +212,7 @@ namespace AnimationEditor.Pages
                 ParentInstance.ViewModel.LoadedAnimationFile.SpriteSheets.Add(modifiedPath);
                 var sheet = new Classes.Spritesheet(image.Item1, transparentimage.Item1, transparentimage.Item2);
                 sheet.isReady = true;
-                ParentInstance.ViewModel.SpriteSheets.Add(sheet);
+                Services.GlobalService.SpriteService.SpriteSheets.Add(sheet);
             }
 
             InitializeVarriables();
@@ -216,8 +223,9 @@ namespace AnimationEditor.Pages
             ParentInstance.TextureManagerPopup.IsOpen = true;
             GlobalService.PropertyHandler.UpdateControls();
             GlobalService.PropertyHandler.UpdateSpriteSheetProperties();
+            GlobalService.FileHandler.ReloadAnimationTextures();
+            GlobalService.SpriteService.InvalidateAllFrames();
         }
-
         private void ListTextures_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (ListTextures.SelectedIndex != -1)
@@ -227,7 +235,6 @@ namespace AnimationEditor.Pages
             }
 
         }
-
         private void ButtonRemove_Click(object sender, RoutedEventArgs e)
         {
             int Index = SelectedTextureIndex;
@@ -244,12 +251,10 @@ namespace AnimationEditor.Pages
                 MessageBox.Show("You can not remove the base spritesheet, add another spritesheet or replace this one if you wish to remove it.", "Unable to remove Spritesheet", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
         private void ButtonAdd_Click(object sender, RoutedEventArgs e)
         {
             AddTexture();
         }
-
         bool IsPowerOfTwo(ulong x)
         {
             return (x & (x - 1)) == 0;

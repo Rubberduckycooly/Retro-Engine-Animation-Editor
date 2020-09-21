@@ -64,7 +64,12 @@
             </DockPanel>
             <TextBlock x:Name="SizeText" DockPanel.Dock="Top" Margin="5 0 5 5"/>
             <TextBlock x:Name="FormatText" DockPanel.Dock="Top" Text="" Margin="5 0 5 5"/>
-            <Image x:Name="ImageTexture" Source="{Binding CurrentTexture}"/>
+            <Border BorderBrush="{DynamicResource NormalText}" BorderThickness="1">
+                <Grid>
+                    <Image x:Name="ImageTexture" Source="{Binding CurrentTexture}"/>
+                </Grid>
+            </Border>
+
         </DockPanel>
     </Border>
 </UserControl>

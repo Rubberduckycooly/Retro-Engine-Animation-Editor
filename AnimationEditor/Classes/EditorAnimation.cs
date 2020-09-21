@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -386,8 +387,7 @@ namespace AnimationEditor.Classes
                 }
             }
         }
-        public List<string> SpriteSheets { get => SpriteSheetsPaths; set => SpriteSheetsPaths = value; }
-        public List<string> SpriteSheetsPaths { get; set; } = new List<string>();
+        public ObservableCollection<string> SpriteSheets { get; set; } = new ObservableCollection<string>();
         public List<string> CollisionBoxes { get => CollisionBoxesList; set => CollisionBoxesList = value; }
         private List<string> CollisionBoxesList { get; set; } = new List<string>();
         public List<EditorAnimationInfo> Animations { get; set; } = new List<EditorAnimationInfo>();

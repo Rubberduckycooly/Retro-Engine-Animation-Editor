@@ -136,6 +136,15 @@ namespace AnimationEditor.Services
             CroppedFrames.Remove(new Tuple<string, int>(name, frame.GetHashCode()));
             CroppedTransparentFrames.Remove(new Tuple<string, int>(name, frame.GetHashCode()));
         }
+
+        public void InvalidateAllFrames()
+        {
+            CroppedFrames.Clear();
+            CroppedTransparentFrames.Clear();
+            CroppedFrames = new Dictionary<Tuple<string, int>, BitmapSource>();
+            CroppedTransparentFrames = new Dictionary<Tuple<string, int>, BitmapSource>();
+        }
+
         #endregion
     }
 }

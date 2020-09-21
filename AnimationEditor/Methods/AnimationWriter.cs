@@ -312,16 +312,16 @@ namespace AnimationEditor.Methods
 
         public static void RSDKv5_Save_AnimHeader(EditorAnimation BridgeHost, RSDKv5.Animation animsetv5)
         {
-            animsetv5.SpriteSheets = BridgeHost.SpriteSheets;
+            animsetv5.SpriteSheets = BridgeHost.SpriteSheets.ToList();
             animsetv5.CollisionBoxes = BridgeHost.CollisionBoxes;
         }
         public static void RSDKvB_Save_AnimHeader(EditorAnimation BridgeHost, RSDKvB.Animation animsetvB)
         {
-            animsetvB.SpriteSheets = BridgeHost.SpriteSheets;
+            animsetvB.SpriteSheets = BridgeHost.SpriteSheets.ToList();
         }
         public static void RSDKv2_Save_AnimHeader(EditorAnimation BridgeHost, RSDKv2.Animation animsetv2)
         {
-            animsetv2.SpriteSheets = BridgeHost.SpriteSheets;
+            animsetv2.SpriteSheets = BridgeHost.SpriteSheets.ToList();
         }
         public static void RSDKv1_Save_AnimHeader(EditorAnimation BridgeHost, RSDKv1.Animation animsetv1)
         {

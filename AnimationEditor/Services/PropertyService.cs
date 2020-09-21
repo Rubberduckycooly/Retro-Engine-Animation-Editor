@@ -248,6 +248,7 @@ namespace AnimationEditor.Services
         }
         public void UpdateSpriteSheetProperties()
         {
+            OnPropertyChanged(nameof(Instance.ViewModel.SpriteSheets));
             OnPropertyChanged(nameof(Instance.ViewModel.SpriteSheetPaths));
             OnPropertyChanged(nameof(Instance.ViewModel.CurrentFrame_SpriteSheet));
         }
