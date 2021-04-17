@@ -309,7 +309,7 @@ namespace AnimationEditor.Services
                 {
                     parentDirectory = Directory.GetParent(parentDirectory).FullName;
                 }
-                Instance.ViewModel.SpriteDirectory = parentDirectory;
+                Instance.ViewModel.SpriteDirectory = Path.Combine(parentDirectory, "Sprites");
                 string imagePath = GetImagePath(path, parentDirectory);
 
 
